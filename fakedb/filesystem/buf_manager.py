@@ -1,12 +1,13 @@
 import os
-
-from ..config import CACHE_SIZE
-
+import numpy as np
+from ..config import CACHE_SIZE, PAGE_SIZE
+from .lru import LRU
 
 class BufManager:
     def __init__(self):
-        pass
-
+        self.pages = np.zeros((CACHE_SIZE, PAGE_SIZE), dtype=np.uint8)
+        self.fdpd_to_idx = {}
+        self.lru = LRU()
 
     def close(self, fd):
         '''
@@ -22,6 +23,10 @@ class BufManager:
         TODO:
         写文件, 写到cache中
         '''
+        if fd not in self.fdpd_to_idx:
+            self.fdpd_to_idx[fd] = {}
+        if pd not in self.fdpd_to_idx[fd]:
+            pass
         pass
 
     def shutdown(self):
