@@ -8,10 +8,14 @@ import os
 PAGE_SIZE = 8192 # 采用文档中的设定, 每页8192字节
 PAGE_SIZE_BITS = 13 # 8192字节为13位
 
+CACHE_SIZE = 60000
+
 class FileManager:
 
     def __init__(self):
-        self.fd2name = {} # 维护打开的文件名和fd的映射
+
+        # 维护打开的文件名和fd的映射
+        self.fd2name = {} 
         self.name2fd = {}
 
     def create_file(self, filename):
@@ -53,7 +57,7 @@ class FileManager:
         '''写回一页数据
         fd: file id, 文件描述符
         pd: page id, 页号
-
+        data: 要写入的数据
         return: 无返回值
         '''
         os.lseek(fd, pd << PAGE_SIZE_BITS) # 设置偏移量
