@@ -1,5 +1,6 @@
 import os
 
+from .buf_manager import BufManager
 from ..config import PAGE_SIZE, PAGE_SIZE_BITS
 
 
@@ -11,6 +12,9 @@ class FileManager:
         # 维护打开的文件名和fd的映射
         self.fd2name = {} 
         self.name2fd = {}
+
+        # buffer manager
+        self.buf_manager = BufManager()
 
     def create_file(self, filename):
         '''创建文件'''
@@ -34,6 +38,7 @@ class FileManager:
     def close_file(self, fd):
         '''关闭文件'''
         # TODO: 清空cache中该文件对应的页, 写回
+        self.buf_manager.close(fd)
         os.close(fd)
         self.name2fd.pop(self.fd2name.pop(fd));
     
@@ -54,8 +59,9 @@ class FileManager:
         data: 要写入的数据
         return: 无返回值
         '''
-        os.lseek(fd, pd << PAGE_SIZE_BITS, 0) # 设置偏移量
-        os.write(fd, PAGE_SIZE, data.tobytes()) # 写一页数据
+        self.buf_manager.write(fd, pd, data)
+        # os.lseek(fd, pd << PAGE_SIZE_BITS, 0) # 设置偏移量
+        # os.write(fd, PAGE_SIZE, data.tobytes()) # 写一页数据
 
 
     
