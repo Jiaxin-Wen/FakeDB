@@ -10,6 +10,7 @@ class BufManager:
 
     def close(self, fd):
         '''
+        TODO:
         关闭一个文件, 更新cache
         fd: file descsriptor
         '''
@@ -18,6 +19,14 @@ class BufManager:
 
     def write(self, fd, pd, data):
         '''
+        TODO:
         写文件, 写到cache中
+        '''
+        pass
+
+    def shutdown(self):
+        '''
+        TODO:
+        退出
         '''
         pass
