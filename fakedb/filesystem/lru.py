@@ -7,13 +7,14 @@ class LRU:
         self.unused = set(list(range(size)))
 
     def assign(self):
+        # return new_idx, need_write_back
         if len(self.unused) == 0:
             idx = self.cache.popitem(last=False)
-            return idx
+            return idx, True
         else:
             idx = self.unused.pop()
             self.cache[idx] = None
-            return idx
+            return idx, False
 
     def free(self, idx):
         # assert idx not in self.unused
