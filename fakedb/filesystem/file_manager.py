@@ -64,5 +64,13 @@ class FileManager:
         # os.write(fd, PAGE_SIZE, data.tobytes()) # 写一页数据
 
 
-    
-    
+    def shutdown(self):
+        '''
+        退出
+        '''
+        # clear fd2name and name2fd
+        self.fd2name = {}
+        self.name2fd = {}
+
+        # clear cache
+        self.buf_manager.shutdown()    

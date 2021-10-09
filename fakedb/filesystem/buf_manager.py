@@ -11,6 +11,7 @@ class BufManager:
 
     def close(self, fd):
         '''
+        TODO:
         关闭一个文件, 更新cache
         fd: file descsriptor
         '''
@@ -19,10 +20,18 @@ class BufManager:
 
     def write(self, fd, pd, data):
         '''
+        TODO:
         写文件, 写到cache中
         '''
         if fd not in self.fdpd_to_idx:
             self.fdpd_to_idx[fd] = {}
         if pd not in self.fdpd_to_idx[fd]:
             pass
+        pass
+
+    def shutdown(self):
+        '''
+        TODO:
+        退出
+        '''
         pass
