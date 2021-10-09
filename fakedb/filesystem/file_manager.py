@@ -1,10 +1,7 @@
-'''
-FileManager with buffer
-
-'''
-
 import os
-from fakedb.config import *
+
+from ..config import PAGE_SIZE, PAGE_SIZE_BITS
+
 
 
 class FileManager:
