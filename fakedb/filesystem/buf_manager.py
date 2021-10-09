@@ -40,14 +40,3 @@ class BufManager:
         idx = self.fdpd_to_idx[fd][pd]
         self.lru.access(idx)
         self.pages[idx] = data
-
-    def shutdown(self):
-        '''
-        TODO:
-        退出
-        '''
-        for fd, d in self.fdpd_to_idx.items():
-            for pd, idx in d.items():
-                self.lru.free(idx)
-                self.write_back(fd, pd, idx)
-        self.fdpd_to_idx = {}

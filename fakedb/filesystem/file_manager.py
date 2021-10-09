@@ -64,9 +64,8 @@ class FileManager:
         '''
         退出
         '''
-        # clear fd2name and name2fd
-        self.fd2name = {}
-        self.name2fd = {}
+        for fd in self.fd2name:
+            self.close_file(fd)  
 
-        # clear cache
-        self.buf_manager.shutdown()    
+        assert not any(self.fd2name)
+        assert not any(self.name2fd)
