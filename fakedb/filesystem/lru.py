@@ -1,5 +1,6 @@
 from collections import OrderedDict
 
+
 class LRU:
     def __init__(self, size):
         self.cache = OrderedDict()
@@ -22,4 +23,3 @@ class LRU:
     def access(self, idx):
         # assert idx not in self.unused
         self.cache[idx] = None
-
