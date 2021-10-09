@@ -4,11 +4,8 @@ FileManager with buffer
 '''
 
 import os
+from fakedb.config import *
 
-PAGE_SIZE = 8192 # 采用文档中的设定, 每页8192字节
-PAGE_SIZE_BITS = 13 # 8192字节为13位
-
-CACHE_SIZE = 60000
 
 class FileManager:
 
