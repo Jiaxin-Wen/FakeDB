@@ -1,22 +1,20 @@
-'''
-FileManager with buffer
-
-'''
-
 import os
 
-PAGE_SIZE = 8192 # 采用文档中的设定, 每页8192字节
-PAGE_SIZE_BITS = 13 # 8192字节为13位
+from ..config import PAGE_SIZE, PAGE_SIZE_BITS
+
+
 
 class FileManager:
 
     def __init__(self):
-        self.fd2name = {} # 维护打开的文件名和fd的映射
+
+        # 维护打开的文件名和fd的映射
+        self.fd2name = {} 
         self.name2fd = {}
 
     def create_file(self, filename):
         '''创建文件'''
-        os.mknod(filename)
+        open(filename, 'a').close()
 
     def remove_file(self, filename):
         '''删除文件'''
@@ -46,17 +44,17 @@ class FileManager:
 
         return: 读出的数据
         '''
-        os.lseek(fd, pd << PAGE_SIZE_BITS) # 设置偏移量
+        os.lseek(fd, pd << PAGE_SIZE_BITS, 0) # 设置偏移量
         return os.read(fd, PAGE_SIZE) # 读一页数据, 返回
 
     def write_page(self, fd, pd, data):
         '''写回一页数据
         fd: file id, 文件描述符
         pd: page id, 页号
-
+        data: 要写入的数据
         return: 无返回值
         '''
-        os.lseek(fd, pd << PAGE_SIZE_BITS) # 设置偏移量
+        os.lseek(fd, pd << PAGE_SIZE_BITS, 0) # 设置偏移量
         os.write(fd, PAGE_SIZE, data.tobytes()) # 写一页数据
 
 
