@@ -17,7 +17,7 @@ class FileManager:
 
     def create_file(self, filename):
         '''创建文件'''
-        os.mknod(filename)
+        open(filename, 'a').close()
 
     def remove_file(self, filename):
         '''删除文件'''
