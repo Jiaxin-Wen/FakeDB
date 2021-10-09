@@ -47,7 +47,7 @@ class FileManager:
 
         return: 读出的数据
         '''
-        os.lseek(fd, pd << PAGE_SIZE_BITS) # 设置偏移量
+        os.lseek(fd, pd << PAGE_SIZE_BITS, 0) # 设置偏移量
         return os.read(fd, PAGE_SIZE) # 读一页数据, 返回
 
     def write_page(self, fd, pd, data):
@@ -57,7 +57,7 @@ class FileManager:
         data: 要写入的数据
         return: 无返回值
         '''
-        os.lseek(fd, pd << PAGE_SIZE_BITS) # 设置偏移量
+        os.lseek(fd, pd << PAGE_SIZE_BITS, 0) # 设置偏移量
         os.write(fd, PAGE_SIZE, data.tobytes()) # 写一页数据
 
 
