@@ -38,7 +38,6 @@ class FileManager:
         # TODO: 清空cache中该文件对应的页, 写回
         os.close(fd)
         self.name2fd.pop(self.fd2name.pop(fd));
-
     
     def read_page(self, fd, pd):
         '''读取一页数据
@@ -50,7 +49,7 @@ class FileManager:
         os.lseek(fd, pd << PAGE_SIZE_BITS) # 设置偏移量
         return os.read(fd, PAGE_SIZE) # 读一页数据, 返回
 
-    def write_page(self, fd, pd):
+    def write_page(self, fd, pd, data):
         '''写回一页数据
         fd: file id, 文件描述符
         pd: page id, 页号
@@ -58,7 +57,7 @@ class FileManager:
         return: 无返回值
         '''
         os.lseek(fd, pd << PAGE_SIZE_BITS) # 设置偏移量
-        os.write(fd, PAGE_SIZE) # 写一页数据
+        os.write(fd, PAGE_SIZE, data.tobytes()) # 写一页数据
 
 
     
