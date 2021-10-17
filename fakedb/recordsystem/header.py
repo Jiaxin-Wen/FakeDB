@@ -14,6 +14,7 @@ class Header:
         page_num: 当前页数
         filename: 文件名
         bitmap_len: bitmap的字节数
+        next_available_page: 下一个可以插入记录的页
         '''
         self.data = kwargs
         print('header = ', self.data)
