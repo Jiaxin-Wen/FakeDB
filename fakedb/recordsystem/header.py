@@ -7,6 +7,14 @@ class Header:
     文件头
     '''
     def __init__(self, **kwargs):
+        '''
+        record_len: 每条记录的字节数
+        record_capacity: 每页最大可存放的记录数
+        record_num: 当前记录数
+        page_num: 当前页数
+        filename: 文件名
+        bitmap_len: bitmap的字节数
+        '''
         self.data = kwargs
         print('header = ', self.data)
 
