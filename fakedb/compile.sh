@@ -1,1 +1,1 @@
-antlr4 -Dlanguage=Python3 SQL.g4 -o parser
+antlr4 SQL.g4 -Dlanguage=Python3 -visitor -o parser

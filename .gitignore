@@ -1,7 +1,2 @@
 .DS_Store
 .idea
-
-
-# antlr
-*.tokens
-*.interp

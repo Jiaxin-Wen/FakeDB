@@ -372,6 +372,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitProgram" ):
                 listener.exitProgram(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitProgram" ):
+                return visitor.visitProgram(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -441,6 +447,12 @@ class SQLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitStatement" ):
                 listener.exitStatement(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitStatement" ):
+                return visitor.visitStatement(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -542,6 +554,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitShow_dbs" ):
                 listener.exitShow_dbs(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitShow_dbs" ):
+                return visitor.visitShow_dbs(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class Drop_dbContext(Db_statementContext):
 
@@ -560,6 +578,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitDrop_db" ):
                 listener.exitDrop_db(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitDrop_db" ):
+                return visitor.visitDrop_db(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class Show_tablesContext(Db_statementContext):
 
@@ -575,6 +599,12 @@ class SQLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitShow_tables" ):
                 listener.exitShow_tables(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitShow_tables" ):
+                return visitor.visitShow_tables(self)
+            else:
+                return visitor.visitChildren(self)
 
 
     class Create_dbContext(Db_statementContext):
@@ -594,6 +624,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitCreate_db" ):
                 listener.exitCreate_db(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitCreate_db" ):
+                return visitor.visitCreate_db(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class Use_dbContext(Db_statementContext):
 
@@ -612,6 +648,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitUse_db" ):
                 listener.exitUse_db(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitUse_db" ):
+                return visitor.visitUse_db(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class Show_indexesContext(Db_statementContext):
 
@@ -627,6 +669,12 @@ class SQLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitShow_indexes" ):
                 listener.exitShow_indexes(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitShow_indexes" ):
+                return visitor.visitShow_indexes(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -741,6 +789,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitDump_data" ):
                 listener.exitDump_data(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitDump_data" ):
+                return visitor.visitDump_data(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class Load_dataContext(Io_statementContext):
 
@@ -760,6 +814,12 @@ class SQLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitLoad_data" ):
                 listener.exitLoad_data(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitLoad_data" ):
+                return visitor.visitLoad_data(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -855,6 +915,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitDelete_from_table" ):
                 listener.exitDelete_from_table(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitDelete_from_table" ):
+                return visitor.visitDelete_from_table(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class Insert_into_tableContext(Table_statementContext):
 
@@ -875,6 +941,12 @@ class SQLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitInsert_into_table" ):
                 listener.exitInsert_into_table(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitInsert_into_table" ):
+                return visitor.visitInsert_into_table(self)
+            else:
+                return visitor.visitChildren(self)
 
 
     class Create_tableContext(Table_statementContext):
@@ -897,6 +969,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitCreate_table" ):
                 listener.exitCreate_table(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitCreate_table" ):
+                return visitor.visitCreate_table(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class Describe_tableContext(Table_statementContext):
 
@@ -914,6 +992,12 @@ class SQLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitDescribe_table" ):
                 listener.exitDescribe_table(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitDescribe_table" ):
+                return visitor.visitDescribe_table(self)
+            else:
+                return visitor.visitChildren(self)
 
 
     class Select_table_Context(Table_statementContext):
@@ -934,6 +1018,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitSelect_table_" ):
                 listener.exitSelect_table_(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSelect_table_" ):
+                return visitor.visitSelect_table_(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class Drop_tableContext(Table_statementContext):
 
@@ -951,6 +1041,12 @@ class SQLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitDrop_table" ):
                 listener.exitDrop_table(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitDrop_table" ):
+                return visitor.visitDrop_table(self)
+            else:
+                return visitor.visitChildren(self)
 
 
     class Update_tableContext(Table_statementContext):
@@ -975,6 +1071,12 @@ class SQLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitUpdate_table" ):
                 listener.exitUpdate_table(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitUpdate_table" ):
+                return visitor.visitUpdate_table(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1121,6 +1223,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitSelect_table" ):
                 listener.exitSelect_table(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSelect_table" ):
+                return visitor.visitSelect_table(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1226,6 +1334,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitAlter_table_drop_pk" ):
                 listener.exitAlter_table_drop_pk(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAlter_table_drop_pk" ):
+                return visitor.visitAlter_table_drop_pk(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class Alter_table_add_foreign_keyContext(Alter_statementContext):
 
@@ -1253,6 +1367,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitAlter_table_add_foreign_key" ):
                 listener.exitAlter_table_add_foreign_key(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAlter_table_add_foreign_key" ):
+                return visitor.visitAlter_table_add_foreign_key(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class Alter_table_add_uniqueContext(Alter_statementContext):
 
@@ -1273,6 +1393,12 @@ class SQLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitAlter_table_add_unique" ):
                 listener.exitAlter_table_add_unique(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAlter_table_add_unique" ):
+                return visitor.visitAlter_table_add_unique(self)
+            else:
+                return visitor.visitChildren(self)
 
 
     class Alter_drop_indexContext(Alter_statementContext):
@@ -1295,6 +1421,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitAlter_drop_index" ):
                 listener.exitAlter_drop_index(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAlter_drop_index" ):
+                return visitor.visitAlter_drop_index(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class Alter_add_indexContext(Alter_statementContext):
 
@@ -1316,6 +1448,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitAlter_add_index" ):
                 listener.exitAlter_add_index(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAlter_add_index" ):
+                return visitor.visitAlter_add_index(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class Alter_table_drop_foreign_keyContext(Alter_statementContext):
 
@@ -1336,6 +1474,12 @@ class SQLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitAlter_table_drop_foreign_key" ):
                 listener.exitAlter_table_drop_foreign_key(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAlter_table_drop_foreign_key" ):
+                return visitor.visitAlter_table_drop_foreign_key(self)
+            else:
+                return visitor.visitChildren(self)
 
 
     class Alter_table_add_pkContext(Alter_statementContext):
@@ -1360,6 +1504,12 @@ class SQLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitAlter_table_add_pk" ):
                 listener.exitAlter_table_add_pk(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAlter_table_add_pk" ):
+                return visitor.visitAlter_table_add_pk(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1577,6 +1727,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitField_list" ):
                 listener.exitField_list(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitField_list" ):
+                return visitor.visitField_list(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1646,6 +1802,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitPrimary_key_field" ):
                 listener.exitPrimary_key_field(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitPrimary_key_field" ):
+                return visitor.visitPrimary_key_field(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class Foreign_key_fieldContext(FieldContext):
 
@@ -1673,6 +1835,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitForeign_key_field" ):
                 listener.exitForeign_key_field(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitForeign_key_field" ):
+                return visitor.visitForeign_key_field(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class Normal_fieldContext(FieldContext):
 
@@ -1698,6 +1866,12 @@ class SQLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitNormal_field" ):
                 listener.exitNormal_field(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitNormal_field" ):
+                return visitor.visitNormal_field(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -1824,6 +1998,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitType_" ):
                 listener.exitType_(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitType_" ):
+                return visitor.visitType_(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1892,6 +2072,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitValue_lists" ):
                 listener.exitValue_lists(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitValue_lists" ):
+                return visitor.visitValue_lists(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -1948,6 +2134,12 @@ class SQLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitValue_list" ):
                 listener.exitValue_list(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitValue_list" ):
+                return visitor.visitValue_list(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2015,6 +2207,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitValue" ):
                 listener.exitValue(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitValue" ):
+                return visitor.visitValue(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -2064,6 +2262,12 @@ class SQLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitWhere_and_clause" ):
                 listener.exitWhere_and_clause(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitWhere_and_clause" ):
+                return visitor.visitWhere_and_clause(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2135,6 +2339,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitWhere_in_list" ):
                 listener.exitWhere_in_list(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitWhere_in_list" ):
+                return visitor.visitWhere_in_list(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class Where_operator_selectContext(Where_clauseContext):
 
@@ -2160,6 +2370,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitWhere_operator_select" ):
                 listener.exitWhere_operator_select(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitWhere_operator_select" ):
+                return visitor.visitWhere_operator_select(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class Where_nullContext(Where_clauseContext):
 
@@ -2180,6 +2396,12 @@ class SQLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitWhere_null" ):
                 listener.exitWhere_null(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitWhere_null" ):
+                return visitor.visitWhere_null(self)
+            else:
+                return visitor.visitChildren(self)
 
 
     class Where_operator_expressionContext(Where_clauseContext):
@@ -2206,6 +2428,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitWhere_operator_expression" ):
                 listener.exitWhere_operator_expression(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitWhere_operator_expression" ):
+                return visitor.visitWhere_operator_expression(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class Where_in_selectContext(Where_clauseContext):
 
@@ -2228,6 +2456,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitWhere_in_select" ):
                 listener.exitWhere_in_select(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitWhere_in_select" ):
+                return visitor.visitWhere_in_select(self)
+            else:
+                return visitor.visitChildren(self)
+
 
     class Where_like_stringContext(Where_clauseContext):
 
@@ -2248,6 +2482,12 @@ class SQLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitWhere_like_string" ):
                 listener.exitWhere_like_string(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitWhere_like_string" ):
+                return visitor.visitWhere_like_string(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2375,6 +2615,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitColumn" ):
                 listener.exitColumn(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitColumn" ):
+                return visitor.visitColumn(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -2423,6 +2669,12 @@ class SQLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitExpression" ):
                 listener.exitExpression(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitExpression" ):
+                return visitor.visitExpression(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2493,6 +2745,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitSet_clause" ):
                 listener.exitSet_clause(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSet_clause" ):
+                return visitor.visitSet_clause(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -2557,6 +2815,12 @@ class SQLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitSelectors" ):
                 listener.exitSelectors(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSelectors" ):
+                return visitor.visitSelectors(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
@@ -2632,6 +2896,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitSelector" ):
                 listener.exitSelector(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitSelector" ):
+                return visitor.visitSelector(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -2706,6 +2976,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitIdentifiers" ):
                 listener.exitIdentifiers(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitIdentifiers" ):
+                return visitor.visitIdentifiers(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -2774,6 +3050,12 @@ class SQLParser ( Parser ):
             if hasattr( listener, "exitOperator" ):
                 listener.exitOperator(self)
 
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitOperator" ):
+                return visitor.visitOperator(self)
+            else:
+                return visitor.visitChildren(self)
+
 
 
 
@@ -2831,6 +3113,12 @@ class SQLParser ( Parser ):
         def exitRule(self, listener:ParseTreeListener):
             if hasattr( listener, "exitAggregator" ):
                 listener.exitAggregator(self)
+
+        def accept(self, visitor:ParseTreeVisitor):
+            if hasattr( visitor, "visitAggregator" ):
+                return visitor.visitAggregator(self)
+            else:
+                return visitor.visitChildren(self)
 
 
 
