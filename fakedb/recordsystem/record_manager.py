@@ -1,6 +1,5 @@
 
 
-
 from ..filesystem.file_manager import FileManager
 from .utils import get_record_capacity, get_bitmap_len
 from .header import Header
@@ -9,6 +8,8 @@ from .rid import RID
 from .record import Record
 from ..config import PAGE_SIZE, NEXT_AVAILABLE_PAGE_OFFSET, NEXT_AVAILABLE_PAGE_SIZE, BITMAP_START_OFFSET
 import numpy as np
+
+
 class RecordManager:
 
     def __init__(self, file_manager: FileManager) -> None:
@@ -23,9 +24,6 @@ class RecordManager:
         header_page = self.file_manager.read_page(fd, 0)
         self.header = Header.deserialize(header_page)
 
-
-    
-
     def create_file(self, filename, record_len):
         '''
         创建一张表
@@ -36,19 +34,19 @@ class RecordManager:
         self.file_manager.create_file(filename)
 
         # 添加头页
-        fd = self.file_manager.open_file(filename) # 打开文件
-        record_capacity = get_record_capacity(record_len) # 计算每页可存储记录的最大条数
+        fd = self.file_manager.open_file(filename)  # 打开文件
+        record_capacity = get_record_capacity(record_len)  # 计算每页可存储记录的最大条数
         bitmap_len = get_bitmap_len(record_capacity)
         header = Header(
-            record_len = record_len, 
-            record_capacity = record_capacity, 
-            record_num = 0,
-            page_num = 1,
-            filename = filename,
-            bitmap_len = bitmap_len,
-            next_available_page = 0)
+            record_len=record_len,
+            record_capacity=record_capacity,
+            record_num=0,
+            page_num=1,
+            filename=filename,
+            bitmap_len=bitmap_len,
+            next_available_page=0)
         header_data = header.serialize()
-        self.file_manager.write_page(fd, 0, header_data) # 写在第一页
+        self.file_manager.write_page(fd, 0, header_data)  # 写在第一页
 
         # 关闭文件
         self.file_manager.close_file(filename)
@@ -64,7 +62,6 @@ class RecordManager:
         fd = self.file_manager.open_file(filename)
         self.init_info(fd)
         return fd
-        
 
     def close_file(self):
         '''
@@ -91,14 +88,16 @@ class RecordManager:
     def set_next_available(self, page, next_page_id):
         offset = NEXT_AVAILABLE_PAGE_OFFSET
         siz = NEXT_AVAILABLE_PAGE_SIZE
-        page[offset:offset + siz] = np.frombuffer(next_page_id.to_bytes(siz, 'big'), dtype=np.uint8)
+        page[offset:offset +
+             siz] = np.frombuffer(next_page_id.to_bytes(siz, 'big'), dtype=np.uint8)
 
     def write_header_back(self):
         self.file_manager.write_page(self.fd, 0, self.header.serialize())
 
     def append_page(self):
         data = np.full(PAGE_SIZE, -1, dtype=np.uint8)
-        data[NEXT_AVAILABLE_PAGE_OFFSET: NEXT_AVAILABLE_PAGE_OFFSET + NEXT_AVAILABLE_PAGE_SIZE] = 0
+        data[NEXT_AVAILABLE_PAGE_OFFSET: NEXT_AVAILABLE_PAGE_OFFSET +
+             NEXT_AVAILABLE_PAGE_SIZE] = 0
         self.set_next_available(data, 0)
         page_id = self.file_manager.new_page(self.fd, data)
         self.header.data['page_num'] += 1
@@ -115,13 +114,14 @@ class RecordManager:
     def set_bitmap(self, page, bitmap):
         offset = BITMAP_START_OFFSET
         l = self.header.data['bitmap_len']
-        page[offset: offset+l] = np.packbits(bitmap) # 不足一个byte的话会先补0再pack
+        page[offset: offset+l] = np.packbits(bitmap)  # 不足一个byte的话会先补0再pack
 
     def get_record(self, rid: RID):
         page, byte_offset = self.get_page_and_offset(rid)
-        record = Record(rid, page[byte_offset: byte_offset + self.header.data['record_len']])
+        record = Record(
+            rid, page[byte_offset: byte_offset + self.header.data['record_len']])
         return record
-    
+
     def update_record(self, rid: RID, data):
         page, byte_offset = self.get_page_and_offset(rid)
         page[byte_offset: byte_offset + self.header.data['record_len']] = data
@@ -148,8 +148,9 @@ class RecordManager:
 
         if len(availabel_slots) == 1:
             # this page is full now
-            self.header.data['next_available_page'] = self.get_next_available(page)
-        
+            self.header.data['next_available_page'] = self.get_next_available(
+                page)
+
         self.file_manager.write_page(self.fd, page_id, page)
         self.write_header_back()
         return RID(page_id, slot_id)
@@ -160,15 +161,15 @@ class RecordManager:
 
         page = self.file_manager.read_page(self.fd, page_id)
         bitmap = self.get_bitmap(page)
-        
+
         bitmap[slot_id] = 1
         self.header.data['record_num'] -= 1
 
         self.set_bitmap(page, bitmap)
         if self.get_next_available(page) == 0:
-            self.set_next_available(page, self.header.data['next_available_page'])
+            self.set_next_available(
+                page, self.header.data['next_available_page'])
             self.header.data['next_availabel_page'] = page_id
 
         self.write_header_back()
         self.file_manager.write_page(self.fd, page_id, page)
-        
