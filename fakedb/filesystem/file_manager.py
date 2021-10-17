@@ -30,7 +30,7 @@ class FileManager:
         '''
         if filename in self.name2id:
             raise Exception(f"file {filename} has been openned")
-        fd = os.open(filename)
+        fd = os.open(filename) # FIXME: clarify mode
         self.fd2name[fd] = filename
         self.name2fd[filename] = fd
         return fd
