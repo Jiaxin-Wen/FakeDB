@@ -5,8 +5,10 @@
 
 import numpy as np
 
+from .index_handler import IndexHandler
+
 class FileIndex:
-    def __init__(self, ):
+    def __init__(self, handler):
         pass
     
     

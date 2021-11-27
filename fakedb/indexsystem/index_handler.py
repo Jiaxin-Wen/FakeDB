@@ -19,3 +19,10 @@ class IndexHandler:
         self.fd = self.file_manager.open_file(index_filename)
         
     # TODO: 封装filemanager的交互
+    
+    
+    def close(self):
+        '''
+        关闭索引文件
+        '''
+        self.file_manager.close_file(self.fd)
