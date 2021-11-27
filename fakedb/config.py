@@ -13,3 +13,8 @@ NEXT_AVAILABLE_PAGE_OFFSET = 0 # 每一页中记录下个空闲页的id
 NEXT_AVAILABLE_PAGE_SIZE = 4 # 每一页中花几个字节记录下个空闲页的id
 
 BITMAP_START_OFFSET = 4 # bitmap的起始字节数
+
+
+# 文件命名
+
+INDEX_FILE_SUFFIX = '.index' # 索引文件后缀

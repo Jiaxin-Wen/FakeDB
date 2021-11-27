@@ -15,6 +15,9 @@ class FileManager:
 
         # buffer manager
         self.buf_manager = BufManager()
+        
+    def exists(self, filename):
+        return os.path.exists(filename)
 
     def create_file(self, filename):
         '''创建文件'''
@@ -34,7 +37,6 @@ class FileManager:
         self.fd2name[fd] = filename
         self.name2fd[filename] = fd
         return fd
-        
 
     def close_file(self, fd):
         '''关闭文件'''
