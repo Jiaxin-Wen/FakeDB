@@ -34,6 +34,7 @@ class FileManager:
         self.fd2name[fd] = filename
         self.name2fd[filename] = fd
         return fd
+        
 
     def close_file(self, fd):
         '''关闭文件'''
@@ -60,6 +61,11 @@ class FileManager:
         '''
         self.buf_manager.write(fd, pd, data)
 
+    def new_page(self, fd, data):
+        pos = os.lseek(fd, 0, os.SEEK_END)
+        os.write(fd, data.tobytes())
+        return pos >> PAGE_SIZE_BITS
+
     def shutdown(self):
         '''
         退出
@@ -69,3 +75,6 @@ class FileManager:
 
         assert not any(self.fd2name)
         assert not any(self.name2fd)
+
+    def get_fd_by_name(self, name):
+        return self.name2fd[name]
