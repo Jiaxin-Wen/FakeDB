@@ -64,6 +64,10 @@ class FileManager:
         self.buf_manager.write(fd, pd, data)
 
     def new_page(self, fd, data):
+        '''
+        创建新页，写入数据
+        返回新页的页号
+        '''
         pos = os.lseek(fd, 0, os.SEEK_END)
         os.write(fd, data.tobytes())
         return pos >> PAGE_SIZE_BITS
