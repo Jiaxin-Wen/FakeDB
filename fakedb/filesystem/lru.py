@@ -23,4 +23,6 @@ class LRU:
 
     def access(self, idx):
         # assert idx not in self.unused
-        self.cache[idx] = None
+        #  self.cache[idx] = None
+        self.cache.move_to_end(last=True)
+        
