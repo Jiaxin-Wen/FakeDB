@@ -18,11 +18,10 @@ class IndexHandler:
             self.file_manager.create_file(index_filename)
         self.fd = self.file_manager.open_file(index_filename)
         
-    # TODO: 封装filemanager的交互
+    # TODO: 封装filemanager的交互    
     
+    def new_page(self):
+        return self.file_manager.new_page(self.fd)
     
     def close(self):
-        '''
-        关闭索引文件
-        '''
         self.file_manager.close_file(self.fd)
