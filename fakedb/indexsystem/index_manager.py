@@ -39,7 +39,7 @@ class IndexManager:
             return None
         else:
             index = self.file2index.pop(filename)
-            # TODO: modified
+            index.write_back()
             
         
     def shutdown(self):
