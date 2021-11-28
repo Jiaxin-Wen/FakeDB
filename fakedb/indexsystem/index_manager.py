@@ -11,34 +11,37 @@ class IndexManager:
     def __init__(self, file_manager):
         self.file_manager = file_manager
         
-        self.file2handler = {} # filename -> indexhandler
-        # TODO: 应该把index包装在indexhandler里, 不要维护两个。。。
-        pass
-    
-    def get_handler(self, filename):
+        self.file2index = {} # file -> fileindex
+
+    def create_index(self, filename):
         '''
         filename: 数据库名 + 表名
-        获取一张表的索引
         '''
-        if filename not in self.file2handler:
-            handler = IndexHandler(filename, self.file_manager)
-            self.file2handler[filename] = handler
-        
-        return self.file2handler[filename]
-    
-    def close_handler(self, filename):
+        handler = IndexHandler(filename, self.file_manager)
+        index = FileIndex(handler, handler.new_page())
+        index.write_back()
+        self.file2index[filename] = index
+        return index
+
+    def open_index(self, filename, root_id):
         '''
         filename: 数据库名 + 表名
-        关闭一张表的索引
+        root_id: 根节点页号
         '''
-        if filename not in self.file2handler:
-            return False
+        handler = IndexHandler(filename, self.file_manager)
+        index = FileIndex(handler, root_id)
+        # load放到init中了
+        self.file2index[filename] = index
+        return index
+
+    def close_index(self, filename):
+        if filename not in self.file2index:
+            return None
         else:
-            # TODO: 目前只关闭了handler, 没有关闭index
-            handler = self.file2handler.pop(filename)
-            handler.close()
-            return True
+            index = self.file2index.pop(filename)
+            # TODO: modified
+            
         
     def shutdown(self):
-        for filename in self.file2handler:
-            self.close_handler(filename)
+        for filename in self.file2index:
+            self.close_index(filename)

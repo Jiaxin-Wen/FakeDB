@@ -12,7 +12,7 @@ from ..config import PAGE_SIZE
 
 
 class FileIndex:
-    def __init__(self, handler, root_id):
+    def __init__(self, handler: IndexHandler, root_id):
         self.root_id = root_id # 根节点的页号
         self.handler = handler
         data = self.handler.read_page(root_id)
