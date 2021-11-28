@@ -17,8 +17,12 @@ class IndexHandler:
         if not self.file_manager.exists(index_filename):
             self.file_manager.create_file(index_filename)
         self.fd = self.file_manager.open_file(index_filename)
-        
-    # TODO: 封装filemanager的交互    
+    
+    def read_page(self, page_id):
+        return self.file_manager.read_page(self.fd, page_id)
+    
+    def write_page(self, page_id, data):
+        return self.file_manager.write_page(self.fd, page_id, data)
     
     def new_page(self):
         return self.file_manager.new_page(self.fd)

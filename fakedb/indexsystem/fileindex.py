@@ -15,7 +15,7 @@ class FileIndex:
     def __init__(self, handler, root_id):
         self.root_id = root_id # 根节点的页号
         self.handler = handler
-        data = self.handler.get_page(root_id)
+        data = self.handler.read_page(root_id)
         data.dtype = np.int64
         nodeType = data[0]
         parent_id = data[1]
@@ -24,7 +24,7 @@ class FileIndex:
         self.rootNode = self.get_node(root_id)    
     
     def get_node(self, page_id):
-        data = self.handler.get_page(page_id)
+        data = self.handler.read_page(page_id)
         data.dtype = np.int64
         parent_id = data[1]
         if data[0] == 1:
