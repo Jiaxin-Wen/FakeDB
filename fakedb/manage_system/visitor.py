@@ -3,9 +3,6 @@ from ..parser import SQLVisitor, SQLParser
 
 
 
-
-
-
 class SystemVisitor(SQLVisitor):
     '''
     派生visitor
@@ -175,92 +172,151 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#field_list.
     def visitField_list(self, ctx:SQLParser.Field_listContext):
+        '''
+        创建表时指定的field list
+        # TODO:
+        '''
+        
+        name2field = {}
+        
+        for field in ctx.field():
+            if isinstance(field, SQLParser.Normal_fieldContext):
+                # normal field
+                name = field.Identifier().getText()
+                # 需要等meta system的实现
+                pass
+            elif isinstance(field, SQLParser.Foreign_key_fieldContext):
+                # foreign key
+                pass
+            elif isinstance(field, SQLParser.Primary_key_fieldContext):
+                # primary key
+                pass
+            else:
+                raise Exception(f"wrong field: {type(field)}")
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by SQLParser#normal_field.
     def visitNormal_field(self, ctx:SQLParser.Normal_fieldContext):
+        name = ctx.Identifier().getText()
+        field_type, field_size = ctx.type_().accept(self)
+        # TODO:
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by SQLParser#primary_key_field.
     def visitPrimary_key_field(self, ctx:SQLParser.Primary_key_fieldContext):
-        return self.visitChildren(ctx)
+        return ctx.identifiers().accept(self)
 
     # Visit a parse tree produced by SQLParser#foreign_key_field.
     def visitForeign_key_field(self, ctx:SQLParser.Foreign_key_fieldContext):
+        # TODO:
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by SQLParser#type_.
     def visitType_(self, ctx:SQLParser.Type_Context):
-        return self.visitChildren(ctx)
+        field_type = ctx.getChild(0).getText()
+        field_size = int(ctx.Integer().getText()) if ctx.Integer() else 0
+        return field_type, field_size
 
     # Visit a parse tree produced by SQLParser#value_lists.
     def visitValue_lists(self, ctx:SQLParser.Value_listsContext):
-        return self.visitChildren(ctx)
+        '''
+        插入时各列的值
+        in语句的值
+        '''
+        return [i.accept(self) for i in ctx.value_list()]
 
     # Visit a parse tree produced by SQLParser#value_list.
     def visitValue_list(self, ctx:SQLParser.Value_listContext):
-        return self.visitChildren(ctx)
+        return [i.accept(self) for i in ctx.value()]
 
     # Visit a parse tree produced by SQLParser#value.
     def visitValue(self, ctx:SQLParser.ValueContext):
-        return self.visitChildren(ctx)
+        if ctx.Null():
+            return None
+        else:
+            raw_value = ctx.getText()
+            if ctx.Integer():
+                return int(raw_value)
+            elif ctx.Float():
+                return float(raw_value)
+            elif ctx.String():
+                return raw_value
 
     # Visit a parse tree produced by SQLParser#where_and_clause.
     def visitWhere_and_clause(self, ctx:SQLParser.Where_and_clauseContext):
-        return self.visitChildren(ctx)
+        return [i.accept(self) for i in ctx.where_clause()]
 
     # Visit a parse tree produced by SQLParser#where_operator_expression.
     def visitWhere_operator_expression(self, ctx:SQLParser.Where_operator_expressionContext):
+        table, col = ctx.column().accept(self)
+        op = ctx.operator().getText()
+        experssion = ctx.expression().accept(self)
+        # TODO: 没看懂
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by SQLParser#where_operator_select.
     def visitWhere_operator_select(self, ctx:SQLParser.Where_operator_selectContext):
+        table, col = ctx.column().accept(self)
+        op = ctx.operator().getText()
+        # TODO:
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by SQLParser#where_null.
     def visitWhere_null(self, ctx:SQLParser.Where_nullContext):
+        # TODO:
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by SQLParser#where_in_list.
     def visitWhere_in_list(self, ctx:SQLParser.Where_in_listContext):
+        # TODO:
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by SQLParser#where_in_select.
     def visitWhere_in_select(self, ctx:SQLParser.Where_in_selectContext):
+        # TODO:
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by SQLParser#where_like_string.
     def visitWhere_like_string(self, ctx:SQLParser.Where_like_stringContext):
+        # TODO:
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by SQLParser#column.
     def visitColumn(self, ctx:SQLParser.ColumnContext):
-        return self.visitChildren(ctx)
-
-    # Visit a parse tree produced by SQLParser#expression.
-    def visitExpression(self, ctx:SQLParser.ExpressionContext):
-        return self.visitChildren(ctx)
+        '''
+        考虑是否带表名的前缀
+        '''
+        if len(ctx.Identifier()) == 1:
+            return None, ctx.Identifier(0).getText()
+        else:
+            return ctx.Identifier(0).getText(), ctx.Identifier(1).getText()
 
     # Visit a parse tree produced by SQLParser#set_clause.
     def visitSet_clause(self, ctx:SQLParser.Set_clauseContext):
-        return self.visitChildren(ctx)
+        '''
+        set语句, 更新值
+        '''
+        res = {}
+        for col, value in zip(ctx.Identifier(), ctx.value()):
+            res[col.getText()]  = value.accept(self)
+        return res
 
     # Visit a parse tree produced by SQLParser#selectors.
     def visitSelectors(self, ctx:SQLParser.SelectorsContext):
-        return self.visitChildren(ctx)
+        '''
+        多条select语句
+        # TODO:
+        '''
+        if ctx.getChild(0).getText() == '*':
+            pass
+        else:
+            return [i.accept(self) for i in ctx.selector()]
 
     # Visit a parse tree produced by SQLParser#selector.
     def visitSelector(self, ctx:SQLParser.SelectorContext):
+        # TODO:
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by SQLParser#identifiers.
     def visitIdentifiers(self, ctx:SQLParser.IdentifiersContext):
-        return self.visitChildren(ctx)
-
-    # Visit a parse tree produced by SQLParser#operator.
-    def visitOperator(self, ctx:SQLParser.OperatorContext):
-        return self.visitChildren(ctx)
-
-    # Visit a parse tree produced by SQLParser#aggregator.
-    def visitAggregator(self, ctx:SQLParser.AggregatorContext):
-        return self.visitChildren(ctx)
+        return [i.getText() for i in ctx.Identifier()]
