@@ -3,7 +3,6 @@
 '''
 
 
-
 PAGE_SIZE = 8192 # 采用文档中的设定, 每页8192字节
 PAGE_SIZE_BITS = 13 # 8192字节为13位
 
@@ -16,5 +15,7 @@ BITMAP_START_OFFSET = 4 # bitmap的起始字节数
 
 
 # 文件命名
-
 INDEX_FILE_SUFFIX = '.index' # 索引文件后缀
+
+# 存储路径
+ROOT_DIR = 'log'
