@@ -8,7 +8,7 @@ class SystemVisitor(SQLVisitor):
     派生visitor
     利用SystemManager封装的接口, 在访问语法树的过程中完成sql语句的执行
     '''
-    def __init__(self, manager):
+    def __init__(self, manager=None):
         super().__init__()
         self.manager = manager
         

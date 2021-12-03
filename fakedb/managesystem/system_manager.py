@@ -19,17 +19,17 @@ class SystemManager:
     SystemManager
     '''
     def __init__(self, visitor):
-        
-        self.visitor = visitor
-        
+               
         self.file_manager = FileManager()
         self.record_manager = RecordManager(self.file_manager)
         self.index_manager = IndexManager(self.file_manager)
         self.meta_manager = MetaManager(self.file_manager)
         
         self.init_db()
-
         self.current_db = None # 当前正在使用的db
+        
+        self.visitor = visitor
+        self.visitor.manager = self
         
     def init_db(self):
         '''从目录下恢复状态'''

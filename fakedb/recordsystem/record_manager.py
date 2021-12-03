@@ -3,7 +3,6 @@
 from ..filesystem.file_manager import FileManager
 from .utils import get_record_capacity, get_bitmap_len
 from .header import Header
-from .filehandle import FileHandle
 from .rid import RID
 from .record import Record
 from ..config import PAGE_SIZE, NEXT_AVAILABLE_PAGE_OFFSET, NEXT_AVAILABLE_PAGE_SIZE, BITMAP_START_OFFSET
