@@ -51,8 +51,14 @@ class SystemManager:
         lexer = SQLLexer(input_stream)
         tokens = CommonTokenStream(lexer)
         parser = SQLParser(tokens)
-        tree = parser.program()
-        self.visitor.visit(tree)
+        try:
+            tree = parser.program()
+        except:
+            return "syntax error"
+        try:
+            self.visitor.visit(tree)
+        except:
+            return "execution error"
         
     def create_db(self, name):
         '''创建数据库'''
