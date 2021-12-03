@@ -18,7 +18,11 @@ class SystemVisitor(SQLVisitor):
         根节点
         顺序执行多条query
         '''
-        return self.visitChildren(ctx)
+        results = []
+        for statement in ctx.statement():
+            res = statement.accept(self)
+            results.append(res)
+        return results
 
     # Visit a parse tree produced by SQLParser#create_db.
     def visitCreate_db(self, ctx:SQLParser.Create_dbContext):

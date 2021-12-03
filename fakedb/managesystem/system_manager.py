@@ -59,7 +59,7 @@ class SystemManager:
             return f"syntax error: {e}"
         try:
             res = self.visitor.visit(tree)
-            print(res)
+            print('final res: ', res)
         except Exception as e:
             return f"execution error: {e}"
         
