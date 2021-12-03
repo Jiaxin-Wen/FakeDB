@@ -38,7 +38,9 @@ class SystemManager:
             
         self.active_db = set()
         for file in os.listdir(ROOT_DIR):
-            self.active_db.add(file)       
+            self.active_db.add(file)  
+            
+        self.meta_manager.load_alldbs()
             
     def execute(self, query):
         '''
