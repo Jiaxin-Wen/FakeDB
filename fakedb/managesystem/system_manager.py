@@ -55,13 +55,19 @@ class SystemManager:
         parser = SQLParser(tokens)
         try:
             tree = parser.program()
-        except:
-            return "syntax error"
+        except Exception as e:
+            return f"syntax error: {e}"
         try:
-            self.visitor.visit(tree)
-        except:
-            return "execution error"
+            res = self.visitor.visit(tree)
+            print(res)
+        except Exception as e:
+            return f"execution error: {e}"
         
+    def show_dbs(self):
+        '''打印全部数据库'''
+        print('dbs = ', self.meta_manager.get_databases_description())
+        return self.meta_manager.get_databases_description()
+            
     def create_db(self, name):
         '''创建数据库'''
         if name in self.active_db:
