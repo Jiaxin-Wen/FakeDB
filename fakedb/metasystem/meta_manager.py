@@ -1,6 +1,6 @@
 from ..config import ROOT_DIR, META_SUFFIX
 import pickle
-
+import os
 
 class MetaManager:
     def __init__(self, fm):
@@ -15,6 +15,9 @@ class MetaManager:
     #     with open(path, 'wb') as f:
     #         pickle.dump(self.db_dict[name], f)
 
+    def shutdown(self):
+        self.writeback_alldbs()
+
     def writeback_alldbs(self):
         # for name in self.db_dict:
         #     self.writeback_db(name)
@@ -24,8 +27,9 @@ class MetaManager:
 
     def load_alldbs(self):
         path = f'{ROOT_DIR}/alldbs{META_SUFFIX}'
-        with open(path, 'rb') as f:
-            self.db_dict = pickle.load(f)
+        if os.path.exists(path):
+            with open(path, 'rb') as f:
+                self.db_dict = pickle.load(f)
 
     def drop_db(self, name):
         if name not in self.db_dict:
