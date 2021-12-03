@@ -126,6 +126,13 @@ class SystemManager:
         table_meta = self.meta_manager.get_table(name)
         return table_meta.get_description()
     
+    def shutdown(self):
+        '''退出'''
+        self.file_manager.shutdown()
+        self.record_manager.shutdown()
+        self.index_manager.shutdown()
+        self.meta_manager.shutdown()
+    
     
     
     
