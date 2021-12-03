@@ -1,6 +1,7 @@
 from ..config import ROOT_DIR, META_SUFFIX
 import pickle
 import os
+from .meta import DbMeta
 
 class MetaManager:
     def __init__(self, fm):
@@ -33,6 +34,11 @@ class MetaManager:
         if os.path.exists(path):
             with open(path, 'rb') as f:
                 self.db_dict = pickle.load(f)
+
+    def create_db(self, name):
+        if name in self.db_dict:
+            raise Exception(f'database {name} exists!')
+        self.db_dict[name] = DbMeta(name, [])
 
     def drop_db(self, name):
         if name not in self.db_dict:
