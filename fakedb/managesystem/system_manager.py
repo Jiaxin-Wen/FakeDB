@@ -59,7 +59,7 @@ class SystemManager:
             return f"syntax error: {e}"
         try:
             res = self.visitor.visit(tree)
-            print(res)
+            print('final res: ', res)
         except Exception as e:
             return f"execution error: {e}"
         
@@ -74,6 +74,7 @@ class SystemManager:
             raise Exception(f"Can't create existing database {name}")
         os.mkdir(get_db_dir(name))
         self.active_db.add(name)
+        self.meta_manager.create_db(name)
         
     def drop_db(self, name):
         '''删除数据库'''
@@ -124,6 +125,13 @@ class SystemManager:
         '''展示一张表'''
         table_meta = self.meta_manager.get_table(name)
         return table_meta.get_description()
+    
+    def shutdown(self):
+        '''退出'''
+        self.file_manager.shutdown()
+        self.record_manager.shutdown()
+        self.index_manager.shutdown()
+        self.meta_manager.shutdown()
     
     
     

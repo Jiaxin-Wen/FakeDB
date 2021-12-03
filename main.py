@@ -7,9 +7,9 @@ def main():
     while True:
         ipt = input('FakeDB> ')
         if ipt == 'exit':
+            system_manager.shutdown()
             break
         ret = system_manager.execute(ipt)
-        print(ret)
 
 if __name__ == '__main__':
     main()
