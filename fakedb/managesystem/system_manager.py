@@ -74,6 +74,7 @@ class SystemManager:
             raise Exception(f"Can't create existing database {name}")
         os.mkdir(get_db_dir(name))
         self.active_db.add(name)
+        self.meta_manager.create_db(name)
         
     def drop_db(self, name):
         '''删除数据库'''

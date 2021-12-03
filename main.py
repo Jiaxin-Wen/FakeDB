@@ -9,7 +9,6 @@ def main():
         if ipt == 'exit':
             break
         ret = system_manager.execute(ipt)
-        print(ret)
 
 if __name__ == '__main__':
     main()
