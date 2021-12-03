@@ -13,6 +13,11 @@ class MetaManager:
 
         self.db_dict.pop(name)
 
+    def use_db(self, name):
+        if name not in self.db_dict:
+            raise Exception(f'database {name} does not exist!')
+        self.current_db = self.db_dict[name]
+
     def create_table(self, tablemeta):
         self.current_db.create_table(tablemeta)
 
