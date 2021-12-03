@@ -5,6 +5,7 @@ class MetaManager:
         self.fm = fm
         self.root_dir = root_dir
         self.db_dict = {}
+        self.current_db = None
 
     def drop_db(self, name):
         if name not in self.db_dict:
@@ -12,4 +13,11 @@ class MetaManager:
 
         self.db_dict.pop(name)
 
+    def create_table(self, tablemeta):
+        self.current_db.create_table(tablemeta)
 
+    def drop_table(self, name):
+        self.current_db.drop_table(name)
+
+    def get_table(self, name):
+        return self.current_db.get_table(name)

@@ -60,5 +60,10 @@ class DbMeta:
             raise Exception(f'table {name} cannot be dropped because it does not exist!')
         self.table_dict.pop(name)
 
+    def get_table(self, name):
+        if name not in self.table_dict:
+            raise Exception(f'table {name} does not exist!')
+        return self.table_dict[name]
+
 
 
