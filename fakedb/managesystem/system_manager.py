@@ -1,7 +1,7 @@
 import os
 import shutil
 
-
+from antlr4 import InputStream, CommonTokenStream
 
 from ..filesystem import FileManager
 from ..recordsystem import RID, RecordManager, Record
@@ -18,7 +18,10 @@ class SystemManager:
     '''
     SystemManager
     '''
-    def __init__(self):
+    def __init__(self, visitor):
+        
+        self.visitor = visitor
+        
         self.file_manager = FileManager()
         self.record_manager = RecordManager(self.file_manager)
         self.index_manager = IndexManager(self.file_manager)
@@ -35,8 +38,23 @@ class SystemManager:
             
         self.active_db = set()
         for file in os.listdir(ROOT_DIR):
-            self.active_db.add(file)        
-    
+            self.active_db.add(file)       
+            
+            
+    def execute(self, query):
+        '''
+        封装给外部调用的主接口
+        接受一条sql query语句
+        返回执行结果
+        ''' 
+        
+        input_stream = InputStream(query)
+        lexer = SQLLexer(input_stream)
+        tokens = CommonTokenStream(lexer)
+        parser = SQLParser(tokens)
+        tree = parser.program()
+        self.visitor.visit(tree)
+        
     def create_db(self, name):
         '''创建数据库'''
         if name in self.active_db:
