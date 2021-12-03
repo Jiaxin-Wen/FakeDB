@@ -17,6 +17,7 @@ BITMAP_START_OFFSET = 4 # bitmap的起始字节数
 # 文件命名
 TABLE_SUFFIX = '.table' # 表文件后缀
 INDEX_SUFFIX = '.index' # 索引文件后缀
+META_SUFFIX = '.meta'
 
 # 存储路径
 ROOT_DIR = 'log'
