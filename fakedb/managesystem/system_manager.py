@@ -11,7 +11,7 @@ from ..parser import SQLLexer, SQLParser
 
 from ..config import ROOT_DIR
 
-from .utils import get_db_dir, get_db_tables
+from .utils import get_db_dir, get_db_tables, get_table_related_files
 
 
 class SystemManager:
@@ -19,10 +19,10 @@ class SystemManager:
     SystemManager
     '''
     def __init__(self):
-        # TODO: 把base_path维护成一个
         self.file_manager = FileManager()
         self.record_manager = RecordManager(self.file_manager)
         self.index_manager = IndexManager(self.file_manager)
+        self.meta_manager = MetaManager(self.file_manager)
         
         self.init_db()
 
@@ -51,8 +51,7 @@ class SystemManager:
         self.index_manager.close_index(name)
         
         db_dir = get_db_dir(name)
-        # TODO: close_meta
-        
+                
         # FIXME： 确认一下是否会存在问题
         # 直接删除数据库目录
         shutil.rmtree(db_dir)
@@ -67,6 +66,7 @@ class SystemManager:
         if name not in self.active_db:
             raise Exception(f"Can't use non-existing database {name}")
         self.current_db = name
+        self.meta_manager.use_db(name) # 维护meta_manager中的current_db
     
     def show_tables(self):
         '''展示数据库中的所有表'''
@@ -74,19 +74,25 @@ class SystemManager:
             raise Exception(f"Please using database first to show tables")
         return get_db_tables(self.current_db)
     
-    def create_table(self, name):
+    def create_table(self, tablemeta):
         '''创建表'''
         if self.current_db is None:
             raise Exception(f"Please using database first to create table")
         
+        self.meta_manager.create_table(tablemeta)
     
     def drop_table(self, name):
         '''删除表'''
-        pass
-    
+        if self.current_db is None:
+            raise Exception(f"Please use database first to drop table")
+        self.meta_manager.drop_table(name)
+        for file in get_table_related_files(self.current_db, name): # 删除表相关的文件
+            self.file_manager.remove_file(file)
+                
     def describe_table(self, name):
         '''展示一张表'''
-        pass
+        table_meta = self.meta_manager.get_table(name)
+        return table_meta.get_description()
     
     
     
