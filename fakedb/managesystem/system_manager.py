@@ -40,7 +40,6 @@ class SystemManager:
         for file in os.listdir(ROOT_DIR):
             self.active_db.add(file)       
             
-            
     def execute(self, query):
         '''
         封装给外部调用的主接口

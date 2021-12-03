@@ -22,27 +22,22 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#create_db.
     def visitCreate_db(self, ctx:SQLParser.Create_dbContext):
-        # TODO: manager实现函数
         return self.manager.create_db(ctx.Identifier().getText())
 
     # Visit a parse tree produced by SQLParser#drop_db.
     def visitDrop_db(self, ctx:SQLParser.Drop_dbContext):
-        # TODO: manager实现函数
         return self.manager.drop_db(ctx.Identifier().getText())
 
     # Visit a parse tree produced by SQLParser#show_dbs.
     def visitShow_dbs(self, ctx:SQLParser.Show_dbsContext):
-        # TODO: manager实现函数
         return self.manager.show_dbs()
 
     # Visit a parse tree produced by SQLParser#use_db.
     def visitUse_db(self, ctx:SQLParser.Use_dbContext):
-        # TODO: manager实现函数
         return self.manager.use_db(ctx.Identifier().getText())
 
     # Visit a parse tree produced by SQLParser#show_tables.
     def visitShow_tables(self, ctx:SQLParser.Show_tablesContext):
-        # TODO:
         return self.manager.show_tables()
 
     # Visit a parse tree produced by SQLParser#show_indexes.
@@ -66,18 +61,17 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#create_table.
     def visitCreate_table(self, ctx:SQLParser.Create_tableContext):
-        # TODO:
         columns, foreign_keys, primary = ctx.field_list().accept(self)
         table = ctx.Identifier().getText()
         res = self.manager.create_table()
-        for key in foreign_keys:
-            self.manager.add_foreign(table, key, foreign_keys[key])
-        self.manager.set_primary(table, primary)
+        # TODO:
+        # for key in foreign_keys:
+        #     self.manager.add_foreign(table, key, foreign_keys[key])
+        # self.manager.set_primary(table, primary)
         return res
 
     # Visit a parse tree produced by SQLParser#drop_table.
     def visitDrop_table(self, ctx:SQLParser.Drop_tableContext):
-        # TODO:
         table = ctx.Identifier().getText()
         return self.manager.drop_table(table)
 
