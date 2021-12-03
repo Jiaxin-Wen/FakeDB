@@ -172,3 +172,6 @@ class RecordManager:
 
         self.write_header_back()
         self.file_manager.write_page(self.fd, page_id, page)
+
+    def shutdown(self):
+        pass
