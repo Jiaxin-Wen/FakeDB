@@ -11,6 +11,10 @@ def get_db_dir(name):
     '''返回数据库的存储目录(一个文件夹)'''
     return f"{ROOT_DIR}/{name}"
 
+def get_table_path(db, table):
+    '''返回数据库中一张表的路径'''
+    return f"{ROOT_DIR}/{db}/{table}{TABLE_SUFFIX}"
+
 
 def get_db_tables(name):
     '''返回数据库下的所有表名'''
