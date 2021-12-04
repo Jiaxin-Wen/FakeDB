@@ -1,0 +1,11 @@
+SHOW DATABASES;
+CREATE DATABASE orderDB2;
+USE orderDB2;
+CREATE TABLE nationBack(
+n_nationkey INT NOT NULL,
+n_name VARCHAR(25) NOT NULL,
+n_regionkey INT NOT NULL,
+n_comment VARCHAR(152)
+);
+
+DROP DATABASE orderDB2;

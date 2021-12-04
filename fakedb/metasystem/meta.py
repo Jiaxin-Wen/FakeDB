@@ -28,8 +28,11 @@ class TableMeta:
     def __init__(self, name, columnmetas):
         self.name = name
         self.column_dict = {}
-        for meta in columnmetas:
+        self.col_idx = {}
+        for i, meta in enumerate(columnmetas):
             self.column_dict[meta.name] = meta
+            self.col_idx[meta.name] = i
+        self.indexes = {} # column_name to its index file's root page_id
 
     def add_column(self, columnmeta):
         if columnmeta.name in self.column_dict:
@@ -41,6 +44,20 @@ class TableMeta:
         if name not in self.column_dict:
             raise Exception(f'column {name} cannot be dropped because it does not exist!')
         self.column_dict.pop(name)
+
+    def get_col_idx(self, name):
+        return self.col_idx[name]
+
+    def has_index(self, colname):
+        return colname in self.indexes
+
+    def create_index(self, colname, page_id):
+        self.indexes[colname] = page_id
+
+    def drop_index(self, colname):
+        if colname not in self.indexes:
+            raise Exception(f'colomn {colname} does not have index!')
+        self.indexes.pop(colname)
 
     def get_record_null_bitmap_len(self):
         return ceil(len(self.column_dict) / 8)
@@ -104,12 +121,12 @@ class TableMeta:
             else:
                 kind = columnmeta.kind
                 if kind == 'VARCHAR':
-                    value = data[pos: pos+siz].tobytes().rstrip(b'\x00').decode('utf-8')
+                    value = data[pos: pos + siz].tobytes().rstrip(b'\x00').decode('utf-8')
                 else:
                     if kind == 'INT':
-                        value = struct.unpack('q', data[pos: pos+siz])[0]
+                        value = struct.unpack('q', data[pos: pos + siz])[0]
                     elif kind == 'FLOAT':
-                        value = struct.unpack('d', data[pos: pos+siz])[0]
+                        value = struct.unpack('d', data[pos: pos + siz])[0]
                     else:
                         raise Exception(f'Wrong kind {columnmeta.kind}!')
                 values.append(value)
@@ -117,6 +134,7 @@ class TableMeta:
             pos += siz
 
         return values
+
 
 class DbMeta:
     def __init__(self, name, tablemetas):
