@@ -123,6 +123,7 @@ class SystemManager:
         self.meta_manager.drop_table(name)
         for file in get_table_related_files(self.current_db, name): # 删除表相关的文件
             self.file_manager.remove_file(file)
+        return f'drop table: {name} from db: {self.current_db}'
                 
     def describe_table(self, name):
         '''展示一张表'''
