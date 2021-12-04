@@ -22,7 +22,7 @@ def get_db_tables(name):
     tables = []
     for file in os.listdir(db_dir):
         if file.endswith(TABLE_SUFFIX):
-            tables.append(file)
+            tables.append(file.split('.')[0])
     assert len(set(tables)) == len(tables) # 无重名的表
     return tables
         
