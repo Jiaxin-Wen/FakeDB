@@ -20,7 +20,7 @@ class MetaManager:
         self.writeback_alldbs()
 
     def get_databases_description(self):
-        return [name for name in self.db_dict]
+        return ' '.join([name for name in self.db_dict])
 
     def writeback_alldbs(self):
         # for name in self.db_dict:

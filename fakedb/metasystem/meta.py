@@ -16,7 +16,7 @@ class ColumnMeta:
 
     def get_description(self):
         # Field, Type, Null, Key, Default, Extra
-        return [self.name, f'{self.kind}{f"({self.siz})" if self.kind == "VARCHAR" else "" }', "", self.default, ""]
+        return ' '.join([self.name, f'{self.kind}{f"({self.siz})" if self.kind == "VARCHAR" else "" }', str(self.null), "", str(self.default), ""])
 
 
 
@@ -39,7 +39,7 @@ class TableMeta:
         self.column_dict.pop(name)
 
     def get_description(self):
-        return [v.get_description() for v in self.column_dict.values()]
+        return '\n'.join([v.get_description() for v in self.column_dict.values()])
 
 
 
