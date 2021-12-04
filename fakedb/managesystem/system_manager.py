@@ -11,7 +11,7 @@ from ..parser import SQLLexer, SQLParser
 
 from ..config import ROOT_DIR
 
-from .utils import get_db_dir, get_db_tables, get_table_related_files
+from .utils import get_db_dir, get_table_path, get_db_tables, get_table_related_files
 
 
 class SystemManager:
@@ -124,11 +124,45 @@ class SystemManager:
         for file in get_table_related_files(self.current_db, name): # 删除表相关的文件
             self.file_manager.remove_file(file)
         return f'drop table: {name} from db: {self.current_db}'
+    
+    def update_table(self, name, conditions, values):
+        '''更新表'''
+        # TODO:
+        return "not implemented func: update table"
                 
     def describe_table(self, name):
         '''展示一张表'''
         table_meta = self.meta_manager.get_table(name)
         return table_meta.get_description()
+    
+    def insert_record(self, table, value_list):
+        '''在表中插入行'''
+        if self.current_db is None:
+            raise Exception(f"Please use database first to insert record")
+        
+        table_meta = self.meta_manager.get_table(table)       
+        data = table_meta.build_record(value_list) # 字节序列
+                
+        # TODO: 检查约束
+        
+        table_path = get_table_path(self.current_db, table)
+        fd = self.record_manager.open_file(table_path)
+        rid = self.record_manager.insert_record(data)
+        
+        # TODO: 管理索引
+        raise f"not implemented func: insert record"
+        
+    def delete_record(self, table, conditions):
+        '''在表中根据条件删除行'''
+        if self.current_db is None:
+            raise Exception(f"Please use database first to delete record")
+        table_meta = self.meta_manager.get_table(table)
+        table_path = get_table_path(self.current_db, table)
+        # TODO: 查询
+        records, data = None, None
+        fd = self.record_manager.open_file(table_path)
+        # TODO: 删除
+        raise f"not implemented func: delete record"
     
     def shutdown(self):
         '''退出'''

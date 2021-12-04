@@ -95,23 +95,20 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#insert_into_table.
     def visitInsert_into_table(self, ctx:SQLParser.Insert_into_tableContext):
-        # TODO:
         table = ctx.getChild(2)
         value_lists = ctx.value_lists().accept(self)
         for i in value_lists:
-            self.manager.insert(table, i)
-        return None
+            self.manager.insert_record(table, i)
+        return f"insert value lists: {value_lists}"
 
     # Visit a parse tree produced by SQLParser#delete_from_table.
     def visitDelete_from_table(self, ctx:SQLParser.Delete_from_tableContext):
-        # TODO:
         table = ctx.Identifier().getText()
         conditions = ctx.where_and_clause().accept(self)
-        return self.manager.delete_records(table, conditions)
+        return self.manager.delete_record(table, conditions)
 
     # Visit a parse tree produced by SQLParser#update_table.
     def visitUpdate_table(self, ctx:SQLParser.Update_tableContext):
-        # TODO:
         table = ctx.Identifier().getText()
         conditions = ctx.where_and_clause().accept(self)
         update_info = ctx.set_clause().accept(self)
