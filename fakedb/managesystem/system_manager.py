@@ -81,6 +81,7 @@ class SystemManager:
         if name not in self.active_db:
             raise Exception(f"Can't drop non-existing database {name}")
         self.index_manager.close_index(name)
+        self.meta_manager.drop_db(name)
         
         db_dir = get_db_dir(name)
                 
@@ -99,7 +100,8 @@ class SystemManager:
             raise Exception(f"Can't use non-existing database {name}")
         self.current_db = name
         self.meta_manager.use_db(name) # 维护meta_manager中的current_db
-    
+        return f'current db change to : {self.current_db}'
+        
     def show_tables(self):
         '''展示数据库中的所有表'''
         if self.current_db is None:
