@@ -47,7 +47,7 @@ class MetaManager:
         self.db_dict.pop(name)
 
     def use_db(self, name):
-        if name not in self.db_dict:  # FIXME: 启动时没有恢复
+        if name not in self.db_dict:
             raise Exception(f'database {name} does not exist!')
         self.current_db = self.db_dict[name]
 

@@ -75,6 +75,7 @@ class SystemManager:
         os.mkdir(get_db_dir(name))
         self.active_db.add(name)
         self.meta_manager.create_db(name)
+        return f'create db: {name}'
         
     def drop_db(self, name):
         '''删除数据库'''

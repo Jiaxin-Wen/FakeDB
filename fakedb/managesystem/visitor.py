@@ -26,7 +26,10 @@ class SystemVisitor(SQLVisitor):
             res = statement.accept(self)
             results.append(res)
         return results
-    
+
+    def aggregateResult(self, aggregate, nextResult):
+        return nextResult if nextResult is not None else aggregate
+
     # Visit a parse tree produced by SQLParser#create_db.
     def visitCreate_db(self, ctx:SQLParser.Create_dbContext):
         return self.manager.create_db(ctx.Identifier().getText())
