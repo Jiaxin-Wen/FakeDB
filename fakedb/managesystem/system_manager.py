@@ -61,7 +61,7 @@ class SystemManager:
             res = self.visitor.visit(tree)
             print('final res: ', res)
         except Exception as e:
-            return f"execution error: {e}"
+            print(f"execution error: {e}")
         
     def show_dbs(self):
         '''打印全部数据库'''
@@ -112,8 +112,8 @@ class SystemManager:
         '''创建表'''
         if self.current_db is None:
             raise Exception(f"Please using database first to create table")
-        
         self.meta_manager.create_table(tablemeta)
+        return f'db = {self.current_db}, create table = {tablemeta}'
     
     def drop_table(self, name):
         '''删除表'''

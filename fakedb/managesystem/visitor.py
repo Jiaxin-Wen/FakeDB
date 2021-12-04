@@ -1,4 +1,7 @@
 from ..parser import SQLVisitor, SQLParser
+from ..metasystem import TableMeta, ColumnMeta
+
+from .system_manager import SystemManager
 
 
 
@@ -10,7 +13,7 @@ class SystemVisitor(SQLVisitor):
     '''
     def __init__(self, manager=None):
         super().__init__()
-        self.manager = manager
+        self.manager: SystemManager = manager
         
     # Visit a parse tree produced by SQLParser#program.
     def visitProgram(self, ctx:SQLParser.ProgramContext):
@@ -23,7 +26,7 @@ class SystemVisitor(SQLVisitor):
             res = statement.accept(self)
             results.append(res)
         return results
-
+    
     # Visit a parse tree produced by SQLParser#create_db.
     def visitCreate_db(self, ctx:SQLParser.Create_dbContext):
         return self.manager.create_db(ctx.Identifier().getText())
@@ -65,9 +68,12 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#create_table.
     def visitCreate_table(self, ctx:SQLParser.Create_tableContext):
+        print('call visitCreate_table')
+
         columns, foreign_keys, primary = ctx.field_list().accept(self)
         table = ctx.Identifier().getText()
-        res = self.manager.create_table()
+        tablemeta = TableMeta(table, columns)
+        res = self.manager.create_table(tablemeta)
         # TODO:
         # for key in foreign_keys:
         #     self.manager.add_foreign(table, key, foreign_keys[key])
@@ -175,14 +181,19 @@ class SystemVisitor(SQLVisitor):
         # TODO:
         '''
         
-        name2field = {}
+        col_list = []
+        foreign_keys = None # TODO:
+        primary_key = None # TODO:
         
         for field in ctx.field():
             if isinstance(field, SQLParser.Normal_fieldContext):
                 # normal field
                 name = field.Identifier().getText()
-                # 需要等meta system的实现
-                pass
+                kind, siz = field.type_().accept(self)
+                null = field.Null() is not None
+                default = None if field.value() is None else field.value().accept(self)
+                colmeta = ColumnMeta(name, kind, siz, null, default)
+                col_list.append(colmeta) 
             elif isinstance(field, SQLParser.Foreign_key_fieldContext):
                 # foreign key
                 pass
@@ -191,7 +202,7 @@ class SystemVisitor(SQLVisitor):
                 pass
             else:
                 raise Exception(f"wrong field: {type(field)}")
-        return self.visitChildren(ctx)
+        return col_list, foreign_keys, primary_key
 
     # Visit a parse tree produced by SQLParser#normal_field.
     def visitNormal_field(self, ctx:SQLParser.Normal_fieldContext):
