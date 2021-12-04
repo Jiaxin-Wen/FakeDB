@@ -7,5 +7,7 @@ n_name VARCHAR(25) NOT NULL,
 n_regionkey INT NOT NULL,
 n_comment VARCHAR(152)
 );
-
+SHOW TABLES;
+DESC nationBack;
+DROP TABLE nationBack;
 DROP DATABASE orderDB2;
