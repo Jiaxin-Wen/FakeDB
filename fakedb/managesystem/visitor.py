@@ -71,8 +71,6 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#create_table.
     def visitCreate_table(self, ctx:SQLParser.Create_tableContext):
-        print('call visitCreate_table')
-
         columns, foreign_keys, primary = ctx.field_list().accept(self)
         table = ctx.Identifier().getText()
         tablemeta = TableMeta(table, columns)
@@ -95,7 +93,7 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#insert_into_table.
     def visitInsert_into_table(self, ctx:SQLParser.Insert_into_tableContext):
-        table = ctx.getChild(2)
+        table = ctx.getChild(2).getText()
         value_lists = ctx.value_lists().accept(self)
         for i in value_lists:
             self.manager.insert_record(table, i)

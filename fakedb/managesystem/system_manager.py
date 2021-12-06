@@ -155,7 +155,7 @@ class SystemManager:
         '''在表中插入行'''
         if self.current_db is None:
             raise Exception(f"Please use database first to insert record")
-        
+        print(f'insert, table = {table}, value = {value_list}')
         table_meta = self.meta_manager.get_table(table)       
         data = table_meta.build_record(value_list) # 字节序列
                 
@@ -166,7 +166,6 @@ class SystemManager:
         rid = self.record_manager.insert_record(data)
         
         self._insert_index(table_meta, value_list, rid)
-        raise f"insert: {value_list}"
         
     def delete_record(self, table, conditions):
         '''在表中根据条件删除行'''
@@ -181,10 +180,12 @@ class SystemManager:
             rid = record.rid
             self.record_manager.delete_record(rid)
             self._delete_index(table_meta, value, rid)
-        return f'delete: {conditions}'
     
-    def update_record(self, table, conditions, new_value):
+    def update_record(self, table, conditions, update_info):
         '''在表中更新record'''
+        print('table = ', table)
+        print('conditions = ', conditions)
+        print('update_info = ', update_info)
         pass
     
     def shutdown(self):

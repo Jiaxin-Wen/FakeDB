@@ -1,0 +1,13 @@
+CREATE DATABASE orderDB2;
+USE orderDB2;
+CREATE TABLE nation(
+n_nationkey INT NOT NULL,
+n_name VARCHAR(25) NOT NULL,
+n_regionkey INT NOT NULL,
+n_comment VARCHAR(152)
+);
+INSERT INTO nation VALUES (0,'America',0, 'nothing left');
+UPDATE nation SET n_name='USA' where n_nationkey=0
+DELETE FROM nation WHERE n_natinokey=0;
+DROP TABLE;
+DROP DATABASE orderDB2;
