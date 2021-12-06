@@ -6,7 +6,11 @@ from ..config import PAGE_SIZE, PAGE_SIZE_BITS
 
 
 class FileManager:
-
+    try:
+        FILE_OPEN_MODE = os.O_RDWR | os.O_BINARY
+    except AttributeError as exception:
+        FILE_OPEN_MODE = os.O_RDWR
+        
     def __init__(self):
 
         # 维护打开的文件名和fd的映射
@@ -33,7 +37,7 @@ class FileManager:
         '''
         if filename in self.name2fd:
             raise Exception(f"file {filename} has been openned")
-        fd = os.open(filename, os.O_RDWR | os.O_BINARY) # FIXME: clarify mode
+        fd = os.open(filename, FileManager.FILE_OPEN_MODE) # FIXME: clarify mode
         self.fd2name[fd] = filename
         self.name2fd[filename] = fd
         return fd
