@@ -36,7 +36,8 @@ class FileManager:
         返回file descriptor(int)
         '''
         if filename in self.name2fd:
-            raise Exception(f"file {filename} has been openned")
+            return self.name2fd[filename]
+            # raise Exception(f"file {filename} has been opened")
         fd = os.open(filename, FileManager.FILE_OPEN_MODE) # FIXME: clarify mode
         self.fd2name[fd] = filename
         self.name2fd[filename] = fd
