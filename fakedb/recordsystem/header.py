@@ -1,6 +1,7 @@
 import json
 import numpy as np
-from ..config import PAGE_SIZE
+# from ..config import PAGE_SIZE
+PAGE_SIZE = 8192
 
 class Header:
     '''
@@ -16,15 +17,15 @@ class Header:
         bitmap_len: bitmap的字节数
         next_available_page: 下一个可以插入记录的页
         '''
-        self.data = kwargs
-        print('header = ', self.data)
+        for k, v in kwargs.items():
+            self.__setattr__(k, v)
 
     def serialize(self):
         '''
         导出一整页, 用0补位
         '''
         output = np.zeros(PAGE_SIZE, dtype=np.uint8)
-        header_bytes = json.dumps(self.data).encode('utf-8')
+        header_bytes = json.dumps(self.__dict__).encode('utf-8')
         output[: len(header_bytes)] = list(header_bytes)
         return output
 
@@ -33,7 +34,8 @@ class Header:
         '''
         恢复dict, 去掉补位的0
         '''
-        header = json.loads(data.tobytes().decode('utf-8').rstrip('\0'))
+        data = json.loads(data.tobytes().decode('utf-8').rstrip('\0'))
+        header = Header(**data)
         return header
 
 
@@ -41,4 +43,6 @@ class Header:
 
 if __name__ == '__main__':
     test = Header(a=2, b=3)
+    data = test.serialize()
+    header = Header.deserialize(data)
     
