@@ -1,5 +1,6 @@
 import os
 import shutil
+import traceback
 
 from antlr4 import InputStream, CommonTokenStream
 
@@ -62,6 +63,7 @@ class SystemManager:
             print('final res: ', res)
         except Exception as e:
             print(f"execution error: {e}")
+            print(traceback.format_exc())
         
     def show_dbs(self):
         '''打印全部数据库'''
