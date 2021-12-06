@@ -116,7 +116,8 @@ class SystemManager:
         if self.current_db is None:
             raise Exception(f"Please using database first to create table")
         self.meta_manager.create_table(tablemeta)
-        self.file_manager.create_file(get_table_path(self.current_db, tablemeta.name))
+        self.record_manager.create_file(get_table_path(self.current_db, tablemeta.name), tablemeta.get_record_size())
+        # self.file_manager.create_file(get_table_path(self.current_db, tablemeta.name))
         return f'db = {self.current_db}, create table = {tablemeta}'
     
     def drop_table(self, name):
