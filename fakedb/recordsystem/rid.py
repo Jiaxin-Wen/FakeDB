@@ -1,6 +1,6 @@
 class RID:
     
-    def init__(self, page_id, slot_id):
+    def __init__(self, page_id, slot_id):
         '''
         page_id: 页号
         slot_id: 槽号
