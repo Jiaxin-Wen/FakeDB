@@ -66,6 +66,7 @@ class BufManager:
                 self.fdpd_to_idx[fd][pd] = idx
                 
             data = self._read(fd, pd)
+            data = np.frombuffer(data, np.uint8, PAGE_SIZE)
             self.pages[idx] = data
             
         self.lru.access(idx)
