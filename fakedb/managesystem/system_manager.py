@@ -125,12 +125,7 @@ class SystemManager:
         for file in get_table_related_files(self.current_db, name): # 删除表相关的文件
             self.file_manager.remove_file(file)
         return f'drop table: {name} from db: {self.current_db}'
-    
-    def update_table(self, name, conditions, values):
-        '''更新表'''
-        # TODO:
-        return "not implemented func: update table"
-                
+                   
     def describe_table(self, name):
         '''展示一张表'''
         table_meta = self.meta_manager.get_table(name)
@@ -180,10 +175,17 @@ class SystemManager:
         table_meta = self.meta_manager.get_table(table)
         table_path = get_table_path(self.current_db, table)
         # TODO: 查询
-        records, data = None, None
-        fd = self.record_manager.open_file(table_path)
-        # TODO: 删除
-        return 'not implemented yet'
+        records, value_list = None, None
+        self.record_manager.open_file(table_path)
+        for record, value in zip(records, value_list):
+            rid = record.rid
+            self.record_manager.delete_record(rid)
+            self._delete_index(table_meta, value, rid)
+        return f'delete: {conditions}'
+    
+    def update_record(self, table, conditions, new_value):
+        '''在表中更新record'''
+        pass
     
     def shutdown(self):
         '''退出'''
