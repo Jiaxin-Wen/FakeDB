@@ -1,7 +1,5 @@
 import os
 
-
-
 from ..config import TABLE_SUFFIX, INDEX_SUFFIX
 from ..config import ROOT_DIR
 
@@ -11,9 +9,15 @@ def get_db_dir(name):
     '''返回数据库的存储目录(一个文件夹)'''
     return f"{ROOT_DIR}/{name}"
 
+
 def get_table_path(db, table):
     '''返回数据库中一张表的路径'''
     return f"{ROOT_DIR}/{db}/{table}{TABLE_SUFFIX}"
+
+
+def get_index_path(db, table):
+    '''返回数据库中一张表索引文件的路径'''
+    return f"{ROOT_DIR}/{db}/{table}{INDEX_SUFFIX}"
 
 
 def get_db_tables(name):
@@ -25,7 +29,7 @@ def get_db_tables(name):
             tables.append(file.split('.')[0])
     assert len(set(tables)) == len(tables) # 无重名的表
     return tables
-        
+
 
 def get_table_related_files(db, table):
     '''返回数据库相关的所有文件, 包括.table, .index'''

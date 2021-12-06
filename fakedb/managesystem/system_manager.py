@@ -11,7 +11,7 @@ from ..parser import SQLLexer, SQLParser
 
 from ..config import ROOT_DIR
 
-from .utils import get_db_dir, get_table_path, get_db_tables, get_table_related_files
+from .utils import get_db_dir, get_table_path, get_index_path, get_db_tables, get_table_related_files
 
 
 class SystemManager:
@@ -136,6 +136,26 @@ class SystemManager:
         table_meta = self.meta_manager.get_table(name)
         return table_meta.get_description()
     
+    def _insert_index(self, table_meta, value_list, rid):
+        '''内部接口, 插入行后更新索引文件'''
+        index_path = get_index_path(self.current_db, table_meta.name)
+        for col, rid in table_meta.indexes.items():
+            index = self.index_manager.open_index(index_path, rid)
+            col_id = table_meta.get_col_idx(col)
+            # FIXME: 对None值的处理
+            if value_list[col_id] is not None:
+                index.insert(value_list[col_id], rid) 
+                
+    def _delete_index(self, table_meta, value_list, rid):
+        '''内部接口, 删除行后更新索引文件'''
+        index_path = get_index_path(self.current_db, table_meta.name)
+        for col, rid in table_meta.indexes.items():
+            index = self.index_manager.open_index(index_path, rid)
+            col_id = table_meta.get_col_idx(col)
+            # FIXME: 对None值的处理
+            if value_list[col_id] is not None:
+                index.remove(value_list[col_id], rid)
+            
     def insert_record(self, table, value_list):
         '''在表中插入行'''
         if self.current_db is None:
@@ -147,11 +167,11 @@ class SystemManager:
         # TODO: 检查约束
         
         table_path = get_table_path(self.current_db, table)
-        fd = self.record_manager.open_file(table_path)
+        self.record_manager.open_file(table_path)
         rid = self.record_manager.insert_record(data)
         
-        # TODO: 管理索引
-        raise f"not implemented func: insert record"
+        self._insert_index(table_meta, value_list, rid)
+        raise f"insert: {value_list}"
         
     def delete_record(self, table, conditions):
         '''在表中根据条件删除行'''
@@ -163,7 +183,7 @@ class SystemManager:
         records, data = None, None
         fd = self.record_manager.open_file(table_path)
         # TODO: 删除
-        raise f"not implemented func: delete record"
+        return 'not implemented yet'
     
     def shutdown(self):
         '''退出'''
