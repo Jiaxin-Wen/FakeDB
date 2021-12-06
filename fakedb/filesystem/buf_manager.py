@@ -19,7 +19,7 @@ class BufManager:
             d = self.fdpd_to_idx[fd]
             for pd, idx in d.items():
                 self.lru.free(idx)
-                self.write_back(fd, pd, idx)
+                self._write(fd, pd, idx)
             self.fdpd_to_idx.pop(fd)
 
     def _write(self, fd, pd, idx):

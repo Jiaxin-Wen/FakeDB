@@ -48,7 +48,7 @@ class RecordManager:
         self.file_manager.write_page(fd, 0, header_data)  # 写在第一页
 
         # 关闭文件
-        self.file_manager.close_file(filename)
+        self.file_manager.close_file(fd)
 
     def remove_file(self, filename):
         '''删除文件'''

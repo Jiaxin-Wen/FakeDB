@@ -29,7 +29,7 @@ class Header:
         return output
 
     @staticmethod
-    def deserialize(self, data):
+    def deserialize(data):
         '''
         恢复dict, 去掉补位的0
         '''
