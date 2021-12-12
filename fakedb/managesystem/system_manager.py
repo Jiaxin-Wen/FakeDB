@@ -50,7 +50,6 @@ class SystemManager:
         接受一条sql query语句
         返回执行结果
         ''' 
-        
         input_stream = InputStream(query)
         lexer = SQLLexer(input_stream)
         tokens = CommonTokenStream(lexer)
@@ -58,7 +57,10 @@ class SystemManager:
         try:
             tree = parser.program()
         except Exception as e:
-            return f"syntax error: {e}"
+            print(f"syntax error: {e}")
+            print(traceback.format_exc())
+            
+        # print(tree.toStringTree())
         try:
             res = self.visitor.visit(tree)
             print('final res: ', res)
@@ -180,10 +182,8 @@ class SystemManager:
         else:
             return None
 
-
     def search_records_using_indexes(self, table_name, conditions):
         """
-
         :param table_name:
         :param conditions:
         :return: 满足条件的records和它们的values
@@ -218,8 +218,6 @@ class SystemManager:
                 values.append(record_values)
 
         return records, values
-
-
     
     def _insert_index(self, table_meta, value_list, rid):
         '''内部接口, 插入行后更新索引文件'''
