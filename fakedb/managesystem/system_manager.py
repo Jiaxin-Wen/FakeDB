@@ -186,9 +186,15 @@ class SystemManager:
     
     def update_record(self, table, conditions, update_info):
         '''在表中更新record'''
+        # TODO:
         print('table = ', table)
         print('conditions = ', conditions)
         print('update_info = ', update_info)
+        pass
+    
+    def select(self, ):
+        '''select语句'''
+        # TODO:
         pass
     
     def shutdown(self):
