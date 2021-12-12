@@ -5,15 +5,16 @@ import traceback
 from antlr4 import InputStream, CommonTokenStream
 
 from ..filesystem import FileManager
-from ..recordsystem import RID, RecordManager, Record
+from ..recordsystem import RID, RecordManager, Record, get_all_records
 from ..indexsystem import FileIndex, IndexManager
-from ..metasystem import MetaManager
+from ..metasystem import MetaManager, TableMeta
 from ..parser import SQLLexer, SQLParser
 
 from ..config import ROOT_DIR
 
-from .utils import get_db_dir, get_table_path, get_index_path, get_db_tables, get_table_related_files
-
+from .utils import get_db_dir, get_table_path, get_index_path, get_db_tables, get_table_related_files, \
+    compare_two_cols, compare_col_value, in_values, like_check, null_check
+from .condition import ConditionKind, Condition
 
 class SystemManager:
     '''
@@ -133,6 +134,92 @@ class SystemManager:
         '''展示一张表'''
         table_meta = self.meta_manager.get_table(name)
         return table_meta.get_description()
+
+    def filter_records_by_index(self, table_name, conditions):
+        # TODO: add index filter
+        return None
+
+    def get_condition_func(self, condition: Condition, table_meta: TableMeta):
+        if condition.table_name and condition.table_name != table_meta.name:
+            return None
+
+        col_name = condition.col_name
+        col_idx = table_meta.get_col_idx(col_name)
+        if col_idx is None:
+            raise Exception(f'{condition.col_name} not in table {table_meta.name}!')
+
+        col_kind = table_meta.column_dict[col_name].kind
+        cond_kind = condition.kind
+        if cond_kind == ConditionKind.Compare:
+            if condition.col_name2:
+                if condition.table_name2 != condition.table_name:
+                    return None
+                col_idx2 = table_meta.get_col_idx(condition.col_name2)
+                return compare_two_cols(col_idx, col_idx2, condition.operator)
+            else:
+                value = condition.value
+                if col_kind in ['INT', 'FLOAT'] and not isinstance(value, (int, float)):
+                    raise Exception(f'col_kind is {col_kind} but {value} is not that type!')
+
+                elif col_kind == 'VARCHAR' and not isinstance(value, str):
+                    raise Exception(f'col_kind is {col_kind} but {value} is not that type!')
+
+                return compare_col_value(col_idx, value, condition.operator)
+
+        elif cond_kind == ConditionKind.In:
+            return in_values(col_idx, condition.value)
+
+        elif cond_kind == ConditionKind.Like:
+            assert col_kind == 'VARCHAR', f'col_kind {col_kind} does not support LIKE!'
+            return like_check(col_idx, condition.value)
+
+        elif cond_kind == ConditionKind.IsNull:
+            assert isinstance(condition.value, bool), f'{condition.value} is not bool value!'
+            return null_check(col_idx, condition.value)
+
+        else:
+            return None
+
+
+    def search_records_using_indexes(self, table_name, conditions):
+        """
+
+        :param table_name:
+        :param conditions:
+        :return: 满足条件的records和它们的values
+        """
+        table_meta = self.meta_manager.get_table(table_name)
+        table_path = get_table_path(self.current_db, table_name)
+        self.record_manager.open_file(table_path)
+        index_filter_rids = self.filter_records_by_index(table_name, conditions)
+        if index_filter_rids is None:
+            all_records = get_all_records(self.record_manager)
+        else:
+            all_records = list(map(self.record_manager.get_record, index_filter_rids))
+
+        records = []
+        values = []
+
+        condition_funcs = []
+        for condition in conditions:
+            func = self.get_condition_func(condition, table_meta)
+            if func is not None:
+                condition_funcs.append(func)
+
+        for record in all_records:
+            record_values = table_meta.load_record(record.data)
+            flag = True
+            for func in condition_funcs:
+                if not func(record_values):
+                    flag = False
+                    break
+            if flag:
+                records.append(record)
+                values.append(record_values)
+
+        return records, values
+
+
     
     def _insert_index(self, table_meta, value_list, rid):
         '''内部接口, 插入行后更新索引文件'''

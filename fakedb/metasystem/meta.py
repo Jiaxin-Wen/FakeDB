@@ -46,7 +46,7 @@ class TableMeta:
         self.column_dict.pop(name)
 
     def get_col_idx(self, name):
-        return self.col_idx[name]
+        return self.col_idx.get(name, None)
 
     def has_index(self, colname):
         return colname in self.indexes

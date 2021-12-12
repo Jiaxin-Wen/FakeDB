@@ -126,12 +126,15 @@ class RecordManager:
         page[byte_offset: byte_offset + self.header.record_len] = data
         self.file_manager.write_page(self.fd, rid.page_id, page)
 
+    def get_page(self, page_id):
+        return self.file_manager.read_page(self.fd, page_id)
+
     def insert_record(self, data):
         page_id = self.header.next_available_page
         if page_id == 0:
             page_id = self.append_page()
 
-        page = self.file_manager.read_page(self.fd, page_id)
+        page = self.get_page(page_id)
         bitmap = self.get_bitmap(page)
         availabel_slots, = np.where(bitmap)
 
