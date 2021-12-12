@@ -8,6 +8,8 @@ from ..config import ROOT_DIR
 def compare_two_cols(col_idx, col_idx2, operator):
     if operator == '<>':
         return lambda x: x[col_idx] != x[col_idx2]
+    elif operator == '=':
+        return lambda x: x[col_idx] == x[col_idx2]
     else:
         return lambda x: eval(f'{x[col_idx]}{operator}{x[col_idx2]}')
 
