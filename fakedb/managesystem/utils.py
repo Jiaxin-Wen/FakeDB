@@ -1,8 +1,49 @@
 import os
+import re
 
 from ..config import TABLE_SUFFIX, INDEX_SUFFIX
 from ..config import ROOT_DIR
 
+
+def compare_two_cols(col_idx, col_idx2, operator):
+    if operator == '<>':
+        return lambda x: x[col_idx] != x[col_idx2]
+    else:
+        return lambda x: eval(f'{x[col_idx]}{operator}{x[col_idx2]}')
+
+
+def compare_col_value(col_idx, value, operator):
+    if operator == '=':
+        return lambda x: x[col_idx] == value
+    elif operator == '<>':
+        return lambda x: x[col_idx] != value
+    else:
+        return lambda x: x[col_idx] is not None and eval(f'{x[col_idx]}{operator}{value}')
+
+
+def in_values(col_idx, values):
+    return lambda x: x[col_idx] in values
+
+
+def sql_to_re_pattern(pattern):
+    # TODO: CHECK
+    pattern = pattern.replace('%%', '\r').replace('%?', '\n').replace('%_', '\0')
+    pattern = re.escape(pattern)
+    pattern = pattern.replace('%', '.*').replace(r'\?', '.').replace('_', '.')
+    pattern = pattern.replace('\r', '%').replace('\n', r'\?').replace('\0', '_')
+    return re.compile('^' + pattern + '$')
+
+
+def like_check(col_idx, pattern):
+    pattern = sql_to_re_pattern(pattern)
+    return lambda x: pattern.match(x[col_idx])
+
+
+def null_check(col_idx, is_null: bool):
+    if is_null:
+        return lambda x: x[col_idx] is None
+    else:
+        return lambda x: x[col_idx] is not None
 
 
 def get_db_dir(name):
@@ -27,7 +68,7 @@ def get_db_tables(name):
     for file in os.listdir(db_dir):
         if file.endswith(TABLE_SUFFIX):
             tables.append(file.split('.')[0])
-    assert len(set(tables)) == len(tables) # 无重名的表
+    assert len(set(tables)) == len(tables)  # 无重名的表
     return tables
 
 

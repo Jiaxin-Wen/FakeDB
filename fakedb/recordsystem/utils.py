@@ -1,5 +1,19 @@
 from ..config import PAGE_SIZE
+from .record_manager import RecordManager
+from .rid import RID
+import numpy as np
 
+def get_all_records(record_manager: RecordManager):
+    page_num = record_manager.header.page_num
+    res = []
+    for page_id in range(1, page_num):
+        page = record_manager.get_page(page_id)
+        bitmap = record_manager.get_bitmap(page)
+        for slot_id in np.where(bitmap == 0)[0]:
+            record = record_manager.get_record(RID(page_id, slot_id))
+            res.append(record)
+
+    return res
 
 def get_record_capacity(record_len):
     '''
