@@ -9,6 +9,8 @@ n_comment VARCHAR(152)
 INSERT INTO nation VALUES (0, 'America', 0, 'nothing left');
 SELECT * FROM nation;
 UPDATE nation SET n_name='USA' WHERE nation.n_nationkey=0;
-DELETE FROM nation WHERE n_nationkey=0;
+SELECT * FROM nation;
+DELETE FROM nation WHERE nation.n_nationkey=0;
+SELECT * FROM nation;
 DROP TABLE;
 DROP DATABASE orderDB2;

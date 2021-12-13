@@ -259,17 +259,21 @@ class SystemManager:
         
     def delete_record(self, table, conditions):
         '''在表中根据条件删除行'''
+        # for i in conditions:
+        #     print(i)
         if self.current_db is None:
             raise Exception(f"Please use database first to delete record")
         table_meta = self.meta_manager.get_table(table)
         table_path = get_table_path(self.current_db, table)
-        # TODO: 查询
-        records, value_list = None, None
+        records, values = self.search_records_using_indexes(table, conditions)
         self.record_manager.open_file(table_path)
-        for record, value in zip(records, value_list):
+        for record, value in zip(records, values):
             rid = record.rid
+            # TODO: 检查约束
             self.record_manager.delete_record(rid)
             self._delete_index(table_meta, value, rid)
+            
+        return 'delete'
     
     def update_record(self, table, conditions, update_info):
         '''在表中更新record'''
