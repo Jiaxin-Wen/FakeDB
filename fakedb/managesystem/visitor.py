@@ -98,7 +98,6 @@ class SystemVisitor(SQLVisitor):
         table = ctx.getChild(2).getText()
         value_lists = ctx.value_lists().accept(self)
         for i in value_lists:
-            print('value list = ', i)
             self.manager.insert_record(table, i)
         return f"insert value lists: {value_lists}"
 
@@ -119,10 +118,6 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#select_table.
     def visitSelect_table(self, ctx:SQLParser.Select_tableContext):
-        '''
-        TODO: select语句
-        '''
-        print("visit select table")
         tables = ctx.identifiers().accept(self)
         conditions = ctx.where_and_clause().accept(self) if ctx.where_and_clause() else ()
         selectors = ctx.selectors().accept(self)
@@ -266,20 +261,16 @@ class SystemVisitor(SQLVisitor):
         table, col = ctx.column().accept(self)
         op = ctx.operator().getText()
         value = ctx.expression().accept(self)
-        print(f'visit where operation expression')
-        print(f'table = {table}, col = {col}, op = {op}, experssion = {value}')
-        
         condition = Condition(ConditionKind.Compare, table, col, op, value)
-        # TODO: 没看懂
         return condition
 
     # Visit a parse tree produced by SQLParser#where_operator_select.
     def visitWhere_operator_select(self, ctx:SQLParser.Where_operator_selectContext):
+        # TODO:
         print('visit where operator select')
         table, col = ctx.column().accept(self)
         op = ctx.operator().getText()
         print(f'where operator select, table = {table}, col = {col}, op = {op}')
-        # TODO:
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by SQLParser#where_null.
