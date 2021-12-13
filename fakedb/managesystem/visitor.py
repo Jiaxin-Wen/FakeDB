@@ -2,8 +2,9 @@ from ..parser import SQLVisitor, SQLParser
 from ..metasystem import TableMeta, ColumnMeta
 
 from .system_manager import SystemManager
-from .condition import Condition, ConditionKind
 
+from .condition import Condition, ConditionKind
+from .selector import Selector, SelectorKind
 
 
 
@@ -118,14 +119,17 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#select_table.
     def visitSelect_table(self, ctx:SQLParser.Select_tableContext):
-        # TODO:
-        table = ctx.identifiers().accept(self)
+        '''
+        TODO: select语句
+        '''
+        print("visit select table")
+        tables = ctx.identifiers().accept(self)
         conditions = ctx.where_and_clause().accept(self) if ctx.where_and_clause() else ()
-        selectors = ctx.selectors.accept(self)
+        selectors = ctx.selectors().accept(self)
         group_by = ctx.column().accept(self) if ctx.column() else (None, '')
         limit = int(ctx.Integer(0).getText()) if ctx.Integer(0) else None
         offset = int(ctx.Integer(1).getText()) if ctx.Integer(1) else None
-        return self.manager.select(selectors, table, conditions, group_by, limit, offset)
+        return self.manager.select_records(selectors, tables, conditions, group_by, limit, offset)
 
     # Visit a parse tree produced by SQLParser#alter_add_index.
     def visitAlter_add_index(self, ctx:SQLParser.Alter_add_indexContext):
@@ -274,7 +278,7 @@ class SystemVisitor(SQLVisitor):
         print('visit where operator select')
         table, col = ctx.column().accept(self)
         op = ctx.operator().getText()
-        # print(f'where operator select, table = {table}, col = {col}, op = {op}')
+        print(f'where operator select, table = {table}, col = {col}, op = {op}')
         # TODO:
         return self.visitChildren(ctx)
 
@@ -314,9 +318,7 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#set_clause.
     def visitSet_clause(self, ctx:SQLParser.Set_clauseContext):
-        '''
-        set语句, 更新值
-        '''
+        '''set语句, 更新值'''
         res = {}
         for col, value in zip(ctx.Identifier(), ctx.value()):
             res[col.getText()]  = value.accept(self)
@@ -324,19 +326,18 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#selectors.
     def visitSelectors(self, ctx:SQLParser.SelectorsContext):
-        '''
-        多条select语句
-        # TODO:
-        '''
-        if ctx.getChild(0).getText() == '*':
-            pass
+        '''多条select语句'''
+        if ctx.getChild(0).getText() == '*': # 特判处理*
+            return Selector(SelectorKind.All, '*', '*')
         else:
             return [i.accept(self) for i in ctx.selector()]
 
     # Visit a parse tree produced by SQLParser#selector.
     def visitSelector(self, ctx:SQLParser.SelectorContext):
-        # TODO:
-        return self.visitChildren(ctx)
+        # TODO: 处理Count和Aggregator
+        table, col = ctx.column().accept(self)
+        selector = Selector(SelectorKind.Field, table, col)
+        return selector
 
     # Visit a parse tree produced by SQLParser#identifiers.
     def visitIdentifiers(self, ctx:SQLParser.IdentifiersContext):

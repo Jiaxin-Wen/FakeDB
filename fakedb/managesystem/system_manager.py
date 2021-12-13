@@ -17,6 +17,7 @@ from ..config import ROOT_DIR
 from .utils import get_db_dir, get_table_path, get_index_path, get_db_tables, get_table_related_files, \
     compare_two_cols, compare_col_value, in_values, like_check, null_check
 from .condition import ConditionKind, Condition
+from .selector import SelectorKind, Selector
 
 class SystemManager:
     '''
@@ -276,7 +277,6 @@ class SystemManager:
         # for i in conditions:
         #     print(i)
         # print('update_info = ', update_info)
-        
         table_meta = self.meta_manager.get_table(table)
         records, record_values = self.search_records_using_indexes(table, conditions) # 根据condition找到的record和原始value
         
@@ -288,7 +288,7 @@ class SystemManager:
             new_value_list = copy(ori_value_list)
             for col, new_value in update_info.items():
                 index = table_meta.get_col_idx(col)
-                new_value_list[index] = new_value # 更新TableMeta
+                new_value_list[index] = new_value # 维护更新后的record
             
             # TODO: 检查约束
             
@@ -302,11 +302,29 @@ class SystemManager:
         
         return "update record"
     
-    def select(self, ):
-        '''select语句'''
-        # TODO:
-        pass
-    
+    def select_records(self, selectors, tables, conditions, group_by, limit, offset):
+        '''
+        select语句
+        只初步支持了select *
+        TODO: group by, limit, offset
+        '''
+        # print('selectors = ', selectors)
+        # print('tables = ', tables)
+        # print('conditions = ', conditions)
+        # print('group by = ', group_by)
+        # print('limit = ', limit)
+        # print('offset = ', offset)
+        if self.current_db is None:
+            raise Exception(f"Please use database first to select records")
+
+        if not isinstance(selectors, list):
+            assert selectors.kind == SelectorKind.All # select * 
+            table = tables[0]
+            _, res = self.search_records_using_indexes(table, conditions)
+            
+        print(res)
+        return res
+
     def shutdown(self):
         '''退出'''
         self.file_manager.shutdown()
