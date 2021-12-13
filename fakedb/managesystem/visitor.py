@@ -2,6 +2,7 @@ from ..parser import SQLVisitor, SQLParser
 from ..metasystem import TableMeta, ColumnMeta
 
 from .system_manager import SystemManager
+from .condition import Condition, ConditionKind
 
 
 
@@ -96,6 +97,7 @@ class SystemVisitor(SQLVisitor):
         table = ctx.getChild(2).getText()
         value_lists = ctx.value_lists().accept(self)
         for i in value_lists:
+            print('value list = ', i)
             self.manager.insert_record(table, i)
         return f"insert value lists: {value_lists}"
 
@@ -107,10 +109,12 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#update_table.
     def visitUpdate_table(self, ctx:SQLParser.Update_tableContext):
+        # print('visit update table')
         table = ctx.Identifier().getText()
         conditions = ctx.where_and_clause().accept(self)
         update_info = ctx.set_clause().accept(self)
-        return self.manager.update(table, conditions, update_info)
+        # print(f'update table, table = {table}, conditions = {conditions}, update_info = {update_info}')
+        return self.manager.update_record(table, conditions, update_info)
 
     # Visit a parse tree produced by SQLParser#select_table.
     def visitSelect_table(self, ctx:SQLParser.Select_tableContext):
@@ -257,34 +261,44 @@ class SystemVisitor(SQLVisitor):
     def visitWhere_operator_expression(self, ctx:SQLParser.Where_operator_expressionContext):
         table, col = ctx.column().accept(self)
         op = ctx.operator().getText()
-        experssion = ctx.expression().accept(self)
+        value = ctx.expression().accept(self)
+        print(f'visit where operation expression')
+        print(f'table = {table}, col = {col}, op = {op}, experssion = {value}')
+        
+        condition = Condition(ConditionKind.Compare, table, col, op, value)
         # TODO: 没看懂
-        return self.visitChildren(ctx)
+        return condition
 
     # Visit a parse tree produced by SQLParser#where_operator_select.
     def visitWhere_operator_select(self, ctx:SQLParser.Where_operator_selectContext):
+        print('visit where operator select')
         table, col = ctx.column().accept(self)
         op = ctx.operator().getText()
+        # print(f'where operator select, table = {table}, col = {col}, op = {op}')
         # TODO:
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by SQLParser#where_null.
     def visitWhere_null(self, ctx:SQLParser.Where_nullContext):
+        print('visit where null')
         # TODO:
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by SQLParser#where_in_list.
     def visitWhere_in_list(self, ctx:SQLParser.Where_in_listContext):
+        print('visit where in list')
         # TODO:
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by SQLParser#where_in_select.
     def visitWhere_in_select(self, ctx:SQLParser.Where_in_selectContext):
+        print('visit where in select')
         # TODO:
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by SQLParser#where_like_string.
     def visitWhere_like_string(self, ctx:SQLParser.Where_like_stringContext):
+        print('visit where like string')
         # TODO:
         return self.visitChildren(ctx)
 

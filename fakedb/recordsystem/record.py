@@ -10,3 +10,8 @@ class Record:
         '''
         self.rid = rid
         self.data = data
+        
+        
+    def set_data(self, data):
+        '''更新data'''
+        self.data = data

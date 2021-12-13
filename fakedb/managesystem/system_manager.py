@@ -2,6 +2,8 @@ import os
 import shutil
 import traceback
 
+from copy import copy
+
 from antlr4 import InputStream, CommonTokenStream
 
 from ..filesystem import FileManager
@@ -60,7 +62,6 @@ class SystemManager:
             print(f"syntax error: {e}")
             print(traceback.format_exc())
             
-        # print(tree.toStringTree())
         try:
             res = self.visitor.visit(tree)
             print('final res: ', res)
@@ -271,11 +272,35 @@ class SystemManager:
     
     def update_record(self, table, conditions, update_info):
         '''在表中更新record'''
-        # TODO:
-        print('table = ', table)
-        print('conditions = ', conditions)
-        print('update_info = ', update_info)
-        pass
+        # print('table = ', table)
+        # for i in conditions:
+        #     print(i)
+        # print('update_info = ', update_info)
+        
+        table_meta = self.meta_manager.get_table(table)
+        records, record_values = self.search_records_using_indexes(table, conditions) # 根据condition找到的record和原始value
+        
+        self.record_manager.open_file(get_table_path(self.current_db, table))
+        
+        # print('records = ', records)
+        # print('record_values = ', record_values)
+        for record, ori_value_list in zip(records, record_values):
+            new_value_list = copy(ori_value_list)
+            for col, new_value in update_info.items():
+                index = table_meta.get_col_idx(col)
+                new_value_list[index] = new_value # 更新TableMeta
+            
+            # TODO: 检查约束
+            
+            # 更新record
+            data = table_meta.build_record(new_value_list)
+            self.record_manager.update_record(record.rid, data)
+                        
+            # 维护index 先删除再添加
+            self._delete_index(table_meta, ori_value_list, record.rid)
+            self._insert_index(table_meta, new_value_list, record.rid)
+        
+        return "update record"
     
     def select(self, ):
         '''select语句'''
