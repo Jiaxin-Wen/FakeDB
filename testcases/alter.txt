@@ -1,0 +1,7 @@
+CREATE DATABASE orderDB3;
+USE orderDB3;
+CREATE TABLE student(
+n_id INT NOT NULL,
+n_name VARCHAR(25) NOT NULL,
+n_score INT NOT NULL
+);

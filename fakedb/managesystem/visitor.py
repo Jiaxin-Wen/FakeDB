@@ -59,16 +59,12 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#load_data.
     def visitLoad_data(self, ctx:SQLParser.Load_dataContext):
-        '''
-        io statement
-        '''
+        '''io statement'''
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by SQLParser#dump_data.
     def visitDump_data(self, ctx:SQLParser.Dump_dataContext):
-        '''
-        io statement
-        '''
+        '''io statement'''
         return self.visitChildren(ctx)
 
     # Visit a parse tree produced by SQLParser#create_table.
@@ -181,7 +177,6 @@ class SystemVisitor(SQLVisitor):
         创建表时指定的field list
         # TODO:
         '''
-        
         col_list = []
         foreign_keys = None # TODO:
         primary_key = None # TODO:
