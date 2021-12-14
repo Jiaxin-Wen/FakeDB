@@ -316,14 +316,15 @@ class SystemManager:
         - 支持aggregation
         - group by, limit, offset
         '''
-        # for i in selectors:
-        #     print(i)
-        # for i in conditions:
-        #     print(i)
+        for i in selectors:
+            print(i)
+        for i in conditions:
+            print(i)
             
         # print('tables = ', tables)
         assert len(tables) == 1 # 暂时不支持group_by
         table = tables[0]
+        table_meta = self.meta_manager.get_table(table)
         # print('group by = ', group_by)
         # print('limit = ', limit)
         # print('offset = ', offset)
@@ -334,14 +335,16 @@ class SystemManager:
         _, value_list = self.search_records_using_indexes(table, conditions)
         if len(selectors) == 1 and selectors[0].kind == SelectorKind.All: # select *
             return value_list
-        else: # select field
-            table_meta = self.meta_manager.get_table(table)
+        else: 
             selected_value_list = {}
             for selector in selectors:
                 col = selector.col_name
                 col_idx = table_meta.get_col_idx(col)
                 selected_value_list[col] = [i[col_idx] for i in value_list]
             return selected_value_list
+            if selectors[0].kind == SelectorKind.Filed: # field
+            else: # 聚集查询
+                
 
         raise Exception("not implemented branch")
     

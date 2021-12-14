@@ -328,10 +328,10 @@ class SystemVisitor(SQLVisitor):
         '''
         实现聚集函数的处理
         '''
-        if ctx.Count(): # cuonter
+        if ctx.Count(): # Count *
             return Selector(SelectorKind.Counter, '*', '*')
         table, col = ctx.column().accept(self)
-        if ctx.aggregator():
+        if ctx.aggregator(): # 聚集
             return Selector(SelectorKind.Aggregation, table, col, ctx.aggregator().getText())
         return Selector(SelectorKind.Field, table, col) # 基本的field selector
 
