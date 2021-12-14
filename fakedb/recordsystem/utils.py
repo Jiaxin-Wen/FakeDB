@@ -1,9 +1,9 @@
 from ..config import PAGE_SIZE
-from .record_manager import RecordManager
 from .rid import RID
 import numpy as np
 
-def get_all_records(record_manager: RecordManager):
+
+def get_all_records(record_manager):
     page_num = record_manager.header.page_num
     res = []
     for page_id in range(1, page_num):

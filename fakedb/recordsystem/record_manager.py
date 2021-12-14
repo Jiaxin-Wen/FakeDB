@@ -22,7 +22,7 @@ class RecordManager:
         self.fd = fd
         header_page = self.file_manager.read_page(fd, 0)
         self.header = Header.deserialize(header_page)
-        print('self.header = ', self.header)
+        # print('self.header = ', self.header)
 
     def create_file(self, filename, record_len):
         '''

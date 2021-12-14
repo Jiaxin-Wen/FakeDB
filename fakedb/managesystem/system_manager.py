@@ -2,6 +2,8 @@ import os
 import shutil
 import traceback
 
+from copy import copy
+
 from antlr4 import InputStream, CommonTokenStream
 
 from ..filesystem import FileManager
@@ -15,6 +17,7 @@ from ..config import ROOT_DIR
 from .utils import get_db_dir, get_table_path, get_index_path, get_db_tables, get_table_related_files, \
     compare_two_cols, compare_col_value, in_values, like_check, null_check
 from .condition import ConditionKind, Condition
+from .selector import SelectorKind, Selector
 
 class SystemManager:
     '''
@@ -50,7 +53,6 @@ class SystemManager:
         接受一条sql query语句
         返回执行结果
         ''' 
-        
         input_stream = InputStream(query)
         lexer = SQLLexer(input_stream)
         tokens = CommonTokenStream(lexer)
@@ -58,7 +60,9 @@ class SystemManager:
         try:
             tree = parser.program()
         except Exception as e:
-            return f"syntax error: {e}"
+            print(f"syntax error: {e}")
+            print(traceback.format_exc())
+            
         try:
             res = self.visitor.visit(tree)
             print('final res: ', res)
@@ -180,10 +184,8 @@ class SystemManager:
         else:
             return None
 
-
     def search_records_using_indexes(self, table_name, conditions):
         """
-
         :param table_name:
         :param conditions:
         :return: 满足条件的records和它们的values
@@ -218,8 +220,6 @@ class SystemManager:
                 values.append(record_values)
 
         return records, values
-
-
     
     def _insert_index(self, table_meta, value_list, rid):
         '''内部接口, 插入行后更新索引文件'''
@@ -259,24 +259,89 @@ class SystemManager:
         
     def delete_record(self, table, conditions):
         '''在表中根据条件删除行'''
+        # for i in conditions:
+        #     print(i)
         if self.current_db is None:
             raise Exception(f"Please use database first to delete record")
         table_meta = self.meta_manager.get_table(table)
         table_path = get_table_path(self.current_db, table)
-        # TODO: 查询
-        records, value_list = None, None
+        records, values = self.search_records_using_indexes(table, conditions)
         self.record_manager.open_file(table_path)
-        for record, value in zip(records, value_list):
+        for record, value in zip(records, values):
             rid = record.rid
+            # TODO: 检查约束
             self.record_manager.delete_record(rid)
             self._delete_index(table_meta, value, rid)
+            
+        return 'delete'
     
     def update_record(self, table, conditions, update_info):
         '''在表中更新record'''
-        print('table = ', table)
-        print('conditions = ', conditions)
-        print('update_info = ', update_info)
-        pass
+        # print('table = ', table)
+        # for i in conditions:
+        #     print(i)
+        # print('update_info = ', update_info)
+        table_meta = self.meta_manager.get_table(table)
+        records, record_values = self.search_records_using_indexes(table, conditions) # 根据condition找到的record和原始value
+        
+        self.record_manager.open_file(get_table_path(self.current_db, table))
+        
+        # print('records = ', records)
+        # print('record_values = ', record_values)
+        for record, ori_value_list in zip(records, record_values):
+            new_value_list = copy(ori_value_list)
+            for col, new_value in update_info.items():
+                index = table_meta.get_col_idx(col)
+                new_value_list[index] = new_value # 维护更新后的record
+            
+            # TODO: 检查约束
+            
+            # 更新record
+            data = table_meta.build_record(new_value_list)
+            self.record_manager.update_record(record.rid, data)
+                        
+            # 维护index 先删除再添加
+            self._delete_index(table_meta, ori_value_list, record.rid)
+            self._insert_index(table_meta, new_value_list, record.rid)
+        
+        return "update record"
+    
+    def select_records(self, selectors, tables, conditions, group_by, limit, offset):
+        '''
+        select语句
+        只初步支持了select *
+        TODO: 
+        - 支持aggregation
+        - group by, limit, offset
+        '''
+        # for i in selectors:
+        #     print(i)
+        # for i in conditions:
+        #     print(i)
+            
+        # print('tables = ', tables)
+        assert len(tables) == 1 # 暂时不支持group_by
+        table = tables[0]
+        # print('group by = ', group_by)
+        # print('limit = ', limit)
+        # print('offset = ', offset)
+        
+        if self.current_db is None:
+            raise Exception(f"Please use database first to select records")
+
+        _, value_list = self.search_records_using_indexes(table, conditions)
+        if len(selectors) == 1 and selectors[0].kind == SelectorKind.All: # select *
+            return value_list
+        else: # select field
+            table_meta = self.meta_manager.get_table(table)
+            selected_value_list = {}
+            for selector in selectors:
+                col = selector.col_name
+                col_idx = table_meta.get_col_idx(col)
+                selected_value_list[col] = [i[col_idx] for i in value_list]
+            return selected_value_list
+
+        raise Exception("not implemented branch")
     
     def shutdown(self):
         '''退出'''

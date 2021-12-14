@@ -6,8 +6,12 @@ n_name VARCHAR(25) NOT NULL,
 n_regionkey INT NOT NULL,
 n_comment VARCHAR(152)
 );
-INSERT INTO nation VALUES (0,'America',0, 'nothing left');
-UPDATE nation SET n_name='USA' where n_nationkey=0
-DELETE FROM nation WHERE n_natinokey=0;
+INSERT INTO nation VALUES (0, 'America', 0, 'nothing left');
+SELECT * FROM nation;
+UPDATE nation SET n_name='USA' WHERE nation.n_nationkey=0;
+SELECT * FROM nation;
+SELECT nation.n_name, nation.n_comment FROM nation WHERE nation.n_nationkey<1;
+DELETE FROM nation WHERE nation.n_nationkey=0;
+SELECT * FROM nation;
 DROP TABLE;
 DROP DATABASE orderDB2;
