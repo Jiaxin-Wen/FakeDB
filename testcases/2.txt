@@ -13,5 +13,5 @@ SELECT * FROM nation;
 SELECT nation.n_name, nation.n_comment FROM nation WHERE nation.n_nationkey<1;
 DELETE FROM nation WHERE nation.n_nationkey=0;
 SELECT * FROM nation;
-DROP TABLE;
+DROP TABLE nation;
 DROP DATABASE orderDB2;
