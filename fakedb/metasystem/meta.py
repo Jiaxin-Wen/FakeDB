@@ -33,6 +33,9 @@ class TableMeta:
             self.column_dict[meta.name] = meta
             self.col_idx[meta.name] = i
         self.indexes = {} # column_name to its index file's root page_id
+        self.primary = set()
+        self.foreigns = {}
+        self.uniques = set()
 
     def add_column(self, columnmeta):
         if columnmeta.name in self.column_dict:
@@ -58,6 +61,23 @@ class TableMeta:
         if colname not in self.indexes:
             raise Exception(f'colomn {colname} does not have index!')
         self.indexes.pop(colname)
+
+    def add_primary(self, colname):
+        self.primary.add(colname)
+
+    def drop_primary(self, colname):
+        if colname in self.primary:
+            self.primary.remove(colname)
+
+    def add_foreign(self, colname, foreign):
+        self.foreigns[colname] = foreign
+
+    def remove_foreign(self, colname):
+        if colname in self.foreigns:
+            return self.foreigns.pop(colname)
+
+    def add_unique(self, colname):
+        self.uniques.add(colname)
 
     def get_record_null_bitmap_len(self):
         return ceil(len(self.column_dict) / 8)
