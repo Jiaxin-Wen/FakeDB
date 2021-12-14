@@ -58,9 +58,9 @@ def get_table_path(db, table):
     return f"{ROOT_DIR}/{db}/{table}{TABLE_SUFFIX}"
 
 
-def get_index_path(db, table):
+def get_index_path(db, table, col):
     '''返回数据库中一张表索引文件的路径'''
-    return f"{ROOT_DIR}/{db}/{table}{INDEX_SUFFIX}"
+    return f"{ROOT_DIR}/{db}/{table}_{col}{INDEX_SUFFIX}"
 
 
 def get_db_tables(name):
@@ -77,8 +77,7 @@ def get_db_tables(name):
 def get_table_related_files(db, table):
     '''返回数据库相关的所有文件, 包括.table, .index'''
     output = []
-    for suffix in [TABLE_SUFFIX, INDEX_SUFFIX]:
-        file = f'{ROOT_DIR}/{db}/{table}{suffix}'
-        if os.path.exists(file):
-            output.append(file)
+    for file in os.listdir(f"{ROOT_DIR}/{db}"):
+        if file.startswith(table):
+            output.append(f'{ROOT_DIR}/{db}/{file}')
     return output
