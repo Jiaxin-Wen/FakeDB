@@ -43,11 +43,19 @@ class FileManager:
         self.name2fd[filename] = fd
         return fd
 
-    def close_file(self, fd):
+    def close_file(self, description):
         '''关闭文件'''
-        self.buf_manager.close(fd) # 清空cache中该文件对应的页
-        os.close(fd)
-        self.name2fd.pop(self.fd2name.pop(fd));
+        if isinstance(description, str) and description in self.name2fd:
+            fd = self.name2fd[description]
+        elif description in self.fd2name:
+            fd = description
+        else:
+            fd = None
+        
+        if fd is not None:
+            self.buf_manager.close(fd) # 清空cache中该文件对应的页
+            os.close(fd)
+            self.name2fd.pop(self.fd2name.pop(fd));
     
     def read_page(self, fd, pd):
         '''读取一页数据

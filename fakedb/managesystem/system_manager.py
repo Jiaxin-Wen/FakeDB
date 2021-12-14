@@ -12,7 +12,7 @@ from ..indexsystem import FileIndex, IndexManager
 from ..metasystem import MetaManager, TableMeta
 from ..parser import SQLLexer, SQLParser
 
-from ..config import ROOT_DIR
+from ..config import ROOT_DIR, TABLE_SUFFIX, INDEX_SUFFIX
 
 from .utils import get_db_dir, get_table_path, get_index_path, get_db_tables, get_table_related_files, \
     compare_two_cols, compare_col_value, in_values, like_check, null_check
@@ -86,6 +86,7 @@ class SystemManager:
         
     def drop_db(self, name):
         '''删除数据库'''
+        # TODO: close file
         if name not in self.active_db:
             raise Exception(f"Can't drop non-existing database {name}")
         self.index_manager.close_index(name)
@@ -131,6 +132,7 @@ class SystemManager:
             raise Exception(f"Please use database first to drop table")
         self.meta_manager.drop_table(name)
         for file in get_table_related_files(self.current_db, name): # 删除表相关的文件
+            self.file_manager.close_file(file)
             self.file_manager.remove_file(file)
         return f'drop table: {name} from db: {self.current_db}'
                    
@@ -253,8 +255,8 @@ class SystemManager:
     
     def _insert_index(self, table_meta, value_list, rid):
         '''内部接口, 插入行后更新索引文件'''
-        index_path = get_index_path(self.current_db, table_meta.name)
         for col, rid in table_meta.indexes.items():
+            index_path = get_index_path(self.current_db, table_meta.name, col)
             index = self.index_manager.open_index(index_path, rid)
             col_id = table_meta.get_col_idx(col)
             # FIXME: 对None值的处理
@@ -263,8 +265,8 @@ class SystemManager:
                 
     def _delete_index(self, table_meta, value_list, rid):
         '''内部接口, 删除行后更新索引文件'''
-        index_path = get_index_path(self.current_db, table_meta.name)
         for col, rid in table_meta.indexes.items():
+            index_path = get_index_path(self.current_db, table_meta.name, col)
             index = self.index_manager.open_index(index_path, rid)
             col_id = table_meta.get_col_idx(col)
             # FIXME: 对None值的处理
@@ -344,14 +346,15 @@ class SystemManager:
         - 支持aggregation
         - group by, limit, offset
         '''
-        # for i in selectors:
-        #     print(i)
-        # for i in conditions:
-        #     print(i)
+        for i in selectors:
+            print(i)
+        for i in conditions:
+            print(i)
             
         # print('tables = ', tables)
         assert len(tables) == 1 # 暂时不支持group_by
         table = tables[0]
+        table_meta = self.meta_manager.get_table(table)
         # print('group by = ', group_by)
         # print('limit = ', limit)
         # print('offset = ', offset)
@@ -362,14 +365,16 @@ class SystemManager:
         _, value_list = self.search_records_using_indexes(table, conditions)
         if len(selectors) == 1 and selectors[0].kind == SelectorKind.All: # select *
             return value_list
-        else: # select field
-            table_meta = self.meta_manager.get_table(table)
+        else: 
             selected_value_list = {}
             for selector in selectors:
                 col = selector.col_name
                 col_idx = table_meta.get_col_idx(col)
                 selected_value_list[col] = [i[col_idx] for i in value_list]
             return selected_value_list
+            if selectors[0].kind == SelectorKind.Filed: # field
+            else: # 聚集查询
+                
 
         raise Exception("not implemented branch")
     
