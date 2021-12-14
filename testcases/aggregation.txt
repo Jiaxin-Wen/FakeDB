@@ -18,5 +18,5 @@ SELECT AVG(student.n_score) FROM student;
 SELECT MAX(student.n_score) FROM student;
 SELECT SUM(student.n_score) FROM student;
 SELECT COUNT(student.n_score) FROM student;
-DROP TABLE;
+DROP TABLE student;
 DROP DATABASE orderDB3;

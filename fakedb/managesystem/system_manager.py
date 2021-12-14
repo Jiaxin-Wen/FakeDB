@@ -336,15 +336,20 @@ class SystemManager:
         if len(selectors) == 1 and selectors[0].kind == SelectorKind.All: # select *
             return value_list
         else: 
-            selected_value_list = {}
+            res = {}
             for selector in selectors:
                 col = selector.col_name
-                col_idx = table_meta.get_col_idx(col)
-                selected_value_list[col] = [i[col_idx] for i in value_list]
-            return selected_value_list
-            if selectors[0].kind == SelectorKind.Filed: # field
-            else: # 聚集查询
+                selected_value_list = []
+                if col == '*': # Count (*)
+                    selected_value_list = [0] * len(value_list)
+                else:
+                    col_idx = table_meta.get_col_idx(col)
+                    selected_value_list = [i[col_idx] for i in value_list]
                 
+                selected_value_list = selector(selected_value_list)
+                
+                res[str(selector)] = selected_value_list      
+            return res                
 
         raise Exception("not implemented branch")
     
