@@ -319,16 +319,21 @@ class SystemVisitor(SQLVisitor):
     def visitSelectors(self, ctx:SQLParser.SelectorsContext):
         '''多条select语句'''
         if ctx.getChild(0).getText() == '*': # 特判处理*
-            return Selector(SelectorKind.All, '*', '*')
+            return [Selector(SelectorKind.All, '*', '*')]
         else:
             return [i.accept(self) for i in ctx.selector()]
 
     # Visit a parse tree produced by SQLParser#selector.
     def visitSelector(self, ctx:SQLParser.SelectorContext):
-        # TODO: 处理Count和Aggregator
+        '''
+        实现聚集函数的处理
+        '''
+        if ctx.Count(): # cuonter
+            return Selector(SelectorKind.Counter, '*', '*')
         table, col = ctx.column().accept(self)
-        selector = Selector(SelectorKind.Field, table, col)
-        return selector
+        if ctx.aggregator():
+            return Selector(SelectorKind.Aggregation, table, col, ctx.aggregator().getText())
+        return Selector(SelectorKind.Field, table, col) # 基本的field selector
 
     # Visit a parse tree produced by SQLParser#identifiers.
     def visitIdentifiers(self, ctx:SQLParser.IdentifiersContext):

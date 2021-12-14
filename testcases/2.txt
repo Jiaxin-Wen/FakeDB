@@ -10,6 +10,7 @@ INSERT INTO nation VALUES (0, 'America', 0, 'nothing left');
 SELECT * FROM nation;
 UPDATE nation SET n_name='USA' WHERE nation.n_nationkey=0;
 SELECT * FROM nation;
+SELECT nation.n_name, nation.n_comment FROM nation WHERE nation.n_nationkey<1;
 DELETE FROM nation WHERE nation.n_nationkey=0;
 SELECT * FROM nation;
 DROP TABLE;

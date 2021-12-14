@@ -310,25 +310,39 @@ class SystemManager:
         '''
         select语句
         只初步支持了select *
-        TODO: group by, limit, offset
+        TODO: 
+        - 支持aggregation
+        - group by, limit, offset
         '''
-        # print('selectors = ', selectors)
+        # for i in selectors:
+        #     print(i)
+        # for i in conditions:
+        #     print(i)
+            
         # print('tables = ', tables)
-        # print('conditions = ', conditions)
+        assert len(tables) == 1 # 暂时不支持group_by
+        table = tables[0]
         # print('group by = ', group_by)
         # print('limit = ', limit)
         # print('offset = ', offset)
+        
         if self.current_db is None:
             raise Exception(f"Please use database first to select records")
 
-        if not isinstance(selectors, list):
-            assert selectors.kind == SelectorKind.All # select * 
-            table = tables[0]
-            _, res = self.search_records_using_indexes(table, conditions)
-            
-        print(res)
-        return res
+        _, value_list = self.search_records_using_indexes(table, conditions)
+        if len(selectors) == 1 and selectors[0].kind == SelectorKind.All: # select *
+            return value_list
+        else: # select field
+            table_meta = self.meta_manager.get_table(table)
+            selected_value_list = {}
+            for selector in selectors:
+                col = selector.col_name
+                col_idx = table_meta.get_col_idx(col)
+                selected_value_list[col] = [i[col_idx] for i in value_list]
+            return selected_value_list
 
+        raise Exception("not implemented branch")
+    
     def shutdown(self):
         '''退出'''
         self.file_manager.shutdown()
