@@ -142,7 +142,6 @@ class SystemManager:
         return table_meta.get_description()
 
     def filter_records_by_index(self, table_name, table_meta, conditions):
-        # TODO: add index filter
         results = set()
         for condition in conditions:
             if condition.kind != ConditionKind.Compare:
@@ -171,9 +170,12 @@ class SystemManager:
                         l = value
 
                     root_id = table_meta.indexes[col_name]
+                    index_file_path = get_index_path(self.current_db, table_name, col_name)
+                    index = self.index_manager.open_index(index_file_path, root_id)
+                    rids = set(index.rangeSearch(l, h))
+                    results &= rids
 
-
-        return None
+        return results
 
     def get_condition_func(self, condition: Condition, table_meta: TableMeta):
         if condition.table_name and condition.table_name != table_meta.name:
