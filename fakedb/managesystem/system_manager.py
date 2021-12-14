@@ -141,9 +141,41 @@ class SystemManager:
         table_meta = self.meta_manager.get_table(name)
         return table_meta.get_description()
 
-    def filter_records_by_index(self, table_name, conditions):
-        # TODO: add index filter
-        return None
+    def filter_records_by_index(self, table_name, table_meta, conditions):
+        results = set()
+        for condition in conditions:
+            if condition.kind != ConditionKind.Compare:
+                continue
+            if condition.table_name and condition.table_name != table_name:
+                continue
+            col_name = condition.col_name
+            if table_meta.has_index(col_name):
+                value = condition.value
+                if value is not None:
+                    value = int(condition.value)
+                    l, h = -1e10, 1e10
+                    operator = condition.operator
+                    if operator == '<>':
+                        continue
+                    if operator == '=':
+                        l = value
+                        h = value
+                    elif operator == '<':
+                        h = value - 1
+                    elif operator == '>':
+                        l = value + 1
+                    elif operator == '<=':
+                        h = value
+                    elif operator == '>=':
+                        l = value
+
+                    root_id = table_meta.indexes[col_name]
+                    index_file_path = get_index_path(self.current_db, table_name, col_name)
+                    index = self.index_manager.open_index(index_file_path, root_id)
+                    rids = set(index.rangeSearch(l, h))
+                    results &= rids
+
+        return results
 
     def get_condition_func(self, condition: Condition, table_meta: TableMeta):
         if condition.table_name and condition.table_name != table_meta.name:
@@ -195,7 +227,7 @@ class SystemManager:
         table_meta = self.meta_manager.get_table(table_name)
         table_path = get_table_path(self.current_db, table_name)
         self.record_manager.open_file(table_path)
-        index_filter_rids = self.filter_records_by_index(table_name, conditions)
+        index_filter_rids = self.filter_records_by_index(table_name, table_meta, conditions)
         if index_filter_rids is None:
             all_records = get_all_records(self.record_manager)
         else:
