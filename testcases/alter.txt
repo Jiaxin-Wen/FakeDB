@@ -15,7 +15,7 @@ ALTER TABLE student ADD INDEX (n_score);
 SHOW INDEXES;
 ALTER TABLE student ADD CONSTRAINT con1 PRIMARY KEY (n_id);
 ALTER TABLE student ADD CONSTRAINT con2 FOREIGN KEY (class_id) REFERENCES class (id);
-ALTER TABLE student ADD UNIQUE n_name;
+ALTER TABLE student ADD UNIQUE (n_name);
 INSERT INTO student VALUES (0, 'a', 70, 1);
 INSERT INTO student VALUES (1, 'a', 80, 1);
 INSERT INTO student VALUES (1, 'b', 80, 1);
