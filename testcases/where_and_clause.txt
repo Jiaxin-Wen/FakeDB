@@ -9,6 +9,7 @@ n_comment VARCHAR(152)
 INSERT INTO nation VALUES (0, 'America', 0, 'nothing left');
 INSERT INTO nation VALUES (0, 'xrz', 0, 'nothing left');
 INSERT INTO nation VALUES (0, '1234', 0, 'nothing left');
+INSERT INTO nation VALUES (0, '124', 0, null);
 SELECT * FROM nation WHERE nation.n_name LIKE '%r%';
 SELECT * FROM nation WHERE nation.n_name LIKE '_r%';
 SELECT * FROM nation WHERE nation.n_name LIKE '%r_';
@@ -16,3 +17,7 @@ SELECT * FROM nation WHERE nation.n_name LIKE '%3%';
 SELECT * FROM nation WHERE nation.n_name LIKE '%3';
 SELECT * FROM nation WHERE nation.n_name LIKE 'A%';
 SELECT * FROM nation WHERE nation.n_name LIKE 'a%';
+SELECT * FROM nation WHERE nation.n_comment IS NULL;
+SELECT * FROM nation WHERE nation.n_comment IS NOT NULL;
+SELECT * FROM nation WHERE nation.n_name IN ('1234','124');
+SELECT * FROM nation WHERE nation.n_name IN ('America','xrz');

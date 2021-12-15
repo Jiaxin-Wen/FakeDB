@@ -108,6 +108,7 @@ where_and_clause
     ;
 
 where_clause
+where_clause
     : column operator expression            # where_operator_expression
     | column operator '(' select_table ')'  # where_operator_select
     | column 'IS' ('NOT')? Null             # where_null
