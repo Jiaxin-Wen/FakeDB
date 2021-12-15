@@ -156,10 +156,16 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#alter_table_add_foreign_key.
     def visitAlter_table_add_foreign_key(self, ctx:SQLParser.Alter_table_add_foreign_keyContext):
-        # TODO:
         table = ctx.Identifier(0).getText()
-        primary_key = ctx.identifiers().accept(self)
-        return self.manager.set_primary(table, primary_key)
+        foreign_name = ctx.Identifier(1).getText()
+        foreign_table = ctx.Identifier(2).getText()
+        keys = ctx.identifiers(0).accept(self)
+        foreign_keys = ctx.identifiers(1).accept(self)
+        
+        res = []
+        for key, foreign_key in zip(keys, foreign_keys):
+            res.append(self.manager.add_foreign_key(table, foreign_table, key, foreign_key, foreign_name))
+        return res
 
     # Visit a parse tree produced by SQLParser#alter_table_add_unique.
     def visitAlter_table_add_unique(self, ctx:SQLParser.Alter_table_add_uniqueContext):

@@ -391,7 +391,6 @@ class SystemManager:
         if table_meta.has_index(col): # 判断该列是否已创建过索引
             return f"{table}.{col} has created index"
         
-        
         # 创建index文件
         index_path = get_index_path(self.current_db, table, col)
         index = self.index_manager.create_index(index_path)
@@ -403,7 +402,7 @@ class SystemManager:
         self.record_manager.open_file(get_table_path(self.current_db, table))
         records = get_all_records(self.record_manager)
         for record in records:
-            value = table_meta.load_record(record)
+            value = table_meta.load_record(record.data)
             index.insert(value[col_idx], record.rid)
         return f"add index on {table}.{col}" 
     
@@ -417,7 +416,17 @@ class SystemManager:
         for key in primary_key_list:
             table_meta.add_primary(key)
             self.add_index(table, key)
-        return f'add primariy key: {primary_key_list} in {table}'        
+        return f'add primariy key: {primary_key_list} in {table}'   
+    
+    def add_foreign_key(self, table, foreign_table, key, foreign_key, foreign_name):
+        '''添加外键'''
+        table_meta = self.meta_manager.get_table(table)
+        table_meta.add_foreign(key, foreign_name)
+        
+        print('foreign table = ', foreign_table)
+        print('foreign key = ', foreign_key)
+        # 在从表上建立索引
+        return self.add_index(foreign_table, foreign_key)
 
     def shutdown(self):
         '''退出'''
