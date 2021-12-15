@@ -124,7 +124,6 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#alter_add_index.
     def visitAlter_add_index(self, ctx:SQLParser.Alter_add_indexContext):
-        # TODO:
         table= ctx.Identifier().getText()
         cols = ctx.identifiers().accept(self)
         res = []

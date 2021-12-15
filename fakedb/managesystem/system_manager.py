@@ -405,7 +405,11 @@ class SystemManager:
         for record in records:
             value = table_meta.load_record(record)
             index.insert(value[col_idx], record.rid)
-        return f"add index on {table}.{col}"    
+        return f"add index on {table}.{col}" 
+    
+    def show_indexes(self):
+        '''打印数据库中的所有索引'''
+        return self.meta_manager.get_indexes_description()
 
     def shutdown(self):
         '''退出'''
