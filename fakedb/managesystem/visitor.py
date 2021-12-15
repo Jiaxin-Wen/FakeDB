@@ -298,8 +298,9 @@ class SystemVisitor(SQLVisitor):
     # Visit a parse tree produced by SQLParser#where_like_string.
     def visitWhere_like_string(self, ctx:SQLParser.Where_like_stringContext):
         print('visit where like string')
-        # TODO:
-        return self.visitChildren(ctx)
+        pattern = ctx.String().getText()[1:-1]
+        table, col = ctx.column().accept(self)
+        return Condition(ConditionKind.Like, table, col, value=pattern)
 
     # Visit a parse tree produced by SQLParser#column.
     def visitColumn(self, ctx:SQLParser.ColumnContext):
