@@ -433,13 +433,17 @@ class SystemManager:
             self.add_index(table, key)
         return f'add primariy key: {primary_key_list} in {table}'  
     
-    def drop_primary_key(self, table):
+    def drop_primary_key(self, table, primary_key):
         '''删除主键''' 
-        # TODO:
         table_meta = self.meta_manager.get_table(table)
-        primary_keys = table_meta.primary
-        for key in primary_keys:
-            self.drop_index(table, key)
+        if primary_key is not None:
+            self.drop_index(table, primary_key)
+            return f'drop primary key: {table}.{primary_key}'
+        else:
+            primary_keys = table_meta.primary
+            for key in primary_keys:
+                self.drop_index(table, key)
+            return f'drop all primary keys in {table}: {",".join(primary_keys)}'
     
     def add_foreign_key(self, table, foreign_table, key, foreign_key, foreign_name):
         '''添加外键'''
