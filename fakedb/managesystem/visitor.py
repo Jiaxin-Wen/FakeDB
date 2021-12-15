@@ -169,11 +169,10 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#alter_table_add_unique.
     def visitAlter_table_add_unique(self, ctx:SQLParser.Alter_table_add_uniqueContext):
-        # TODO:
-        table = None
-        name = None
-        col = None
-        return self.manager.add_unique(table, col, name)
+        table = ctx.Identifier().getText()
+        cols = ctx.identifiers().accept(self)
+        for col in cols:
+            return self.manager.add_unique(table, col)
 
     # Visit a parse tree produced by SQLParser#field_list.
     def visitField_list(self, ctx:SQLParser.Field_listContext):

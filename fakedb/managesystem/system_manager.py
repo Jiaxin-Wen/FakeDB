@@ -428,6 +428,11 @@ class SystemManager:
         # 在从表上建立索引
         return self.add_index(foreign_table, foreign_key)
 
+    def add_unique(self, table, col):
+        table_meta = self.meta_manager.get_table(table)
+        table_meta.add_unique(col)
+        return f'add unique on {table}.{col}'
+
     def shutdown(self):
         '''退出'''
         self.file_manager.shutdown()
