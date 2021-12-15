@@ -7,7 +7,7 @@ class MetaManager:
     def __init__(self, fm):
         self.fm = fm
         self.db_dict = {}
-        self.current_db = None
+        self.current_db = None # current DbMeta
 
     # def writeback_db(self, name):
     #     if name not in self.db_dict:
@@ -18,6 +18,10 @@ class MetaManager:
 
     def shutdown(self):
         self.writeback_alldbs()
+
+    def get_indexes_description(self):
+        assert self.current_db is not None
+        return self.current_db.get_indexes_description()
 
     def get_databases_description(self):
         return ' '.join([name for name in self.db_dict])

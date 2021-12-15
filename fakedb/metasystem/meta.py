@@ -166,6 +166,12 @@ class DbMeta:
         for meta in tablemetas:
             self.table_dict[meta.name] = meta
 
+    def get_indexes_description(self):
+        res = []
+        for tablemeta in self.table_dict.values():
+            res.append(f'{tablemeta.name}: {list(tablemeta.indexes.keys())}')
+        return '\n'.join(res)
+
     def create_table(self, tablemeta):
         if tablemeta.name in self.table_dict:
             raise Exception(f'table {tablemeta.name} cannot be created because it exists!')
