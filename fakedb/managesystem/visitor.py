@@ -280,9 +280,10 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#where_null.
     def visitWhere_null(self, ctx:SQLParser.Where_nullContext):
-        print('visit where null')
-        # TODO:
-        return self.visitChildren(ctx)
+        table, col = ctx.column().accept(self)
+        flag = ctx.getChild(2).getText() != "NOT"
+        condition = Condition(ConditionKind.IsNull, table, col, value=flag)
+        return condition
 
     # Visit a parse tree produced by SQLParser#where_in_list.
     def visitWhere_in_list(self, ctx:SQLParser.Where_in_listContext):
