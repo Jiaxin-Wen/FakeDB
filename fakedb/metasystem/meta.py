@@ -48,6 +48,9 @@ class TableMeta:
             raise Exception(f'column {name} cannot be dropped because it does not exist!')
         self.column_dict.pop(name)
 
+    def has_column(self, name):
+        return name in self.column_dict
+
     def get_col_idx(self, name):
         return self.col_idx.get(name, None)
 
