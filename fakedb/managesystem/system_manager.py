@@ -172,10 +172,11 @@ class SystemManager:
                     root_id = table_meta.indexes[col_name]
                     index_file_path = get_index_path(self.current_db, table_name, col_name)
                     index = self.index_manager.open_index(index_file_path, root_id)
-                    rids = set(index.rangeSearch(l, h))
-                    results &= rids
+                    rids = index.rangeSearch(l, h)
+                    if rids is not None:
+                        results &= set(rids)
 
-        return results
+        return results if len(results) > 0 else None
 
     def get_condition_func(self, condition: Condition, table_meta: TableMeta):
         if condition.table_name and condition.table_name != table_meta.name:
