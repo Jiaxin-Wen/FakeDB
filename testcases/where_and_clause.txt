@@ -1,0 +1,17 @@
+CREATE DATABASE orderDB2;
+USE orderDB2;
+CREATE TABLE nation(
+n_nationkey INT NOT NULL,
+n_name VARCHAR(25) NOT NULL,
+n_regionkey INT NOT NULL,
+n_comment VARCHAR(152)
+);
+INSERT INTO nation VALUES (0, 'America', 0, 'nothing left');
+INSERT INTO nation VALUES (0, 'xrz', 0, 'nothing left');
+INSERT INTO nation VALUES (0, '1234', 0, 'nothing left');
+SELECT * FROM nation WHERE nation.n_name LIKE '%r%';
+SELECT * FROM nation WHERE nation.n_name LIKE '_r%';
+SELECT * FROM nation WHERE nation.n_name LIKE '%r_';
+SELECT * FROM nation WHERE nation.n_name LIKE '%3%';
+SELECT * FROM nation WHERE nation.n_name LIKE '%3';
+SELECT * FROM nation WHERE nation.n_name LIKE 'A%';
