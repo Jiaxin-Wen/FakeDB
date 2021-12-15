@@ -27,6 +27,9 @@ SELECT * FROM nation WHERE nation.n_comment IS NULL;
 SELECT * FROM nation WHERE nation.n_comment IS NOT NULL;
 SELECT * FROM nation WHERE nation.n_name IN ('1234','124');
 SELECT * FROM nation WHERE nation.n_name IN ('America','xrz');
-SELECT * FROM nation WHERE nation.n_name IN (SELECT n_name FROM ref WHERE ref.n_id < 1);
-SELECT * FROM nation WHERE nation.n_nationkey = (SELECT n_id FROM ref WHERE ref.n_name = 'America');
+SELECT * FROM nation WHERE nation.n_name IN (SELECT ref.n_name FROM ref WHERE ref.n_id < 1);
+SELECT * FROM nation WHERE nation.n_nationkey = (SELECT ref.n_id FROM ref WHERE ref.n_name = 'America');
+SELECT * FROM nation WHERE nation.n_nationkey < (SELECT ref.n_id FROM ref WHERE ref.n_name = 'America');
+SELECT * FROM nation WHERE nation.n_nationkey > (SELECT ref.n_id FROM ref WHERE ref.n_name = 'America');
+
 
