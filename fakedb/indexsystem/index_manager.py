@@ -15,17 +15,17 @@ class IndexManager:
 
     def create_index(self, filename):
         '''
-        filename: 数据库名 + 表名
+        filename: 数据库名 + 表名 + 列名
         '''
         handler = IndexHandler(filename, self.file_manager)
         index = FileIndex(handler, handler.new_page())
-        index.write_back()
+        index.writeback()
         self.file2index[filename] = index
         return index
 
     def open_index(self, filename, root_id):
         '''
-        filename: 数据库名 + 表名
+        filename: 数据库名 + 表名 + 列名
         root_id: 根节点页号
         '''
         handler = IndexHandler(filename, self.file_manager)

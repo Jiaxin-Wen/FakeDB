@@ -343,9 +343,7 @@ class SystemManager:
     def select_records(self, selectors, tables, conditions, group_by, limit, offset):
         '''
         select语句
-        只初步支持了select *
         TODO: 
-        - 支持aggregation
         - group by, limit, offset
         '''
         for i in selectors:
@@ -385,6 +383,30 @@ class SystemManager:
 
         raise Exception("not implemented branch")
     
+    def add_index(self, table, col):
+        '''添加索引'''
+        table_meta = self.meta_manager.get_table(table)
+        if not table_meta.has_column(col): # 判断列是否在表中
+            return f"{table} has no column named {col}"
+        if table_meta.has_index(col): # 判断该列是否已创建过索引
+            return f"{table}.{col} has created index"
+        
+        
+        # 创建index文件
+        index_path = get_index_path(self.current_db, table, col)
+        index = self.index_manager.create_index(index_path)
+        
+        table_meta.create_index(col, index.root_id)
+        
+        # 初始化
+        col_idx = table_meta.get_col_idx(col)
+        self.record_manager.open_file(get_table_path(self.current_db, table))
+        records = get_all_records(self.record_manager)
+        for record in records:
+            value = table_meta.load_record(record)
+            index.insert(value[col_idx], record.rid)
+        return f"add index on {table}.{col}"    
+
     def shutdown(self):
         '''退出'''
         self.file_manager.shutdown()

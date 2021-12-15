@@ -4,14 +4,14 @@ CREATE TABLE student(
 n_id INT NOT NULL,
 n_name VARCHAR(25) NOT NULL,
 n_score INT NOT NULL,
-class_id INT NOT NULL,
+class_id INT NOT NULL
 );
 CREATE TABLE class(
 id INT NOT NULL,
-student_number INT NOT NULL,
+student_number INT NOT NULL
 );
 INSERT INTO class VALUES (1, 0);
-ALTER TABLE student ADD INDEX n_score;
+ALTER TABLE student ADD INDEX (n_score);
 ALTER TABLE student ADD CONSTRAINT con1 PRIMARY KEY (n_id);
 ALTER TABLE student ADD CONSTRAINT con2 FOREIGN KEY (class_id) REFERENCES class (id);
 ALTER TABLE student ADD UNIQUE n_name;
