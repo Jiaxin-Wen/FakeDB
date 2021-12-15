@@ -417,6 +417,7 @@ class SystemManager:
         table_meta.drop_index(col)
         
         index_path = get_index_path(self.current_db, table, col)
+        self.file_manager.close_file(index_path)
         self.file_manager.remove_file(index_path)
         return f'drop index: {table}.{col}'
     

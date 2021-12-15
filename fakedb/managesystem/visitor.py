@@ -133,12 +133,20 @@ class SystemVisitor(SQLVisitor):
     # Visit a parse tree produced by SQLParser#alter_drop_index.
     def visitAlter_drop_index(self, ctx:SQLParser.Alter_drop_indexContext):
         # TODO:
-        index = ctx.Identifier(1).getText()
-        return self.manager.drop_index(index)
+        table = ctx.Identifier().getText()
+        indexes = ctx.identifiers().accept(self)
+        print(f'table = {table}, indexes = {indexes}')
+        res = []
+        for index in indexes:
+            tmp = self.manager.drop_index(table, index)
+            res.append(tmp)
+        return res
 
     # Visit a parse tree produced by SQLParser#alter_table_drop_pk.
     def visitAlter_table_drop_pk(self, ctx:SQLParser.Alter_table_drop_pkContext):
         table = ctx.Identifier(0).getText()
+        primary_key = ctx.Identifier(1).getText() if ctx.Identifier(1) else None
+        print(f'drop pk, table = {table}, pk = {primary_key}')
         return self.manager.drop_primary_key(table)
 
     # Visit a parse tree produced by SQLParser#alter_table_drop_foreign_key.
