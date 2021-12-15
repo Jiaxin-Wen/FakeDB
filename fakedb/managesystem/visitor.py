@@ -294,9 +294,12 @@ class SystemVisitor(SQLVisitor):
     
     # Visit a parse tree produced by SQLParser#where_in_select.
     def visitWhere_in_select(self, ctx:SQLParser.Where_in_selectContext):
-        print('visit where in select')
-        # TODO:
-        return self.visitChildren(ctx)
+        table, col = ctx.column().accept(self)
+        value = ctx.select_table().accept(self).values()
+        value = list(value)[0]
+        # print(f'where operator select, table = {table}, col = {col}, op = {op}, value = {value}')
+        condition = Condition(ConditionKind.In, table, col, value=value)
+        return condition
 
     # Visit a parse tree produced by SQLParser#where_like_string.
     def visitWhere_like_string(self, ctx:SQLParser.Where_like_stringContext):
