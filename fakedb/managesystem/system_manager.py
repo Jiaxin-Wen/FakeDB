@@ -410,6 +410,14 @@ class SystemManager:
     def show_indexes(self):
         '''打印数据库中的所有索引'''
         return self.meta_manager.get_indexes_description()
+    
+    def add_primary_key(self, table, primary_key_list):
+        '''添加主键'''
+        table_meta = self.meta_manager.get_table(table)
+        for key in primary_key_list:
+            table_meta.add_primary(key)
+            self.add_index(table, key)
+        return f'add primariy key: {primary_key_list} in {table}'        
 
     def shutdown(self):
         '''退出'''

@@ -54,7 +54,6 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#show_indexes.
     def visitShow_indexes(self, ctx:SQLParser.Show_indexesContext):
-        # TODO:
         return self.manager.show_indexes()
 
     # Visit a parse tree produced by SQLParser#load_data.
@@ -151,10 +150,9 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#alter_table_add_pk.
     def visitAlter_table_add_pk(self, ctx:SQLParser.Alter_table_add_pkContext):
-        # TODO:
         table = ctx.Identifier(0).getText()
         primary_key = ctx.identifiers().accept(self)
-        return self.manager.set_primary_key(table, primary_key)
+        return self.manager.add_primary_key(table, primary_key)
 
     # Visit a parse tree produced by SQLParser#alter_table_add_foreign_key.
     def visitAlter_table_add_foreign_key(self, ctx:SQLParser.Alter_table_add_foreign_keyContext):
