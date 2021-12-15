@@ -255,6 +255,36 @@ class SystemManager:
                 values.append(record_values)
 
         return records, values
+
+    def check_unique(self, tablemeta, values, old_record=None):
+        """
+        :param tablemeta:
+        :param values:
+        :param old_record: 为None表示插入的情况，如果不为None，表示update之前旧的record
+        :return: True if no problem
+        """
+        flag = True
+        for key in tablemeta.uniques:
+            idx = tablemeta.get_col_idx(key)
+            value = values[idx]
+            conditions = [Condition(ConditionKind.Compare, tablemeta.name, key, '=', value)]
+            records, vals = self.search_records_using_indexes(tablemeta.name, conditions)
+            if old_record is None:
+                if len(records) > 0:
+                    flag = False
+                    break
+            else:
+                if len(records) > 1:
+                    flag = False
+                    break
+                elif len(records) == 1:
+                    if records[0].rid != old_record.rid:
+                        flag = False
+                        break
+
+        return flag
+
+
     
     def _insert_index(self, table_meta, value_list, rid):
         '''内部接口, 插入行后更新索引文件'''
