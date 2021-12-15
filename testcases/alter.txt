@@ -24,7 +24,9 @@ INSERT INTO student VALUES (2, 'c', 90, 2);
 INSERT INTO student VALUES (2, 'c', 90, 1);
 SELECT * FROM student;
 SELECT * FROM student WHERE student.n_score > 75;
+SHOW INDEXES;
 ALTER TABLE student DROP INDEX (n_score);
+SHOW INDEXES
 ALTER TABLE student DROP PRIMARY KEY n_id;
 ALTER TABLE student DROP FOREIGN KEY class_id;
 INSERT INTO student VALUES (2, 'd', 90, 2);

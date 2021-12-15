@@ -406,6 +406,19 @@ class SystemManager:
             index.insert(value[col_idx], record.rid)
         return f"add index on {table}.{col}" 
     
+    def drop_index(self, table, col):
+        '''删除索引'''
+        table_meta = self.meta_manager.get_table(table)
+        if not table_meta.has_column(col): # 判断列是否在表中
+            return f"{table} has no column named {col}"
+        if not table_meta.has_index(col): # 判断该列是否已创建过索引
+            return f"{table}.{col} has not created index"
+        table_meta.drop_index(col)
+        
+        index_path = get_index_path(self.current_db, table, col)
+        self.file_manager.remove_file(index_path)
+        return f'drop index: {table}.{col}'
+    
     def show_indexes(self):
         '''打印数据库中的所有索引'''
         return self.meta_manager.get_indexes_description()
@@ -416,7 +429,15 @@ class SystemManager:
         for key in primary_key_list:
             table_meta.add_primary(key)
             self.add_index(table, key)
-        return f'add primariy key: {primary_key_list} in {table}'   
+        return f'add primariy key: {primary_key_list} in {table}'  
+    
+    def drop_primary_key(self, table):
+        '''删除主键''' 
+        # TODO:
+        table_meta = self.meta_manager.get_table(table)
+        primary_keys = table_meta.primary
+        for key in primary_keys:
+            self.drop_index(table, key)
     
     def add_foreign_key(self, table, foreign_table, key, foreign_key, foreign_name):
         '''添加外键'''

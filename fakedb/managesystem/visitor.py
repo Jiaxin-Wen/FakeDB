@@ -138,7 +138,6 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#alter_table_drop_pk.
     def visitAlter_table_drop_pk(self, ctx:SQLParser.Alter_table_drop_pkContext):
-        # TODO
         table = ctx.Identifier(0).getText()
         return self.manager.drop_primary_key(table)
 
