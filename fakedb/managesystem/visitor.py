@@ -254,7 +254,7 @@ class SystemVisitor(SQLVisitor):
             elif ctx.Float():
                 return float(raw_value)
             elif ctx.String():
-                return raw_value
+                return raw_value[1:-1]
 
     # Visit a parse tree produced by SQLParser#where_and_clause.
     def visitWhere_and_clause(self, ctx:SQLParser.Where_and_clauseContext):
