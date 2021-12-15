@@ -270,12 +270,13 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#where_operator_select.
     def visitWhere_operator_select(self, ctx:SQLParser.Where_operator_selectContext):
-        # TODO:
-        print('visit where operator select')
         table, col = ctx.column().accept(self)
         op = ctx.operator().getText()
-        print(f'where operator select, table = {table}, col = {col}, op = {op}')
-        return self.visitChildren(ctx)
+        value = ctx.select_table().accept(self).values()
+        value = list(value)[0][0] # 保证是单值
+        # print(f'where operator select, table = {table}, col = {col}, op = {op}, value = {value}')
+        condition = Condition(ConditionKind.Compare, table, col, op, value=value)
+        return condition
 
     # Visit a parse tree produced by SQLParser#where_null.
     def visitWhere_null(self, ctx:SQLParser.Where_nullContext):
