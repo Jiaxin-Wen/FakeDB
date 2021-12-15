@@ -15,3 +15,4 @@ SELECT * FROM nation WHERE nation.n_name LIKE '%r_';
 SELECT * FROM nation WHERE nation.n_name LIKE '%3%';
 SELECT * FROM nation WHERE nation.n_name LIKE '%3';
 SELECT * FROM nation WHERE nation.n_name LIKE 'A%';
+SELECT * FROM nation WHERE nation.n_name LIKE 'a%';
