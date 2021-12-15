@@ -1,0 +1,10 @@
+create table的完善
+like模糊查询
+约束
+- 主键
+- unique
+- not null
+- 外键
+group by
+多表连接
+print优化
