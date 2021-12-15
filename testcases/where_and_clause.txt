@@ -6,10 +6,16 @@ n_name VARCHAR(25) NOT NULL,
 n_regionkey INT NOT NULL,
 n_comment VARCHAR(152)
 );
+CREATE TABLE ref(
+    n_id INT NOT NULL,
+    n_name VARCHAR(25) NOT NULL
+);
 INSERT INTO nation VALUES (0, 'America', 0, 'nothing left');
-INSERT INTO nation VALUES (0, 'xrz', 0, 'nothing left');
-INSERT INTO nation VALUES (0, '1234', 0, 'nothing left');
-INSERT INTO nation VALUES (0, '124', 0, null);
+INSERT INTO nation VALUES (1, 'xrz', 0, 'nothing left');
+INSERT INTO nation VALUES (2, '1234', 0, 'nothing left');
+INSERT INTO nation VALUES (3, '124', 0, null);
+INSERT INTO ref VALUES (0, 'America');
+INSERT INTO ref VALUES (1, 'China');
 SELECT * FROM nation WHERE nation.n_name LIKE '%r%';
 SELECT * FROM nation WHERE nation.n_name LIKE '_r%';
 SELECT * FROM nation WHERE nation.n_name LIKE '%r_';
@@ -21,3 +27,6 @@ SELECT * FROM nation WHERE nation.n_comment IS NULL;
 SELECT * FROM nation WHERE nation.n_comment IS NOT NULL;
 SELECT * FROM nation WHERE nation.n_name IN ('1234','124');
 SELECT * FROM nation WHERE nation.n_name IN ('America','xrz');
+SELECT * FROM nation WHERE nation.n_name IN (SELECT n_name FROM ref WHERE ref.n_id < 1);
+SELECT * FROM nation WHERE nation.n_nationkey = (SELECT n_id FROM ref WHERE ref.n_name = 'America');
+
