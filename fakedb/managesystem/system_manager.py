@@ -448,12 +448,15 @@ class SystemManager:
     def add_foreign_key(self, table, foreign_table, key, foreign_key, foreign_name):
         '''添加外键'''
         table_meta = self.meta_manager.get_table(table)
-        table_meta.add_foreign(key, foreign_name)
-        
-        print('foreign table = ', foreign_table)
-        print('foreign key = ', foreign_key)
-        # 在从表上建立索引
+        table_meta.add_foreign(key, f"{foreign_table}.{foreign_key}")
         return self.add_index(foreign_table, foreign_key)
+    
+    def drop_foreign_key(self, table, key):
+        '''删除外键'''
+        table_meta = self.meta_manager.get_table(table)
+        foreign_info = table_meta.foreigns[key]
+        foreign_table, foreign_key = foreign_info.split('.')
+        return self.drop_index(foreign_table, foreign_key)        
 
     def add_unique(self, table, col):
         table_meta = self.meta_manager.get_table(table)
