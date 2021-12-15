@@ -1,5 +1,4 @@
 create table的完善
-like模糊查询
 约束
 - 主键
 - unique
