@@ -281,10 +281,46 @@ class SystemManager:
                     if records[0].rid != old_record.rid:
                         flag = False
                         break
-
         return flag
 
+    def check_primary(self, tablemeta, values, old_record=None):
+        """
 
+        :param tablemeta:
+        :param values:
+        :param old_record:
+        :return: True if no problem
+        """
+        conditions = [Condition(ConditionKind.Compare, tablemeta.name, key, '=', values[tablemeta.get_col_idx(key)]) for key in tablemeta.primary]
+        records, vals = self.search_records_using_indexes(tablemeta.name, conditions)
+        if len(records) > 1:
+            return False
+        if len(records) == 0:
+            return True
+        # len(records) == 1
+        if old_record is None:
+            return False
+        return records[0].rid == old_record.rid
+
+    def check_foreign(self, tablemeta, values):
+        """
+
+        :param tablemeta:
+        :param values:
+        :return: True if no problem
+        """
+        flag = True
+        for key, tab_col in tablemeta.foreigns:
+            idx = tablemeta.get_col_idx(key)
+            value = values[idx]
+            tab, col = tab_col.split('.')
+            conditions = [Condition(ConditionKind.Compare, tab, col, '=', value)]
+            records, vals = self.search_records_using_indexes(col, conditions)
+            if len(records) == 0:
+                flag = False
+                break
+
+        return flag
     
     def _insert_index(self, table_meta, value_list, rid):
         '''内部接口, 插入行后更新索引文件'''
