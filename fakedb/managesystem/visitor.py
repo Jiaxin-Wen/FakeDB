@@ -195,7 +195,7 @@ class SystemVisitor(SQLVisitor):
                 # normal field
                 name = field.Identifier().getText()
                 kind, siz = field.type_().accept(self)
-                null = field.Null() is not None
+                null = field.Null() is None
                 default = None if field.value() is None else field.value().accept(self)
                 colmeta = ColumnMeta(name, kind, siz, null, default)
                 col_list.append(colmeta) 
