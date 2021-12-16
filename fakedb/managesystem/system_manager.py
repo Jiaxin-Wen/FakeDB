@@ -515,11 +515,13 @@ class SystemManager:
         '''删除主键''' 
         table_meta = self.meta_manager.get_table(table)
         if primary_key is not None:
+            table_meta.drop_primary(primary_key)
             self.drop_index(table, primary_key)
             return f'drop primary key: {table}.{primary_key}'
         else:
             primary_keys = table_meta.primary
             for key in primary_keys:
+                table_meta.drop_primary(primary_key)
                 self.drop_index(table, key)
             return f'drop all primary keys in {table}: {",".join(primary_keys)}'
     
