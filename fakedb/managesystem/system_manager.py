@@ -197,6 +197,9 @@ class SystemManager:
                 return compare_two_cols(col_idx, col_idx2, condition.operator)
             else:
                 value = condition.value
+                if value is None:
+                    return lambda x: True
+
                 if col_kind in ['INT', 'FLOAT'] and not isinstance(value, (int, float)):
                     raise Exception(f'col_kind is {col_kind} but {value} is not that type!')
 
