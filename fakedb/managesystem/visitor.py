@@ -270,30 +270,36 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#where_operator_select.
     def visitWhere_operator_select(self, ctx:SQLParser.Where_operator_selectContext):
-        # TODO:
-        print('visit where operator select')
         table, col = ctx.column().accept(self)
         op = ctx.operator().getText()
-        print(f'where operator select, table = {table}, col = {col}, op = {op}')
-        return self.visitChildren(ctx)
+        value = ctx.select_table().accept(self).values()
+        value = list(value)[0][0] # 保证是单值
+        # print(f'where operator select, table = {table}, col = {col}, op = {op}, value = {value}')
+        condition = Condition(ConditionKind.Compare, table, col, op, value=value)
+        return condition
 
     # Visit a parse tree produced by SQLParser#where_null.
     def visitWhere_null(self, ctx:SQLParser.Where_nullContext):
-        print('visit where null')
-        # TODO:
-        return self.visitChildren(ctx)
+        table, col = ctx.column().accept(self)
+        flag = ctx.getChild(2).getText() != "NOT"
+        condition = Condition(ConditionKind.IsNull, table, col, value=flag)
+        return condition
 
     # Visit a parse tree produced by SQLParser#where_in_list.
     def visitWhere_in_list(self, ctx:SQLParser.Where_in_listContext):
-        print('visit where in list')
-        # TODO:
-        return self.visitChildren(ctx)
-
+        table, col = ctx.column().accept(self)
+        values = ctx.value_list().accept(self)
+        condition = Condition(ConditionKind.In, table, col, value=values)
+        return condition
+    
     # Visit a parse tree produced by SQLParser#where_in_select.
     def visitWhere_in_select(self, ctx:SQLParser.Where_in_selectContext):
-        print('visit where in select')
-        # TODO:
-        return self.visitChildren(ctx)
+        table, col = ctx.column().accept(self)
+        value = ctx.select_table().accept(self).values()
+        value = list(value)[0]
+        # print(f'where operator select, table = {table}, col = {col}, op = {op}, value = {value}')
+        condition = Condition(ConditionKind.In, table, col, value=value)
+        return condition
 
     # Visit a parse tree produced by SQLParser#where_like_string.
     def visitWhere_like_string(self, ctx:SQLParser.Where_like_stringContext):
