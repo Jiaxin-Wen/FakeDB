@@ -301,6 +301,8 @@ class SystemManager:
         :param old_record:
         :return: True if no problem
         """
+        if not tablemeta.primary:
+            return True
         conditions = [Condition(ConditionKind.Compare, tablemeta.name, key, '=', values[tablemeta.get_col_idx(key)]) for key in tablemeta.primary]
         records, vals = self.search_records_using_indexes(tablemeta.name, conditions)
         if len(records) > 1:
