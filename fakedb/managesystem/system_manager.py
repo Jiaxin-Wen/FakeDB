@@ -257,6 +257,10 @@ class SystemManager:
         return records, values
 
     def check_constraints(self, tablemeta, values, old_record=None):
+
+        if not self.check_null(tablemeta, values):
+            raise Exception(f'{values} violate Null constraint')
+
         if not self.check_primary(tablemeta, values, old_record):
             raise Exception(f'{values} violate primary constraint')
 
@@ -265,6 +269,16 @@ class SystemManager:
 
         if not self.check_foreign(tablemeta, values):
             raise Exception(f'{values} violate foreign constraint')
+
+    def check_null(self, tablemeta, values):
+        flag = True
+        for i, colmeta in enumerate(tablemeta.column_dict.values()):
+            if not colmeta.null:
+                if values[i] is None:
+                    flag = False
+                    break
+
+        return flag
 
     def check_unique(self, tablemeta, values, old_record=None):
         """
