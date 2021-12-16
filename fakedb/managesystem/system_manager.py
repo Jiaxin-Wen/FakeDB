@@ -256,6 +256,16 @@ class SystemManager:
 
         return records, values
 
+    def check_constraints(self, tablemeta, values, old_record=None):
+        if not self.check_primary(tablemeta, values, old_record):
+            raise Exception(f'{values} violate primary constraint')
+
+        if not self.check_unique(tablemeta, values, old_record):
+            raise Exception(f'{values} violate unique constraint')
+
+        if not self.check_foreign(tablemeta, values):
+            raise Exception(f'{values} violate foreign constraint')
+
     def check_unique(self, tablemeta, values, old_record=None):
         """
         :param tablemeta:
@@ -310,12 +320,12 @@ class SystemManager:
         :return: True if no problem
         """
         flag = True
-        for key, tab_col in tablemeta.foreigns:
+        for key, tab_col in tablemeta.foreigns.items():
             idx = tablemeta.get_col_idx(key)
             value = values[idx]
             tab, col = tab_col.split('.')
             conditions = [Condition(ConditionKind.Compare, tab, col, '=', value)]
-            records, vals = self.search_records_using_indexes(col, conditions)
+            records, vals = self.search_records_using_indexes(tab, conditions)
             if len(records) == 0:
                 flag = False
                 break
@@ -351,6 +361,7 @@ class SystemManager:
         data = table_meta.build_record(value_list) # 字节序列
                 
         # TODO: 检查约束
+        self.check_constraints(table_meta, value_list, old_record=None)
         
         table_path = get_table_path(self.current_db, table)
         self.record_manager.open_file(table_path)
@@ -396,6 +407,7 @@ class SystemManager:
                 new_value_list[index] = new_value # 维护更新后的record
             
             # TODO: 检查约束
+            self.check_constraints(table_meta, new_value_list, record)
             
             # 更新record
             data = table_meta.build_record(new_value_list)
