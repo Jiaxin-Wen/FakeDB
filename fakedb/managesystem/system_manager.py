@@ -536,6 +536,7 @@ class SystemManager:
         table_meta = self.meta_manager.get_table(table)
         foreign_info = table_meta.foreigns[key]
         foreign_table, foreign_key = foreign_info.split('.')
+        table_meta.remove_foreign(key)
         return self.drop_index(foreign_table, foreign_key)        
 
     def add_unique(self, table, col):
