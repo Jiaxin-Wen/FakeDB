@@ -259,19 +259,58 @@ class SystemManager:
 
         return records, values
 
-    def check_constraints(self, tablemeta, values, old_record=None):
+    def check_constraints(self, tablemeta, values, old_record=None, delete=False):
+        if delete:
+            if not self.check_ref_foreign(tablemeta, values, old_record, delete):
+                raise Exception(f'violate foreign constraint')
+        else:
+            if not self.check_null(tablemeta, values):
+                raise Exception(f'{values} violate Null constraint')
 
-        if not self.check_null(tablemeta, values):
-            raise Exception(f'{values} violate Null constraint')
+            if not self.check_primary(tablemeta, values, old_record):
+                raise Exception(f'{values} violate primary constraint')
 
-        if not self.check_primary(tablemeta, values, old_record):
-            raise Exception(f'{values} violate primary constraint')
+            if not self.check_unique(tablemeta, values, old_record):
+                raise Exception(f'{values} violate unique constraint')
 
-        if not self.check_unique(tablemeta, values, old_record):
-            raise Exception(f'{values} violate unique constraint')
+            if not self.check_foreign(tablemeta, values):
+                raise Exception(f'{values} violate foreign constraint')
 
-        if not self.check_foreign(tablemeta, values):
-            raise Exception(f'{values} violate foreign constraint')
+            if old_record is not None:
+                if not self.check_ref_foreign(tablemeta, values, old_record, delete):
+                    raise Exception(f'violate foreign constraint')
+
+    def check_ref_foreign(self, tablemeta, values, old_record=None, delete=False):
+        if delete:
+            flag = True
+            for key, tab_col in tablemeta.ref_foreigns.items():
+                idx = tablemeta.get_col_idx(key)
+                value = values[idx]
+                tab, col = tab_col.split('.')
+                conditions = [Condition(ConditionKind.Compare, tab, col, '=', value)]
+                records, vals = self.search_records_using_indexes(tab, conditions)
+                if len(records) > 0:
+                    flag = False
+                    break
+
+            return flag
+
+        else:
+            flag = True
+            old_values = tablemeta.load_record(old_record.data)
+            for key, tab_col in tablemeta.ref_foreigns.items():
+                idx = tablemeta.get_col_idx(key)
+                if values[idx] == old_values[idx]:
+                    continue
+                value = old_values[idx]
+                tab, col = tab_col.split('.')
+                conditions = [Condition(ConditionKind.Compare, tab, col, '=', value)]
+                records, vals = self.search_records_using_indexes(tab, conditions)
+                if len(records) > 0:
+                    flag = False
+                    break
+
+            return flag
 
     def check_null(self, tablemeta, values):
         flag = True
@@ -379,7 +418,6 @@ class SystemManager:
         table_meta = self.meta_manager.get_table(table)       
         data = table_meta.build_record(value_list) # 字节序列
                 
-        # TODO: 检查约束
         self.check_constraints(table_meta, value_list, old_record=None)
         
         table_path = get_table_path(self.current_db, table)
@@ -400,7 +438,7 @@ class SystemManager:
         self.record_manager.open_file(table_path)
         for record, value in zip(records, values):
             rid = record.rid
-            # TODO: 检查约束
+            self.check_constraints(table_meta, value, record, delete=True)
             self.record_manager.delete_record(rid)
             self._delete_index(table_meta, value, rid)
             
@@ -425,7 +463,6 @@ class SystemManager:
                 index = table_meta.get_col_idx(col)
                 new_value_list[index] = new_value # 维护更新后的record
             
-            # TODO: 检查约束
             self.check_constraints(table_meta, new_value_list, record)
             
             # 更新record
@@ -548,6 +585,8 @@ class SystemManager:
         '''添加外键'''
         table_meta = self.meta_manager.get_table(table)
         table_meta.add_foreign(key, f"{foreign_table}.{foreign_key}")
+        ref_table_meta = self.meta_manager.get_table(foreign_table)
+        ref_table_meta.add_ref_foreign(foreign_key, f'{table}.{key}')
         return self.add_index(foreign_table, foreign_key)
     
     def drop_foreign_key(self, table, key):
@@ -556,6 +595,8 @@ class SystemManager:
         foreign_info = table_meta.foreigns[key]
         foreign_table, foreign_key = foreign_info.split('.')
         table_meta.remove_foreign(key)
+        ref_table_meta = self.meta_manager.get_table(foreign_table)
+        ref_table_meta.remove_ref_foreign(foreign_key)
         return self.drop_index(foreign_table, foreign_key)        
 
     def add_unique(self, table, col):

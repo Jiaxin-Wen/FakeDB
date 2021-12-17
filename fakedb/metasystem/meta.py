@@ -36,6 +36,8 @@ class TableMeta:
         self.primary = set()
         self.foreigns = {}
         self.uniques = set()
+        self.ref_foreigns = {}
+
 
     def add_column(self, columnmeta):
         if columnmeta.name in self.column_dict:
@@ -78,6 +80,13 @@ class TableMeta:
     def remove_foreign(self, colname):
         if colname in self.foreigns:
             return self.foreigns.pop(colname)
+
+    def add_ref_foreign(self, colname, foreign):
+        self.ref_foreigns[colname] = foreign
+
+    def remove_ref_foreign(self, colname):
+        if colname in self.ref_foreigns:
+            self.ref_foreigns.pop(colname)
 
     def add_unique(self, colname):
         self.uniques.add(colname)

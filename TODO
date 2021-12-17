@@ -1,5 +1,4 @@
 create table的完善
-insert时default value的使用
 约束
 - 主键
 - unique
