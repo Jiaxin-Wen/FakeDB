@@ -146,7 +146,7 @@ class SystemManager:
     def cond_join(self, table2records, conditions):
         res = []
         table2idx = {}
-        for i, table in enumerate(table2idx):
+        for i, table in enumerate(table2records):
             table2idx[table] = i
         table_metas = {table_name: self.meta_manager.get_table(table_name) for table_name in table2records}
 
