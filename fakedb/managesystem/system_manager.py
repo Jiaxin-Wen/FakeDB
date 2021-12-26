@@ -549,6 +549,8 @@ class SystemManager:
 
         # table to value_list
         value_dict = {table: self.search_records_using_indexes(table, conditions)[-1] for table in tables}
+        if len(tables) > 1: # join
+            value_dict = self.cond_join(value_dict, conditions)
         print('valud dict = ', value_dict)
         # TODO: 多表condition的结合
         # _, value_list = self.search_records_using_indexes(table, conditions)
