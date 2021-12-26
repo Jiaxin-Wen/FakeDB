@@ -22,4 +22,4 @@ INSERT INTO teacher VALUES ('数学老师', 0);
 INSERT INTO teacher VALUES ('英语老师', 1);
 SELECT * FROM student;
 SELECT student.name, class.name FROM student, class WHERE student.class_id=class.id AND student.name='甲';
-SELECT student.name, class.name, teacher.name FROM student, class, teacher WHERE student.class_id=class.id and teacher.class_id=class.id AND student.name='甲';
+SELECT student.name, class.name, teacher.name FROM student, class, teacher WHERE student.class_id=class.id AND teacher.class_id=class.id AND student.name='甲';
