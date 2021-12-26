@@ -1,0 +1,24 @@
+CREATE DATABASE orderDB3;
+USE orderDB3;
+CREATE TABLE student(
+    n_name VARCHAR(25) NOT NULL,
+    class_id INT NOT NULL
+);
+CREATE TABLE class(
+    id INT NOT NULL,
+    name VARCHAR(25) NOT NULL
+);
+CREATE TABLE teacher(
+    name VARCHAR(25) NOT NULL,
+    class_id INT NOT NULL
+);
+INSERT INTO class VALUES (0, "数学");
+INSERT INTO class VALUES (1, "英语")
+INSERT INTO student VALUES ('甲', 0);
+INSERT INTO student VALUES ('乙', 1);
+INSERT INTO student VALUES ('丙', 1);
+INSERT INTO student VALUES ('丁', 0);
+INSERT INTO student VALUES ('数学老师', 0);
+INSERT INTO student VALUES ('英语老师', 1);
+SELECT student.name, class.name from student, class where student.class_id=class.id AND student.name="甲";
+SELECT student.name, class.name, teacher.name from student, class, teacher where student.class_id=class.id and teacher.class_id=class.id AND student.name="甲";

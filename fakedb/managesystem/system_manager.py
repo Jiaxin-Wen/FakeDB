@@ -489,7 +489,7 @@ class SystemManager:
         '''
         select语句
         TODO: 
-        - group by, limit, offset
+        join
         '''
         for i in selectors:
             print(i)
