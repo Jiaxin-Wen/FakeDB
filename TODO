@@ -3,10 +3,10 @@ create table的完善(done)
 - 分组: group by(done)
 - 分页: limit offset(done)
 多表join
-- 双表join
-- 3,4,5表join
+- 双表join(done)
+- 3,4,5表join(done)
 联合主键
 联合外键
 高级完整性约束
-- 级联外键
+- 级联外键(待定)
 print优化
