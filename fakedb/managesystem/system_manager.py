@@ -2,6 +2,7 @@ import os
 import shutil
 import traceback
 
+from collections import defaultdict
 from copy import copy
 
 from antlr4 import InputStream, CommonTokenStream
@@ -486,35 +487,66 @@ class SystemManager:
         for i in conditions:
             print(i)
             
-        # print('tables = ', tables)
-        assert len(tables) == 1 # 暂时不支持group_by
-        table = tables[0]
-        table_meta = self.meta_manager.get_table(table)
-        # print('group by = ', group_by)
+        print('tables = ', tables)
+        # assert len(tables) == 1 # 暂时不支持group_by
+        print('group by = ', group_by)
         # print('limit = ', limit)
         # print('offset = ', offset)
         
         if self.current_db is None:
             raise Exception(f"Please use database first to select records")
 
+        table = tables[0] # TODO: 多表
         _, value_list = self.search_records_using_indexes(table, conditions)
-        if len(selectors) == 1 and selectors[0].kind == SelectorKind.All: # select *
-            return value_list
-        else: 
-            res = {}
-            for selector in selectors:
-                col = selector.col_name
-                selected_value_list = []
-                if col == '*': # Count (*)
-                    selected_value_list = [0] * len(value_list)
-                else:
-                    col_idx = table_meta.get_col_idx(col)
-                    selected_value_list = [i[col_idx] for i in value_list]
-                
-                selected_value_list = selector(selected_value_list)
-                
-                res[str(selector)] = selected_value_list      
-            return res                
+        selector_kinds = set(selector.kind for selector in selectors)
+        if group_by[-1] is None and SelectorKind.Field in selector_kinds and len(selector_kinds) > 1:
+            # 只有使用groupby时才能同时出现field和聚集函数的select
+            raise Exception("should use group by")
+        if group_by[-1] is not None: # group by
+            group_table, group_col = group_by
+            table_meta = self.meta_manager.get_table(group_table)
+            group_value_dict = defaultdict(list) # 按group_by的列的值 构造dict
+            group_idx = table_meta.get_col_idx(group_col)
+            for i in value_list:
+                key = i[group_idx]
+                group_value_dict[key].append(i)
+            
+            group_res = []
+            for i, tmp_value_list in group_value_dict.items():
+                tmp_res = []
+                for selector in selectors:
+                    col = selector.col_name
+                    selected_value_list = []
+                    if col == '*': # Count (*)
+                        selected_value_list = [0] * len(value_list)
+                    else:
+                        col_idx = table_meta.get_col_idx(col)
+                        selected_value_list = [i[col_idx] for i in tmp_value_list]
+                    
+                    selected_value_list = selector(selected_value_list)
+                    tmp_res.append(selected_value_list)
+                group_res.append(tmp_res)
+            return group_res
+        else:
+            if len(selectors) == 1 and selectors[0].kind == SelectorKind.All: # select *
+                return value_list
+            else: 
+                table_meta = self.meta_manager.get_table(table)
+   
+                res = {}
+                for selector in selectors:
+                    col = selector.col_name
+                    selected_value_list = []
+                    if col == '*': # Count (*)
+                        selected_value_list = [0] * len(value_list)
+                    else:
+                        col_idx = table_meta.get_col_idx(col)
+                        selected_value_list = [i[col_idx] for i in value_list]
+                    
+                    selected_value_list = selector(selected_value_list)
+                    
+                    res[str(selector)] = selected_value_list      
+                return res                
 
         raise Exception("not implemented branch")
     

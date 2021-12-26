@@ -113,7 +113,7 @@ class SystemVisitor(SQLVisitor):
         tables = ctx.identifiers().accept(self)
         conditions = ctx.where_and_clause().accept(self) if ctx.where_and_clause() else ()
         selectors = ctx.selectors().accept(self)
-        group_by = ctx.column().accept(self) if ctx.column() else (None, '')
+        group_by = ctx.column().accept(self) if ctx.column() else (None, None)
         limit = int(ctx.Integer(0).getText()) if ctx.Integer(0) else None
         offset = int(ctx.Integer(1).getText()) if ctx.Integer(1) else None
         return self.manager.select_records(selectors, tables, conditions, group_by, limit, offset)

@@ -1,6 +1,6 @@
-create table的完善
+create table的完善(done)
 高级查询
-- 分组: group by
+- 分组: group by(done)
 - 分页: limit offset
 多表join
 - 双表join
