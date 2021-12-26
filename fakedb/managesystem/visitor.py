@@ -72,10 +72,9 @@ class SystemVisitor(SQLVisitor):
         table = ctx.Identifier().getText()
         tablemeta = TableMeta(table, columns)
         res = self.manager.create_table(tablemeta)
-        # TODO:
-        # for key in foreign_keys:
-        #     self.manager.add_foreign(table, key, foreign_keys[key])
-        # self.manager.set_primary(table, primary)
+        for key, (foreign_table, foreign_key) in foreign_keys.items():
+            self.manager.add_foreign_key(table, foreign_table, key, foreign_key, None)
+        self.manager.add_primary_key(table, primary)
         return res
 
     # Visit a parse tree produced by SQLParser#drop_table.
@@ -104,11 +103,9 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#update_table.
     def visitUpdate_table(self, ctx:SQLParser.Update_tableContext):
-        # print('visit update table')
         table = ctx.Identifier().getText()
         conditions = ctx.where_and_clause().accept(self)
         update_info = ctx.set_clause().accept(self)
-        # print(f'update table, table = {table}, conditions = {conditions}, update_info = {update_info}')
         return self.manager.update_record(table, conditions, update_info)
 
     # Visit a parse tree produced by SQLParser#select_table.
@@ -149,7 +146,6 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#alter_table_drop_foreign_key.
     def visitAlter_table_drop_foreign_key(self, ctx:SQLParser.Alter_table_drop_foreign_keyContext):
-        # TODO:
         table = ctx.Identifier(0).getText()
         foreign_key = ctx.Identifier(1).getText()
         return self.manager.drop_foreign_key(table, foreign_key)
@@ -184,11 +180,10 @@ class SystemVisitor(SQLVisitor):
     def visitField_list(self, ctx:SQLParser.Field_listContext):
         '''
         创建表时指定的field list
-        # TODO:
         '''
-        col_list = []
-        foreign_keys = None # TODO:
-        primary_key = None # TODO:
+        col_dict = {}
+        foreign_keys = {}
+        primary_key = None
         
         for field in ctx.field():
             if isinstance(field, SQLParser.Normal_fieldContext):
@@ -198,32 +193,59 @@ class SystemVisitor(SQLVisitor):
                 null = field.Null() is None
                 default = None if field.value() is None else field.value().accept(self)
                 colmeta = ColumnMeta(name, kind, siz, null, default)
-                col_list.append(colmeta) 
+                col_dict[name] = colmeta 
             elif isinstance(field, SQLParser.Foreign_key_fieldContext):
                 # foreign key
-                pass
+                name, keys, foreign_table, _foreign_keys = field.accept(self)
+                for key, foreign_key in zip(keys, _foreign_keys):
+                    # FIXME: 复合外键的处理
+                    foreign_keys[key] = (foreign_table, foreign_key)
             elif isinstance(field, SQLParser.Primary_key_fieldContext):
-                # primary key
-                pass
+                if primary_key is not None:
+                    raise Exception(f"Alread set primary key: {primary_key}")
+                cols = field.accept(self) # TOOD: 联合主键
+                for col in cols:
+                    if col not in col_dict:
+                        raise Exception(f"field {col} does not exist")
+                primary_key = cols
             else:
                 raise Exception(f"wrong field: {type(field)}")
-        return col_list, foreign_keys, primary_key
+        return list(col_dict.values()), foreign_keys, primary_key
 
     # Visit a parse tree produced by SQLParser#normal_field.
     def visitNormal_field(self, ctx:SQLParser.Normal_fieldContext):
+        assert False
+        # 应该不会被调用到
         name = ctx.Identifier().getText()
-        field_type, field_size = ctx.type_().accept(self)
-        # TODO:
-        return self.visitChildren(ctx)
+        kind, siz = ctx.type_().accept(self)
+        null = field.Null() is None
+        default = None if field.value() is None else field.value().accept(self)
+        colmeta = ColumnMeta(name, kind, siz, null, default)
+        return colmeta
 
     # Visit a parse tree produced by SQLParser#primary_key_field.
     def visitPrimary_key_field(self, ctx:SQLParser.Primary_key_fieldContext):
+        # 联合主键, 返回一个list of string
         return ctx.identifiers().accept(self)
 
     # Visit a parse tree produced by SQLParser#foreign_key_field.
     def visitForeign_key_field(self, ctx:SQLParser.Foreign_key_fieldContext):
-        # TODO:
-        return self.visitChildren(ctx)
+        '''
+        返回:
+        - 外键名称
+        - 外键的列
+        - ref表名
+        - ref的列
+        '''
+        if len(ctx.Identifier()) == 1:
+            foreign_name = None
+            foreign_table = ctx.Identifier(0).getText()
+        else:
+            foreign_name = ctx.Identifier(0).getText()
+            foreign_table = ctx.Identifier(1).getText()
+        keys = ctx.identifiers(0).accept(self)
+        foreign_keys = ctx.identifiers(1).accept(self)
+        return foreign_name, keys, foreign_table, foreign_keys
 
     # Visit a parse tree produced by SQLParser#type_.
     def visitType_(self, ctx:SQLParser.Type_Context):
