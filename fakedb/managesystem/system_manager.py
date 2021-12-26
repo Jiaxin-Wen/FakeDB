@@ -3,6 +3,7 @@ import shutil
 import traceback
 
 from collections import defaultdict
+from itertools import product
 from copy import copy
 
 from antlr4 import InputStream, CommonTokenStream
@@ -141,6 +142,48 @@ class SystemManager:
         '''展示一张表'''
         table_meta = self.meta_manager.get_table(name)
         return table_meta.get_description()
+
+    def cond_join(self, table2records, conditions):
+        res = []
+        table2idx = {}
+        for i, table in enumerate(table2idx):
+            table2idx[table] = i
+        table_metas = {table_name: self.meta_manager.get_table(table_name) for table_name in table2records}
+
+        for tup in product(*table2records.values()):
+            flag = True
+            for cond in conditions:
+                if cond.table_name2 is None:
+                    continue
+                assert cond.kind == ConditionKind.Compare, f'expected Compare for two table columns, but got {cond.kind}'
+                table_meta = table_metas[cond.table_name]
+                col_idx = table_meta.get_col_idx(cond.col_name)
+                table_idx = table2idx[cond.table_name]
+                val = tup[table_idx][col_idx]
+
+                table_meta2 = table_metas[cond.table_name2]
+                col_idx2 = table_meta2.get_col_idx(cond.col_name2)
+                table_idx2 = table2idx[cond.table_name2]
+                val2 = tup[table_idx2][col_idx2]
+
+                op = cond.operator
+                if op == '=':
+                    if val != val2:
+                        flag = False
+                        break
+                elif op == '<>':
+                    if val == val2:
+                        flag = False
+                        break
+                else:
+                    if not eval(f'{val}{op}{val2}'):
+                        flag = False
+                        break
+
+            if flag:
+                res.append({table_name: value_list for value_list, table_name in zip(tup, table2records)})
+
+        return res
 
     def filter_records_by_index(self, table_name, table_meta, conditions):
         results = set()
