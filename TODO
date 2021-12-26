@@ -1,13 +1,11 @@
 create table的完善
-约束
-- 主键
-- unique
-- not null
-- 外键
-group by
-多表连接
-print优化
-双表join
-联合主键
 高级查询
+- 分组: group by
+- 分页: limit offset
+多表join
+- 双表join
+- 3,4,5表join
+联合主键
 高级完整性约束
+- 级联外键
+print优化
