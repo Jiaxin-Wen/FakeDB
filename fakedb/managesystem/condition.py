@@ -18,4 +18,4 @@ class Condition:
         self.col_name2 = col_name2
 
     def __str__(self):
-        return f"[Condition] table: {self.table_name}, col: {self.col_name}, operator = {self.operator}, value = {self.value}"
+        return f"[Condition] table: {self.table_name}, col: {self.col_name}, operator = {self.operator}, value = {self.value}, table2 = {self.table_name2}, cols = {self.col_name2}"

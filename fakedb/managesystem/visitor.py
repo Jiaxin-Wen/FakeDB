@@ -114,7 +114,7 @@ class SystemVisitor(SQLVisitor):
         conditions = ctx.where_and_clause().accept(self) if ctx.where_and_clause() else ()
         selectors = ctx.selectors().accept(self)
         group_by = ctx.column().accept(self) if ctx.column() else (None, None)
-        limit = int(ctx.Integer(0).getText()) # 根据文法文件, limit必须给定
+        limit = int(ctx.Integer(0).getText()) if ctx.Integer(0) else None# 根据文法文件, limit必须给定
         offset = int(ctx.Integer(1).getText()) if ctx.Integer(1) else 0
         return self.manager.select_records(selectors, tables, conditions, group_by, limit, offset)
 
@@ -287,7 +287,11 @@ class SystemVisitor(SQLVisitor):
         table, col = ctx.column().accept(self)
         op = ctx.operator().getText()
         value = ctx.expression().accept(self)
-        condition = Condition(ConditionKind.Compare, table, col, op, value)
+        if isinstance(value, tuple): # join
+            table2, col2 = value
+            condition = Condition(ConditionKind.Compare, table, col, op, table_name2=table2, col_name2=col2)
+        else:
+            condition = Condition(ConditionKind.Compare, table, col, op, value)
         return condition
 
     # Visit a parse tree produced by SQLParser#where_operator_select.

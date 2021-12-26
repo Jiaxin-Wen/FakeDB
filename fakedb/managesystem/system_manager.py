@@ -478,6 +478,7 @@ class SystemManager:
     
     def select_records(self, selectors, tables, conditions, group_by, limit, offset):
         data = self._select_records(selectors, tables, conditions, group_by)
+        print('ori select records = ', data)
         print('limit = ', limit)
         print('offset = ', offset)
         if limit is None:
@@ -503,8 +504,11 @@ class SystemManager:
         if self.current_db is None:
             raise Exception(f"Please use database first to select records")
 
-        table = tables[0] # TODO: 多表
-        _, value_list = self.search_records_using_indexes(table, conditions)
+        # table to value_list
+        value_dict = {table: self.search_records_using_indexes(table, conditions)[-1] for table in tables}
+        print('valud dict = ', value_dict)
+        # TODO: 多表condition的结合
+        # _, value_list = self.search_records_using_indexes(table, conditions)
         selector_kinds = set(selector.kind for selector in selectors)
         if group_by[-1] is None and SelectorKind.Field in selector_kinds and len(selector_kinds) > 1:
             # 只有使用groupby时才能同时出现field和聚集函数的select
@@ -538,11 +542,12 @@ class SystemManager:
             if len(selectors) == 1 and selectors[0].kind == SelectorKind.All: # select *
                 return value_list
             else: 
-                table_meta = self.meta_manager.get_table(table)
-   
-                res = {}
+                res = []
                 for selector in selectors:
                     col = selector.col_name
+                    table = selector.table_name
+                    table_meta = self.meta_manager.get_table(table)
+                    value_list = value_dict[table]
                     selected_value_list = []
                     if col == '*': # Count (*)
                         selected_value_list = [0] * len(value_list)
@@ -552,7 +557,12 @@ class SystemManager:
                     
                     selected_value_list = selector(selected_value_list)
                     
-                    res[str(selector)] = selected_value_list      
+                    # print(f'selector = {str(selector)}, ori value list = {value_list}, selected value list = {selected_value_list}')
+                    res.append(selected_value_list)
+                
+                # print('ori res = ', res)
+                res = [[row[i] for row in res] for i in range(len(res[0]))]
+                # print('new res = ', res)
                 return res                
 
         raise Exception("not implemented branch")
@@ -600,6 +610,8 @@ class SystemManager:
     
     def add_primary_key(self, table, primary_key_list):
         '''添加主键'''
+        if primary_key_list is None: # create table时未指定主键
+            return
         table_meta = self.meta_manager.get_table(table)
         for key in primary_key_list:
             table_meta.add_primary(key)
