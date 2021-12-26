@@ -549,22 +549,30 @@ class SystemManager:
 
         # table to value_list
         value_dict = {table: self.search_records_using_indexes(table, conditions)[-1] for table in tables}
-        if len(tables) > 1: # join
-            value_dict = self.cond_join(value_dict, conditions)
-        print('valud dict = ', value_dict)
+        print('value_dict = ', value_dict)
+        # if len(tables) > 1: # join
+        value_list_dict = self.cond_join(value_dict, conditions) # list of dict
+        # else:
+            # value_list = value_dict[tables[0]]
+        print('valud list dict = ', value_list_dict)
         # TODO: 多表condition的结合
         # _, value_list = self.search_records_using_indexes(table, conditions)
         selector_kinds = set(selector.kind for selector in selectors)
         if group_by[-1] is None and SelectorKind.Field in selector_kinds and len(selector_kinds) > 1:
             # 只有使用groupby时才能同时出现field和聚集函数的select
             raise Exception("should use group by")
+        
+        def get_value_list(table):
+            return [i[table] for i in value_list_dict]
+        
         if group_by[-1] is not None: # group by
             group_table, group_col = group_by
             table_meta = self.meta_manager.get_table(group_table)
             group_value_dict = defaultdict(list) # 按group_by的列的值 构造dict
             group_idx = table_meta.get_col_idx(group_col)
+            value_list = get_value_list(group_table)
             for i in value_list:
-                key = i[group_idx]
+                key = i[group_table][group_idx]
                 group_value_dict[key].append(i)
             
             group_res = []
@@ -585,14 +593,14 @@ class SystemManager:
             return group_res
         else:
             if len(selectors) == 1 and selectors[0].kind == SelectorKind.All: # select *
-                return value_list
+                return get_value_list(tables[0])
             else: 
                 res = []
                 for selector in selectors:
                     col = selector.col_name
                     table = selector.table_name
                     table_meta = self.meta_manager.get_table(table)
-                    value_list = value_dict[table]
+                    value_list = get_value_list(table)
                     selected_value_list = []
                     if col == '*': # Count (*)
                         selected_value_list = [0] * len(value_list)
