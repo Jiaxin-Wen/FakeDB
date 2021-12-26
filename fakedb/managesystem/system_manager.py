@@ -561,6 +561,12 @@ class SystemManager:
                     res.append(selected_value_list)
                 
                 # print('ori res = ', res)
+                first_len = len(res[0])
+                for i in res:
+                    try:
+                        assert len(i) == first_len
+                    except:
+                        raise "多表join, 每张表的行数应该相同"
                 res = [[row[i] for row in res] for i in range(len(res[0]))]
                 # print('new res = ', res)
                 return res                
