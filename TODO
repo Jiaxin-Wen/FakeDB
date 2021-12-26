@@ -5,7 +5,7 @@ create table的完善(done)
 多表join
 - 双表join
 - 3,4,5表join
-联合主键
+联合主键 (重复性约束已完成，null还没有）
 联合外键
 高级完整性约束
 - 级联外键
