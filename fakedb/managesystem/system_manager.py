@@ -477,6 +477,15 @@ class SystemManager:
         return "update record"
     
     def select_records(self, selectors, tables, conditions, group_by, limit, offset):
+        data = self._select_records(selectors, tables, conditions, group_by)
+        print('limit = ', limit)
+        print('offset = ', offset)
+        if limit is None:
+            return data[offset:]
+        else:
+            return data[offset: offset + limit]
+    
+    def _select_records(self, selectors, tables, conditions, group_by):
         '''
         select语句
         TODO: 
@@ -490,8 +499,6 @@ class SystemManager:
         print('tables = ', tables)
         # assert len(tables) == 1 # 暂时不支持group_by
         print('group by = ', group_by)
-        # print('limit = ', limit)
-        # print('offset = ', offset)
         
         if self.current_db is None:
             raise Exception(f"Please use database first to select records")

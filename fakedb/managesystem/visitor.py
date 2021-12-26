@@ -114,8 +114,8 @@ class SystemVisitor(SQLVisitor):
         conditions = ctx.where_and_clause().accept(self) if ctx.where_and_clause() else ()
         selectors = ctx.selectors().accept(self)
         group_by = ctx.column().accept(self) if ctx.column() else (None, None)
-        limit = int(ctx.Integer(0).getText()) if ctx.Integer(0) else None
-        offset = int(ctx.Integer(1).getText()) if ctx.Integer(1) else None
+        limit = int(ctx.Integer(0).getText()) # 根据文法文件, limit必须给定
+        offset = int(ctx.Integer(1).getText()) if ctx.Integer(1) else 0
         return self.manager.select_records(selectors, tables, conditions, group_by, limit, offset)
 
     # Visit a parse tree produced by SQLParser#alter_add_index.
