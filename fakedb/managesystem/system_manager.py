@@ -327,11 +327,14 @@ class SystemManager:
     def check_ref_foreign(self, tablemeta, values, old_record=None, delete=False):
         if delete:
             flag = True
-            for key, tab_col in tablemeta.ref_foreigns.items():
-                idx = tablemeta.get_col_idx(key)
-                value = values[idx]
-                tab, col = tab_col.split('.')
-                conditions = [Condition(ConditionKind.Compare, tab, col, '=', value)]
+            for keys, tab_cols in tablemeta.ref_foreigns.items():
+                conditions = []
+                tab = None
+                for key, tab_col in zip(keys, tab_cols):
+                    idx = tablemeta.get_col_idx(key)
+                    value = values[idx]
+                    tab, col = tab_col.split('.')
+                    conditions.append(Condition(ConditionKind.Compare, tab, col, '=', value))
                 records, vals = self.search_records_using_indexes(tab, conditions)
                 if len(records) > 0:
                     flag = False
@@ -342,13 +345,23 @@ class SystemManager:
         else:
             flag = True
             old_values = tablemeta.load_record(old_record.data)
-            for key, tab_col in tablemeta.ref_foreigns.items():
-                idx = tablemeta.get_col_idx(key)
-                if values[idx] == old_values[idx]:
+            for keys, tab_cols in tablemeta.ref_foreigns.items():
+                value_all_same = True
+                for key in keys:
+                    idx = tablemeta.get_col_idx(key)
+                    if values[idx] != old_values[idx]:
+                        value_all_same = False
+                        break
+                if value_all_same:
                     continue
-                value = old_values[idx]
-                tab, col = tab_col.split('.')
-                conditions = [Condition(ConditionKind.Compare, tab, col, '=', value)]
+                conditions = []
+                tab = None
+                for key, tab_col in zip(keys, tab_cols):
+                    idx = tablemeta.get_col_idx(key)
+                    value = old_values[idx]
+                    tab, col = tab_col.split('.')
+                    conditions.append(Condition(ConditionKind.Compare, tab, col, '=', value))
+
                 records, vals = self.search_records_using_indexes(tab, conditions)
                 if len(records) > 0:
                     flag = False
@@ -428,11 +441,15 @@ class SystemManager:
         :return: True if no problem
         """
         flag = True
-        for key, tab_col in tablemeta.foreigns.items():
-            idx = tablemeta.get_col_idx(key)
-            value = values[idx]
-            tab, col = tab_col.split('.')
-            conditions = [Condition(ConditionKind.Compare, tab, col, '=', value)]
+        for keys, tab_cols in tablemeta.foreigns.items():
+            conditions = []
+            tab = None
+            for key, tab_col in zip(keys, tab_cols):
+                idx = tablemeta.get_col_idx(key)
+                value = values[idx]
+                tab, col = tab_col.split('.')
+                conditions.append(Condition(ConditionKind.Compare, tab, col, '=', value))
+
             records, vals = self.search_records_using_indexes(tab, conditions)
             if len(records) == 0:
                 flag = False

@@ -34,9 +34,11 @@ class TableMeta:
             self.col_idx[meta.name] = i
         self.indexes = {} # column_name to its index file's root page_id
         self.primary = set()
-        self.foreigns = {}
+        self.foreigns_alias = {} # key值是alias
+        self.foreigns = {} # key值是列名
         self.uniques = set()
-        self.ref_foreigns = {}
+        self.ref_foreigns_alias = {} # key值是alias
+        self.ref_foreigns = {} # key值是列名
 
 
     def add_column(self, columnmeta):
@@ -70,23 +72,34 @@ class TableMeta:
     def add_primary(self, colname):
         self.primary.add(colname)
 
-    def drop_primary(self, colname):
-        if colname in self.primary:
-            self.primary.remove(colname)
+    def drop_primary(self, colname=None):
+        self.primary.clear()
+        # if colname in self.primary:
+        #     self.primary.remove(colname)
 
-    def add_foreign(self, colname, foreign):
-        self.foreigns[colname] = foreign
+    def add_foreign(self, colnames, foreigns, alias):
+        for colname, foreign in zip(colnames, foreigns):
+            self.foreigns[colname] = foreign
+        self.foreigns_alias[alias] = (colnames, foreigns)
 
-    def remove_foreign(self, colname):
-        if colname in self.foreigns:
-            return self.foreigns.pop(colname)
+    def remove_foreign(self, alias):
+        if alias in self.foreigns_alias:
+            colnames = self.foreigns_alias[alias][0]
+            for colname in colnames:
+                self.foreigns.pop(colname)
+            self.foreigns_alias.pop(alias)
 
-    def add_ref_foreign(self, colname, foreign):
-        self.ref_foreigns[colname] = foreign
+    def add_ref_foreign(self, colnames, foreigns, alias):
+        self.ref_foreigns_alias[alias] = (colnames, foreigns)
+        for colname, foreign in zip(colnames, foreigns):
+            self.ref_foreigns[colname] = foreign
 
-    def remove_ref_foreign(self, colname):
-        if colname in self.ref_foreigns:
-            self.ref_foreigns.pop(colname)
+    def remove_ref_foreign(self, alias):
+        if alias in self.ref_foreigns_alias:
+            colnames = self.ref_foreigns_alias[alias][0]
+            for colname in colnames:
+                self.ref_foreigns.pop(colname)
+            self.ref_foreigns_alias.pop(alias)
 
     def add_unique(self, colname):
         self.uniques.add(colname)
