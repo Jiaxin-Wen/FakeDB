@@ -7,6 +7,8 @@ create table的完善(done)
 - 3,4,5表join(done)
 联合主键(done)
 联合外键
+> 强制外键必须指定alias
+- 需要测试一下
 高级完整性约束
 - null: where的判断
 - 级联外键(待定)
