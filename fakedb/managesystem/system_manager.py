@@ -327,7 +327,7 @@ class SystemManager:
     def check_ref_foreign(self, tablemeta, values, old_record=None, delete=False):
         if delete:
             flag = True
-            for keys, tab_cols in tablemeta.ref_foreigns.items():
+            for keys, tab_cols in tablemeta.ref_foreigns_alias.values():
                 conditions = []
                 tab = None
                 for key, tab_col in zip(keys, tab_cols):
@@ -345,7 +345,7 @@ class SystemManager:
         else:
             flag = True
             old_values = tablemeta.load_record(old_record.data)
-            for keys, tab_cols in tablemeta.ref_foreigns.items():
+            for keys, tab_cols in tablemeta.ref_foreigns_alias.values():
                 value_all_same = True
                 for key in keys:
                     idx = tablemeta.get_col_idx(key)
@@ -441,7 +441,7 @@ class SystemManager:
         :return: True if no problem
         """
         flag = True
-        for keys, tab_cols in tablemeta.foreigns.items():
+        for keys, tab_cols in tablemeta.foreigns_alias.values():
             conditions = []
             tab = None
             for key, tab_col in zip(keys, tab_cols):
