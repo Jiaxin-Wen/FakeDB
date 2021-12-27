@@ -4,9 +4,10 @@ CREATE TABLE student(
 n_id INT NOT NULL,
 n_name VARCHAR(25) NOT NULL,
 n_score INT NOT NULL,
-class_id INT NULL
+class_id INT
 );
 ALTER TABLE student ADD CONSTRAINT con1 PRIMARY KEY (n_id, class_id);
+SHOW INDEXES;
 INSERT INTO student VALUES (0, 'a', 70, 1);
 INSERT INTO student VALUES (0, 'a', 70, 1);
 INSERT INTO student VALUES (1, 'a', 70, 1);
@@ -14,3 +15,5 @@ INSERT INTO student VALUES (0, 'a', 70, 2);
 INSERT INTO student VALUES (NULL, 'a', 70, 2);
 INSERT INTO student VALUES (1, 'a', 70, NULL);
 INSERT INTO student VALUES (2, 'a', 70, 3);
+ALTER TABLE student DROP PRIMARY KEY n_id;
+INSERT INTO student VALUES (0, 'a', 70, 1);

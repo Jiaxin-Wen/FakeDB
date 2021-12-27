@@ -72,7 +72,7 @@ class TableMeta:
     def add_primary(self, colname):
         self.primary.add(colname)
 
-    def drop_primary(self, colname=None):
+    def drop_primary(self):
         self.primary.clear()
         # if colname in self.primary:
         #     self.primary.remove(colname)
