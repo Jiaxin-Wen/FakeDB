@@ -78,27 +78,27 @@ class TableMeta:
         #     self.primary.remove(colname)
 
     def add_foreign(self, colnames, foreigns, alias):
-        for colname, foreign in zip(colnames, foreigns):
-            self.foreigns[colname] = foreign
+        # for colname, foreign in zip(colnames, foreigns):
+        #     self.foreigns[colname] = foreign
         self.foreigns_alias[alias] = (colnames, foreigns)
 
     def remove_foreign(self, alias):
         if alias in self.foreigns_alias:
-            colnames = self.foreigns_alias[alias][0]
-            for colname in colnames:
-                self.foreigns.pop(colname)
+            # colnames = self.foreigns_alias[alias][0]
+            # for colname in colnames:
+            #     self.foreigns.pop(colname)
             self.foreigns_alias.pop(alias)
 
     def add_ref_foreign(self, colnames, foreigns, alias):
         self.ref_foreigns_alias[alias] = (colnames, foreigns)
-        for colname, foreign in zip(colnames, foreigns):
-            self.ref_foreigns[colname] = foreign
+        # for colname, foreign in zip(colnames, foreigns):
+        #     self.ref_foreigns[colname] = foreign
 
     def remove_ref_foreign(self, alias):
         if alias in self.ref_foreigns_alias:
-            colnames = self.ref_foreigns_alias[alias][0]
-            for colname in colnames:
-                self.ref_foreigns.pop(colname)
+            # colnames = self.ref_foreigns_alias[alias][0]
+            # for colname in colnames:
+            #     self.ref_foreigns.pop(colname)
             self.ref_foreigns_alias.pop(alias)
 
     def add_unique(self, colname):
