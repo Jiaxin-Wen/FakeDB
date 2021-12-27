@@ -9,6 +9,7 @@ create table的完善(done)
 联合外键(done)
 > 强制外键必须指定alias(done)
 - 需要测试一下(done)
+修复一下索引对null的实现
 高级完整性约束
 - null: where的判断
 - 级联外键(待定)
