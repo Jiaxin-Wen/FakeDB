@@ -347,6 +347,7 @@ class SystemManager:
             old_values = tablemeta.load_record(old_record.data)
             for keys, tab_cols in tablemeta.ref_foreigns_alias.values():
                 value_all_same = True
+                print(values, old_values)
                 for key in keys:
                     idx = tablemeta.get_col_idx(key)
                     if values[idx] != old_values[idx]:
@@ -366,7 +367,7 @@ class SystemManager:
                 if len(records) > 0:
                     flag = False
                     break
-
+            print(f'in check_ref_foreign flag:{flag}')
             return flag
 
     def check_null(self, tablemeta, values):
