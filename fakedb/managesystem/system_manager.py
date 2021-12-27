@@ -712,6 +712,7 @@ class SystemManager:
     
     def add_foreign_key(self, table, foreign_table, key, foreign_key, foreign_name):
         '''添加外键'''
+        # TODO: 修复联合外键的实现
         table_meta = self.meta_manager.get_table(table)
         table_meta.add_foreign(key, f"{foreign_table}.{foreign_key}")
         ref_table_meta = self.meta_manager.get_table(foreign_table)
