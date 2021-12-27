@@ -712,24 +712,28 @@ class SystemManager:
     
     def add_foreign_key(self, table, foreign_table, key, foreign_key, foreign_name):
         '''添加外键'''
-        # TODO: 修复联合外键的实现
         table_meta = self.meta_manager.get_table(table)
         # table_meta.add_foreign(key, f"{foreign_table}.{foreign_key}")
-        table_meta.add_foreign(tuple(key), tuple(foreign_key), foreign_name)
+        table_meta.add_foreign(tuple(key), tuple(f"{foreign_table}.{i}" for i in foreign_key), foreign_name)
         ref_table_meta = self.meta_manager.get_table(foreign_table)
-        ref_table_meta.add_ref_foreign(tuple(foreign_key), tuple(key), foreign_name)
+        ref_table_meta.add_ref_foreign(tuple(foreign_key), tuple(f"{table}.{i}" for i in key), foreign_name)
         # ref_table_meta.add_ref_foreign(foreign_key, f'{table}.{key}')
-        return self.add_index(foreign_table, foreign_key)
+        for i in foreign_key:
+            self.add_index(foreign_table, i)
+        return f"add foreign key, alias = {foreign_name}, ori = {table}.{','.join(key)}, ref = {foreign_table}.{','.join(foreign_key)}"
     
-    def drop_foreign_key(self, table, key):
+    def drop_foreign_key(self, table, foreign_name):
         '''删除外键'''
-        table_meta = self.meta_manager.get_table(table)
-        foreign_info = table_meta.foreigns[key]
-        foreign_table, foreign_key = foreign_info.split('.')
-        table_meta.remove_foreign(key)
+        table_meta = self.meta_manager.get_table(table) 
+        foreign_info = table_meta.foreigns_alias[foreign_name][-1]
+        foreign_table = foreign_info[0].split('.')[0]
+        foreign_key = [i.split('.')[-1] for i in foreign_info]
+        table_meta.remove_foreign(foreign_name)
         ref_table_meta = self.meta_manager.get_table(foreign_table)
-        ref_table_meta.remove_ref_foreign(foreign_key)
-        return self.drop_index(foreign_table, foreign_key)        
+        ref_table_meta.remove_ref_foreign(foreign_name)
+        for i in foreign_key:
+            self.drop_index(foreign_table, i)
+        return f"drop foreign key, alias = {foreign_name}, ref = {foreign_table}.{','.join(foreign_key)}"
 
     def add_unique(self, table, col):
         table_meta = self.meta_manager.get_table(table)

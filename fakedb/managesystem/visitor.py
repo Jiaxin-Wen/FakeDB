@@ -74,8 +74,10 @@ class SystemVisitor(SQLVisitor):
         res = self.manager.create_table(tablemeta)
         # for key, (foreign_table, foreign_key) in foreign_keys.items():
             # self.manager.add_foreign_key(table, foreign_table, key, foreign_key, None)
-        name, keys, foreign_table, foreign_keys = foreign_key
-        self.manager.add_foreign_key(table, foreign_table, keys, foreign_keys, name)
+        # print('in create table, foreign key = ', foreign_key)
+        if any(foreign_key):
+            name, keys, foreign_table, foreign_keys = foreign_key
+            self.manager.add_foreign_key(table, foreign_table, keys, foreign_keys, name)
         self.manager.add_primary_key(table, primary)
         return res
 
@@ -149,8 +151,8 @@ class SystemVisitor(SQLVisitor):
     # Visit a parse tree produced by SQLParser#alter_table_drop_foreign_key.
     def visitAlter_table_drop_foreign_key(self, ctx:SQLParser.Alter_table_drop_foreign_keyContext):
         table = ctx.Identifier(0).getText()
-        foreign_key = ctx.Identifier(1).getText()
-        return self.manager.drop_foreign_key(table, foreign_key)
+        foreign_name = ctx.Identifier(1).getText()
+        return self.manager.drop_foreign_key(table, foreign_name)
 
     # Visit a parse tree produced by SQLParser#alter_table_add_pk.
     def visitAlter_table_add_pk(self, ctx:SQLParser.Alter_table_add_pkContext):
@@ -200,10 +202,7 @@ class SystemVisitor(SQLVisitor):
             elif isinstance(field, SQLParser.Foreign_key_fieldContext):
                 # foreign key
                 name, keys, foreign_table, _foreign_keys = field.accept(self)
-                foreign_key = (name, keys, foreign_table, _foreign_keys)
-                # for key, foreign_key in zip(keys, _foreign_keys):
-                #     # FIXME: 复合外键的处理
-                #     foreign_keys[key] = (foreign_table, foreign_key)
+                foreign_keys = (name, keys, foreign_table, _foreign_keys)
             elif isinstance(field, SQLParser.Primary_key_fieldContext):
                 if primary_key is not None:
                     raise Exception(f"Alread set primary key: {primary_key}")

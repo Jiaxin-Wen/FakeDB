@@ -35,7 +35,6 @@ class TableMeta:
         self.indexes = {} # column_name to its index file's root page_id
         self.primary = set()
         self.foreigns_alias = {} # key值是alias
-        self.foreigns = {} # key值是列名
         self.uniques = set()
         self.ref_foreigns_alias = {} # key值是alias
         self.ref_foreigns = {} # key值是列名
