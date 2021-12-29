@@ -1,0 +1,23 @@
+CREATE DATABASE orderDB3;
+USE orderDB3;
+CREATE TABLE student(
+n_id INT,
+n_name VARCHAR(25) NOT NULL,
+n_score INT NOT NULL,
+class_id INT NOT NULL
+);
+CREATE TABLE class(
+id INT NOT NULL,
+student_number INT NOT NULL,
+class_id INT NOT NULL
+);
+ALTER TABLE student ADD CONSTRAINT con FOREIGN KEY (n_id, class_id) REFERENCES class (id, class_id);
+INSERT INTO class VALUES (1, 0, 2);
+INSERT INTO student VALUES (0, 'a', 70, 2);
+INSERT INTO student VALUES (1, 'a', 70, 0);
+INSERT INTO student VALUES (1, 'a', 70, 2);
+INSERT INTO student VALUES (NULL, 'a', 70, 2);
+DELETE FROM student WHERE student.n_id=1;
+DELETE FROM class WHERE class.id=1;
+INSERT INTO class VALUES (2, 0, 2);
+DELETE FROM class WHERE class.id=1;

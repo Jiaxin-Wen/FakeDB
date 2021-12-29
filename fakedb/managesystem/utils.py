@@ -14,7 +14,17 @@ def compare_two_cols(col_idx, col_idx2, operator):
         return lambda x: eval(f'{x[col_idx]}{operator}{x[col_idx2]}')
 
 
-def compare_col_value(col_idx, value, operator):
+def compare_col_value(col_idx, value, operator, col_null_true, value_null_true):
+    if col_null_true:
+        if operator == '=':
+            return lambda x: x[col_idx] is None or x[col_idx] == value
+        elif operator == '<>':
+            return lambda x: x[col_idx] is None or x[col_idx] != value
+        else:
+            return lambda x: x[col_idx] is None or eval(f'{x[col_idx]}{operator}{value}')
+
+    if value_null_true and value is None:
+        return lambda x: True
     if operator == '=':
         return lambda x: x[col_idx] == value
     elif operator == '<>':

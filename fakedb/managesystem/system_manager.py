@@ -241,16 +241,15 @@ class SystemManager:
                 return compare_two_cols(col_idx, col_idx2, condition.operator)
             else:
                 value = condition.value
-                if value is None:
-                    return lambda x: True
 
-                if col_kind in ['INT', 'FLOAT'] and not isinstance(value, (int, float)):
-                    raise Exception(f'col_kind is {col_kind} but {value} is not that type!')
+                if value is not None:
+                    if col_kind in ['INT', 'FLOAT'] and not isinstance(value, (int, float)):
+                        raise Exception(f'col_kind is {col_kind} but {value} is not that type!')
 
-                elif col_kind == 'VARCHAR' and not isinstance(value, str):
-                    raise Exception(f'col_kind is {col_kind} but {value} is not that type!')
+                    elif col_kind == 'VARCHAR' and not isinstance(value, str):
+                        raise Exception(f'col_kind is {col_kind} but {value} is not that type!')
 
-                return compare_col_value(col_idx, value, condition.operator)
+                return compare_col_value(col_idx, value, condition.operator, condition.col_null_true, condition.value_null_true)
 
         elif cond_kind == ConditionKind.In:
             return in_values(col_idx, condition.value)
@@ -334,11 +333,17 @@ class SystemManager:
                     idx = tablemeta.get_col_idx(key)
                     value = values[idx]
                     tab, col = tab_col.split('.')
-                    conditions.append(Condition(ConditionKind.Compare, tab, col, '=', value))
+                    conditions.append(Condition(ConditionKind.Compare, tab, col, '=', value, col_null_true=True))
                 records, vals = self.search_records_using_indexes(tab, conditions)
-                if len(records) > 0:
-                    flag = False
-                    break
+                _tablemeta = self.meta_manager.get_table(tab)
+                for val_list in vals:
+                    ok = self.check_foreign(_tablemeta, val_list, min_num=2)
+                    if not ok:
+                        flag = False
+                        break
+                # if len(records) > 0:
+                #     flag = False
+                #     break
 
             return flag
 
@@ -361,12 +366,35 @@ class SystemManager:
                     idx = tablemeta.get_col_idx(key)
                     value = old_values[idx]
                     tab, col = tab_col.split('.')
-                    conditions.append(Condition(ConditionKind.Compare, tab, col, '=', value))
+                    conditions.append(Condition(ConditionKind.Compare, tab, col, '=', value, col_null_true=True))
 
                 records, vals = self.search_records_using_indexes(tab, conditions)
-                if len(records) > 0:
-                    flag = False
+                for val_list in vals:
+                    ok = True
+                    _tablemeta = None
+                    for key, tab_col in zip(keys, tab_cols):
+                        idx = tablemeta.get_col_idx(key)
+                        value = values[idx]
+                        tab, col = tab_col.split('.')
+                        _tablemeta = self.meta_manager.get_table(tab)
+                        _idx = _tablemeta.get_col_idx(col)
+                        _value = val_list[_idx]
+                        if _value is None or _value == value:
+                            continue
+                        ok = False
+                        break
+                    if not ok:
+                        if self.check_foreign(_tablemeta, val_list, min_num=1):
+                            continue
+                        flag = False
+                        break
+
+                if not flag:
                     break
+
+                # if len(records) > 0:
+                #     flag = False
+                #     break
             print(f'in check_ref_foreign flag:{flag}')
             return flag
 
@@ -434,7 +462,7 @@ class SystemManager:
             return False
         return records[0].rid == old_record.rid
 
-    def check_foreign(self, tablemeta, values):
+    def check_foreign(self, tablemeta, values, min_num=1):
         """
 
         :param tablemeta:
@@ -442,17 +470,20 @@ class SystemManager:
         :return: True if no problem
         """
         flag = True
+
         for keys, tab_cols in tablemeta.foreigns_alias.values():
             conditions = []
             tab = None
+            # print(keys, tab_cols)
             for key, tab_col in zip(keys, tab_cols):
                 idx = tablemeta.get_col_idx(key)
+                # print(tablemeta.col_idx, key, idx)
                 value = values[idx]
                 tab, col = tab_col.split('.')
-                conditions.append(Condition(ConditionKind.Compare, tab, col, '=', value))
+                conditions.append(Condition(ConditionKind.Compare, tab, col, '=', value, value_null_true=True))
 
             records, vals = self.search_records_using_indexes(tab, conditions)
-            if len(records) == 0:
+            if len(records) < min_num:
                 flag = False
                 break
 
