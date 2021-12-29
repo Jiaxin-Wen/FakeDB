@@ -301,7 +301,7 @@ class SystemVisitor(SQLVisitor):
     def visitWhere_operator_select(self, ctx:SQLParser.Where_operator_selectContext):
         table, col = ctx.column().accept(self)
         op = ctx.operator().getText()
-        value = ctx.select_table().accept(self).values()
+        value = ctx.select_table().accept(self)
         value = list(value)[0][0] # 保证是单值
         # print(f'where operator select, table = {table}, col = {col}, op = {op}, value = {value}')
         condition = Condition(ConditionKind.Compare, table, col, op, value=value)
@@ -324,7 +324,8 @@ class SystemVisitor(SQLVisitor):
     # Visit a parse tree produced by SQLParser#where_in_select.
     def visitWhere_in_select(self, ctx:SQLParser.Where_in_selectContext):
         table, col = ctx.column().accept(self)
-        value = ctx.select_table().accept(self).values()
+        value = ctx.select_table().accept(self)
+        # .values()
         value = list(value)[0]
         # print(f'where operator select, table = {table}, col = {col}, op = {op}, value = {value}')
         condition = Condition(ConditionKind.In, table, col, value=value)
