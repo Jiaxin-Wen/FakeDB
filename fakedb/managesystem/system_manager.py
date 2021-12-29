@@ -242,6 +242,7 @@ class SystemManager:
             else:
                 value = condition.value
                 if value is None:
+                    assert False
                     return lambda x: True
 
                 if col_kind in ['INT', 'FLOAT'] and not isinstance(value, (int, float)):
