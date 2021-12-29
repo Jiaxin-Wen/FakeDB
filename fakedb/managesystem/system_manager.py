@@ -14,7 +14,7 @@ from ..indexsystem import FileIndex, IndexManager
 from ..metasystem import MetaManager, TableMeta
 from ..parser import SQLLexer, SQLParser
 
-from ..config import ROOT_DIR, TABLE_SUFFIX, INDEX_SUFFIX
+from ..config import ROOT_DIR, TABLE_SUFFIX, INDEX_SUFFIX, NULL_VALUE
 
 from .utils import get_db_dir, get_table_path, get_index_path, get_db_tables, get_table_related_files, \
     compare_two_cols, compare_col_value, in_values, like_check, null_check
@@ -186,7 +186,7 @@ class SystemManager:
         return res
 
     def filter_records_by_index(self, table_name, table_meta, conditions):
-        results = set()
+        results = None
         for condition in conditions:
             if condition.kind != ConditionKind.Compare:
                 continue
@@ -197,7 +197,7 @@ class SystemManager:
                 value = condition.value
                 if value is not None:
                     value = int(condition.value)
-                    l, h = -1e10, 1e10
+                    l, h = NULL_VALUE + 1, -NULL_VALUE
                     operator = condition.operator
                     if operator == '<>':
                         continue
@@ -217,10 +217,19 @@ class SystemManager:
                     index_file_path = get_index_path(self.current_db, table_name, col_name)
                     index = self.index_manager.open_index(index_file_path, root_id)
                     rids = index.rangeSearch(l, h)
-                    if rids is not None:
-                        results &= set(rids)
+                    if rids:
+                        if results is None:
+                            results = set(rids)
+                        else:
+                            results &= set(rids)
+                    else:
+                        # rids None or empty list
+                        results = set()
+                        break
+                else:
+                    raise Exception('value is None in filter_records_by_index!')
 
-        return results if len(results) > 0 else None
+        return results
 
     def get_condition_func(self, condition: Condition, table_meta: TableMeta):
         if condition.table_name and condition.table_name != table_meta.name:
@@ -275,6 +284,7 @@ class SystemManager:
         table_path = get_table_path(self.current_db, table_name)
         self.record_manager.open_file(table_path)
         index_filter_rids = self.filter_records_by_index(table_name, table_meta, conditions)
+        print(f'index filter rids:{index_filter_rids}')
         if index_filter_rids is None:
             all_records = get_all_records(self.record_manager)
         else:
@@ -496,8 +506,8 @@ class SystemManager:
             index = self.index_manager.open_index(index_path, rid)
             col_id = table_meta.get_col_idx(col)
             # FIXME: 对None值的处理
-            if value_list[col_id] is not None:
-                index.insert(value_list[col_id], rid) 
+            # if value_list[col_id] is not None:
+            index.insert(value_list[col_id], rid)
                 
     def _delete_index(self, table_meta, value_list, rid):
         '''内部接口, 删除行后更新索引文件'''
@@ -506,8 +516,8 @@ class SystemManager:
             index = self.index_manager.open_index(index_path, rid)
             col_id = table_meta.get_col_idx(col)
             # FIXME: 对None值的处理
-            if value_list[col_id] is not None:
-                index.remove(value_list[col_id], rid)
+            # if value_list[col_id] is not None:
+            index.remove(value_list[col_id], rid)
             
     def insert_record(self, table, value_list):
         '''在表中插入行'''

@@ -115,13 +115,29 @@ class TreeNode:
         # 如果成功删除，则返回删除之后的最大key(如果没有就返回None)，否则返回None
 
         if self.isleaf():
-            pos = self.lower_bound(key)
-            if pos is None or pos >= len(self.key_values):
-                return None
-            if self.key_values[pos][0] != key or self.key_values[pos][1] != val:
+            # pos = self.lower_bound(key)
+            # if pos is None or pos >= len(self.key_values):
+            #     return None
+            # if self.key_values[pos][0] != key or self.key_values[pos][1] != val:
+            #     return None
+            #
+            # self.key_values.pop(pos)
+            # return self.key_values[-1][0]
+
+            l = self.lower_bound(key)
+            h = self.upper_bound(key)
+            if l is None or l >= len(self.key_values):
                 return None
 
-            self.key_values.pop(pos)
+            flag = False
+
+            for i in range(l, h):
+                if self.key_values[i][1] == val:
+                    self.key_values.pop(i)
+                    flag = True
+                    break
+            if not flag:
+                return None
             return self.key_values[-1][0]
 
         else:

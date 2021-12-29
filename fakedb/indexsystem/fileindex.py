@@ -8,7 +8,7 @@ import numpy as np
 from .index_handler import IndexHandler
 from .node import TreeNode
 from ..recordsystem.rid import RID
-from ..config import PAGE_SIZE
+from ..config import PAGE_SIZE, NULL_VALUE
 
 
 class FileIndex:
@@ -53,6 +53,8 @@ class FileIndex:
             self.handler.write_page(page_id, node.toArray())
 
     def insert(self, key, val):
+        if key is None:
+            key = NULL_VALUE
         self.rootNode.insert(key, val)
 
         # check split
@@ -73,10 +75,12 @@ class FileIndex:
 
     
     def remove(self, key, val):
+        if key is None:
+            key = NULL_VALUE
         return self.rootNode.remove(key, val)
 
-    def search(self, key):
-        return self.rootNode.search(key)
+    # def search(self, key):
+    #     return self.rootNode.search(key)
 
     def rangeSearch(self, l, r):
         return self.rootNode.rangeSearch(l, r)

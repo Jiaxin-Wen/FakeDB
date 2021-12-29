@@ -13,6 +13,7 @@ NEXT_AVAILABLE_PAGE_SIZE = 4 # 每一页中花几个字节记录下个空闲页�
 
 BITMAP_START_OFFSET = 4 # bitmap的起始字节数
 
+NULL_VALUE = -1e10
 
 # 文件命名
 TABLE_SUFFIX = '.table' # 表文件后缀
