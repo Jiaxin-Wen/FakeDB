@@ -216,6 +216,7 @@ class SystemManager:
                     root_id = table_meta.indexes[col_name]
                     index_file_path = get_index_path(self.current_db, table_name, col_name)
                     index = self.index_manager.open_index(index_file_path, root_id)
+                    print(f'index search {col_name} l:{l} h:{h}')
                     rids = index.rangeSearch(l, h)
                     if rids:
                         if results is None:
@@ -292,8 +293,9 @@ class SystemManager:
 
         records = []
         values = []
-
+        print(f'all_records:{all_records}')
         condition_funcs = []
+        print(f'conditions:{conditions}')
         for condition in conditions:
             func = self.get_condition_func(condition, table_meta)
             if func is not None:
@@ -501,9 +503,9 @@ class SystemManager:
     
     def _insert_index(self, table_meta, value_list, rid):
         '''内部接口, 插入行后更新索引文件'''
-        for col, rid in table_meta.indexes.items():
+        for col, root_id in table_meta.indexes.items():
             index_path = get_index_path(self.current_db, table_meta.name, col)
-            index = self.index_manager.open_index(index_path, rid)
+            index = self.index_manager.open_index(index_path, root_id)
             col_id = table_meta.get_col_idx(col)
             # FIXME: 对None值的处理
             # if value_list[col_id] is not None:
@@ -511,9 +513,9 @@ class SystemManager:
                 
     def _delete_index(self, table_meta, value_list, rid):
         '''内部接口, 删除行后更新索引文件'''
-        for col, rid in table_meta.indexes.items():
+        for col, root_id in table_meta.indexes.items():
             index_path = get_index_path(self.current_db, table_meta.name, col)
-            index = self.index_manager.open_index(index_path, rid)
+            index = self.index_manager.open_index(index_path, root_id)
             col_id = table_meta.get_col_idx(col)
             # FIXME: 对None值的处理
             # if value_list[col_id] is not None:

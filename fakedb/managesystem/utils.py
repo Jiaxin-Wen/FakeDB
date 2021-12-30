@@ -23,12 +23,19 @@ def compare_col_value(col_idx, value, operator, col_null_true, value_null_true):
         else:
             return lambda x: x[col_idx] is None or eval(f'{x[col_idx]}{operator}{value}')
 
-    if value_null_true and value is None:
-        return lambda x: True
+    if value_null_true:
+        if value is None:
+            return lambda x: True
+        else:
+            return lambda x: False
+
+    if value is None:
+        return lambda x: False
+
     if operator == '=':
-        return lambda x: x[col_idx] == value
+        return lambda x: x[col_idx] is not None and x[col_idx] == value
     elif operator == '<>':
-        return lambda x: x[col_idx] != value
+        return lambda x: x[col_idx] is not None and x[col_idx] != value
     else:
         return lambda x: x[col_idx] is not None and eval(f'{x[col_idx]}{operator}{value}')
 
