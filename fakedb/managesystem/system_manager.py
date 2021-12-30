@@ -623,7 +623,6 @@ class SystemManager:
         # else:
             # value_list = value_dict[tables[0]]
         print('valud list dict = ', value_list_dict)
-        # TODO: 多表condition的结合
         # _, value_list = self.search_records_using_indexes(table, conditions)
         selector_kinds = set(selector.kind for selector in selectors)
         if group_by[-1] is None and SelectorKind.Field in selector_kinds and len(selector_kinds) > 1:
@@ -640,9 +639,9 @@ class SystemManager:
             group_idx = table_meta.get_col_idx(group_col)
             value_list = get_value_list(group_table)
             for i in value_list:
-                key = i[group_table][group_idx]
+                key = i[group_idx]
                 group_value_dict[key].append(i)
-            
+            print('group value dict = ', group_value_dict)
             group_res = []
             for i, tmp_value_list in group_value_dict.items():
                 tmp_res = []
@@ -656,6 +655,8 @@ class SystemManager:
                         selected_value_list = [i[col_idx] for i in tmp_value_list]
                     
                     selected_value_list = selector(selected_value_list)
+                    if group_col == col: # 被group的列取单一值
+                        selected_value_list = selected_value_list[0]
                     tmp_res.append(selected_value_list)
                 group_res.append(tmp_res)
             return group_res
@@ -666,7 +667,7 @@ class SystemManager:
                 res = []
                 for selector in selectors:
                     col = selector.col_name
-                    table = selector.table_name
+                    table = selector.table_name if col != '*' else tables[0]
                     table_meta = self.meta_manager.get_table(table)
                     value_list = get_value_list(table)
                     selected_value_list = []
@@ -682,13 +683,8 @@ class SystemManager:
                     res.append(selected_value_list)
                 
                 # print('ori res = ', res)
-                first_len = len(res[0])
-                for i in res:
-                    try:
-                        assert len(i) == first_len
-                    except:
-                        raise "多表join, 每张表的行数应该相同"
-                res = [[row[i] for row in res] for i in range(len(res[0]))]
+                if not isinstance(res[0], int): # COUNT *
+                    res = [[row[i] for row in res] for i in range(len(res[0]))]
                 # print('new res = ', res)
                 return res                
 
