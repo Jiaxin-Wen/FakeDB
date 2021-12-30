@@ -28,11 +28,14 @@ class IndexManager:
         filename: 数据库名 + 表名 + 列名
         root_id: 根节点页号
         '''
-        handler = IndexHandler(filename, self.file_manager)
-        index = FileIndex(handler, root_id)
-        # load放到init中了
-        self.file2index[filename] = index
-        return index
+        if filename in self.file2index:
+            return self.file2index[filename]
+        else:
+            handler = IndexHandler(filename, self.file_manager)
+            index = FileIndex(handler, root_id)
+            # load放到init中了
+            self.file2index[filename] = index
+            return index
 
     def close_index(self, filename):
         if filename not in self.file2index:
