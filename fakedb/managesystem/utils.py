@@ -26,8 +26,6 @@ def compare_col_value(col_idx, value, operator, col_null_true, value_null_true):
     if value_null_true:
         if value is None:
             return lambda x: True
-        else:
-            return lambda x: False
 
     if value is None:
         return lambda x: False
