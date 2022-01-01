@@ -138,7 +138,9 @@ class TreeNode:
                     break
             if not flag:
                 return None
-            return self.key_values[-1][0]
+            if len(self.key_values) > 0:
+                return self.key_values[-1][0]
+            return None
 
         else:
             pos = self.lower_bound(key)

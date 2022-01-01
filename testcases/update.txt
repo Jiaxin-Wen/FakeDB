@@ -1,0 +1,13 @@
+CREATE DATABASE orderDB3;
+USE orderDB3;
+CREATE TABLE class(
+id INT NOT NULL,
+student_number INT NOT NULL
+);
+ALTER TABLE class ADD INDEX (id);
+INSERT INTO class VALUES (1, 0);
+SELECT * FROM class;
+UPDATE class SET student_number=1 WHERE class.id=1;
+SELECT * FROM class;
+UPDATE class SET student_number=2 WHERE class.student_number=1;
+SELECT * FROM class;
