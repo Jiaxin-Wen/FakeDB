@@ -396,8 +396,10 @@ class SystemManager:
                             continue
                         ok = False
                         break
+                    print(f'val_list:{val_list}, ok:{ok}')
                     if not ok:
-                        if self.check_foreign(_tablemeta, val_list, min_num=1):
+                        # 由于必然和old_values匹配，因此min_num应该是2
+                        if self.check_foreign(_tablemeta, val_list, min_num=2):
                             continue
                         flag = False
                         break
