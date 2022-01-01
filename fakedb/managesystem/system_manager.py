@@ -197,38 +197,41 @@ class SystemManager:
                 value = condition.value
                 if value is not None:
                     value = int(condition.value)
-                    l, h = NULL_VALUE + 1, -NULL_VALUE
-                    operator = condition.operator
-                    if operator == '<>':
-                        continue
-                    if operator == '=':
-                        l = value
-                        h = value
-                    elif operator == '<':
-                        h = value - 1
-                    elif operator == '>':
-                        l = value + 1
-                    elif operator == '<=':
-                        h = value
-                    elif operator == '>=':
-                        l = value
-
-                    root_id = table_meta.indexes[col_name]
-                    index_file_path = get_index_path(self.current_db, table_name, col_name)
-                    index = self.index_manager.open_index(index_file_path, root_id)
-                    print(f'index search {col_name} l:{l} h:{h}')
-                    rids = index.rangeSearch(l, h)
-                    if rids:
-                        if results is None:
-                            results = set(rids)
-                        else:
-                            results &= set(rids)
-                    else:
-                        # rids None or empty list
-                        results = set()
-                        break
                 else:
-                    raise Exception('value is None in filter_records_by_index!')
+                    assert condition.value_null_true is False
+                    value = NULL_VALUE
+                l, h = NULL_VALUE + 1, -NULL_VALUE
+                operator = condition.operator
+                if operator == '<>':
+                    continue
+                if operator == '=':
+                    l = value
+                    h = value
+                elif operator == '<':
+                    h = value - 1
+                elif operator == '>':
+                    l = value + 1
+                elif operator == '<=':
+                    h = value
+                elif operator == '>=':
+                    l = value
+
+                root_id = table_meta.indexes[col_name]
+                index_file_path = get_index_path(self.current_db, table_name, col_name)
+                index = self.index_manager.open_index(index_file_path, root_id)
+                print(f'index search {col_name} l:{l} h:{h}')
+                rids = index.rangeSearch(l, h)
+                if rids:
+                    if results is None:
+                        results = set(rids)
+                    else:
+                        results &= set(rids)
+                else:
+                    # rids None or empty list
+                    results = set()
+                    break
+                # else:
+                #     raise Exception('value is None in filter_records_by_index!')
 
         return results
 
@@ -495,7 +498,8 @@ class SystemManager:
                 # print(tablemeta.col_idx, key, idx)
                 value = values[idx]
                 tab, col = tab_col.split('.')
-                conditions.append(Condition(ConditionKind.Compare, tab, col, '=', value, value_null_true=True))
+                if value is not None:
+                    conditions.append(Condition(ConditionKind.Compare, tab, col, '=', value))
 
             records, vals = self.search_records_using_indexes(tab, conditions)
             if len(records) < min_num:
