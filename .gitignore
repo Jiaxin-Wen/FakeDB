@@ -3,5 +3,5 @@
 .idea
 log/
 .antlr
-
+data
 **/__pycache__
