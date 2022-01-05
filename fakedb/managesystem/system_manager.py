@@ -74,7 +74,7 @@ class SystemManager:
         
     def show_dbs(self):
         '''打印全部数据库'''
-        print('dbs = ', self.meta_manager.get_databases_description())
+        # print('dbs = ', self.meta_manager.get_databases_description())
         return self.meta_manager.get_databases_description()
             
     def create_db(self, name):
@@ -219,7 +219,7 @@ class SystemManager:
                 root_id = table_meta.indexes[col_name]
                 index_file_path = get_index_path(self.current_db, table_name, col_name)
                 index = self.index_manager.open_index(index_file_path, root_id)
-                print(f'index search {col_name} l:{l} h:{h}')
+                # print(f'index search {col_name} l:{l} h:{h}')
                 rids = index.rangeSearch(l, h)
                 if rids:
                     if results is None:
@@ -288,7 +288,7 @@ class SystemManager:
         table_path = get_table_path(self.current_db, table_name)
         self.record_manager.open_file(table_path)
         index_filter_rids = self.filter_records_by_index(table_name, table_meta, conditions)
-        print(f'index filter rids:{index_filter_rids}')
+        # print(f'index filter rids:{index_filter_rids}')
         if index_filter_rids is None:
             all_records = get_all_records(self.record_manager)
         else:
@@ -296,9 +296,9 @@ class SystemManager:
 
         records = []
         values = []
-        print(f'all_records:{all_records}')
+        # print(f'all_records:{all_records}')
         condition_funcs = []
-        print(f'conditions:{conditions}')
+        # print(f'conditions:{conditions}')
         for condition in conditions:
             func = self.get_condition_func(condition, table_meta)
             if func is not None:
@@ -307,7 +307,7 @@ class SystemManager:
         for record in all_records:
             record_values = table_meta.load_record(record.data)
             flag = True
-            print(f'record_values:{record_values}')
+            # print(f'record_values:{record_values}')
             for func in condition_funcs:
                 if not func(record_values):
                     flag = False
@@ -368,7 +368,7 @@ class SystemManager:
             old_values = tablemeta.load_record(old_record.data)
             for keys, tab_cols in tablemeta.ref_foreigns_alias.values():
                 value_all_same = True
-                print(values, old_values)
+                # print(values, old_values)
                 for key in keys:
                     idx = tablemeta.get_col_idx(key)
                     if values[idx] != old_values[idx]:
@@ -399,7 +399,7 @@ class SystemManager:
                             continue
                         ok = False
                         break
-                    print(f'val_list:{val_list}, ok:{ok}')
+                    # print(f'val_list:{val_list}, ok:{ok}')
                     if not ok:
                         # 由于必然和old_values匹配，因此min_num应该是2
                         if self.check_foreign(_tablemeta, val_list, min_num=2):
@@ -413,7 +413,7 @@ class SystemManager:
                 # if len(records) > 0:
                 #     flag = False
                 #     break
-            print(f'in check_ref_foreign flag:{flag}')
+            # print(f'in check_ref_foreign flag:{flag}')
             return flag
 
     def check_null(self, tablemeta, values):
@@ -532,7 +532,7 @@ class SystemManager:
         '''在表中插入行'''
         if self.current_db is None:
             raise Exception(f"Please use database first to insert record")
-        print(f'insert, table = {table}, value = {value_list}')
+        # print(f'insert, table = {table}, value = {value_list}')
         table_meta = self.meta_manager.get_table(table)       
         data = table_meta.build_record(value_list) # 字节序列
                 
@@ -595,9 +595,9 @@ class SystemManager:
     
     def select_records(self, selectors, tables, conditions, group_by, limit, offset):
         data = self._select_records(selectors, tables, conditions, group_by)
-        print('ori select records = ', data)
-        print('limit = ', limit)
-        print('offset = ', offset)
+        # print('ori select records = ', data)
+        # print('limit = ', limit)
+        # print('offset = ', offset)
         if limit is None:
             return data[offset:]
         else:
@@ -609,26 +609,26 @@ class SystemManager:
         TODO: 
         join
         '''
-        for i in selectors:
-            print(i)
-        for i in conditions:
-            print(i)
+        # for i in selectors:
+        #     print(i)
+        # for i in conditions:
+        #     print(i)
             
-        print('tables = ', tables)
+        # print('tables = ', tables)
         # assert len(tables) == 1 # 暂时不支持group_by
-        print('group by = ', group_by)
+        # print('group by = ', group_by)
         
         if self.current_db is None:
             raise Exception(f"Please use database first to select records")
 
         # table to value_list
         value_dict = {table: self.search_records_using_indexes(table, conditions)[-1] for table in tables}
-        print('value_dict = ', value_dict)
+        # print('value_dict = ', value_dict)
         # if len(tables) > 1: # join
         value_list_dict = self.cond_join(value_dict, conditions) # list of dict
         # else:
             # value_list = value_dict[tables[0]]
-        print('valud list dict = ', value_list_dict)
+        # print('valud list dict = ', value_list_dict)
         # _, value_list = self.search_records_using_indexes(table, conditions)
         selector_kinds = set(selector.kind for selector in selectors)
         if group_by[-1] is None and SelectorKind.Field in selector_kinds and len(selector_kinds) > 1:
@@ -647,7 +647,7 @@ class SystemManager:
             for i in value_list:
                 key = i[group_idx]
                 group_value_dict[key].append(i)
-            print('group value dict = ', group_value_dict)
+            # print('group value dict = ', group_value_dict)
             group_res = []
             for i, tmp_value_list in group_value_dict.items():
                 tmp_res = []
@@ -754,7 +754,7 @@ class SystemManager:
         for col in primary_keys: # 删掉所有主键列的index
             self.drop_index(table, col)
         table_meta.drop_primary() # 删除主键
-        print('primary keys = ', primary_keys)
+        # print('primary keys = ', primary_keys)
         return f'drop primary key: {table}.{",".join(primary_keys)}'
     
     def add_foreign_key(self, table, foreign_table, key, foreign_key, foreign_name):
