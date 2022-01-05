@@ -35,7 +35,7 @@ def convert(path, outpath):
 
 
 if __name__ == '__main__':
-    names = os.listdir('data')
+    names = ['part.csv', 'region.csv', 'nation.csv', 'supplier.csv', 'customer.csv', 'partsupp.csv', 'orders.csv', 'lineitem.csv']
     print(names)
     read_file_path = os.path.join('data', 'load.txt')
     with open(read_file_path, 'w', encoding='utf-8') as outf:
