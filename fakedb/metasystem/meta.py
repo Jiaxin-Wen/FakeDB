@@ -39,6 +39,9 @@ class TableMeta:
         self.ref_foreigns_alias = {} # key值是alias
         self.ref_foreigns = {} # key值是列名
 
+    def __str__(self):
+        return self.name
+
 
     def add_column(self, columnmeta):
         if columnmeta.name in self.column_dict:
