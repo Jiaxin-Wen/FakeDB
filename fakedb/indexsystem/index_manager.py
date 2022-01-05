@@ -42,9 +42,10 @@ class IndexManager:
             return None
         else:
             index = self.file2index.pop(filename)
-            index.write_back()
+            index.writeback()
             
         
     def shutdown(self):
-        for filename in self.file2index:
+        filenames = list(self.file2index.keys())
+        for filename in filenames:
             self.close_index(filename)
