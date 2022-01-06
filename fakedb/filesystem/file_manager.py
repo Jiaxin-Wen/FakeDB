@@ -88,8 +88,8 @@ class FileManager:
         '''
         退出
         '''
-        fd_list = list(self.fd2name.keys())
-        for fd in fd_list:
+        fds = list(self.fd2name.keys())
+        for fd in fds:
             self.close_file(fd)  
 
         assert not any(self.fd2name)

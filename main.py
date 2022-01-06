@@ -1,5 +1,5 @@
 from fakedb.managesystem import SystemManager, SystemVisitor
-
+from tqdm import tqdm
 
 def main():
     system_visitor = SystemVisitor()
@@ -9,7 +9,7 @@ def main():
     def read_file(filepath):
         with open(filepath, encoding='utf-8') as f:
             sql = ''
-            for line in f:
+            for line in tqdm(f.readlines()):
                 # print(filepath, line)
                 line = line.strip()
                 if not line:
@@ -30,23 +30,32 @@ def main():
                     sql += ' ' + line
 
     while True:
-        ipt = input('FakeDB> ')
-        if ipt == 'exit' or ipt == 'exit;':
+        try:
+            ipt = input('FakeDB> ')
+            if ipt == 'exit' or ipt == 'exit;':
+                system_manager.shutdown()
+                break
+            elif ipt.startswith('read'):
+                try:
+                    filepath = ipt.strip()[:-1].split()[1]
+                    read_file(filepath)
+                except Exception as e:
+                    print(e)
+                except KeyboardInterrupt:
+                    print('shutdown...')
+                    system_manager.shutdown()
+                    break
+            else:
+                if ipt.endswith(';'):
+                    sql += ' ' + ipt
+                    ret = system_manager.execute(sql)
+                    sql = ''
+                else:
+                    sql += ' ' + ipt
+        except KeyboardInterrupt:
+            print('shutdown...')
             system_manager.shutdown()
             break
-        elif ipt.startswith('read'):
-            try:
-                filepath = ipt.strip()[:-1].split()[1]
-                read_file(filepath)
-            except Exception as e:
-                print(e)
-        else:
-            if ipt.endswith(';'):
-                sql += ' ' + ipt
-                ret = system_manager.execute(sql)
-                sql = ''
-            else:
-                sql += ' ' + ipt
 
 
 if __name__ == '__main__':
