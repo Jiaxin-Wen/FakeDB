@@ -49,7 +49,7 @@ class SystemManager:
             
         self.meta_manager.load_alldbs()
             
-    def execute(self, query, log=True):
+    def execute(self, query):
         '''
         封装给外部调用的主接口
         接受一条sql query语句
@@ -67,8 +67,6 @@ class SystemManager:
             
         try:
             res = self.visitor.visit(tree)
-            if log:
-                print('final res: ', res)
             return res
         except Exception as e:
             print(f"execution error: {e}")

@@ -24,7 +24,7 @@ def main():
                 if line.endswith(';'):
                     sql += ' ' + line
                     # print(f'execute sql:{sql}')
-                    ret = system_manager.execute(sql, log=False)
+                    ret = system_manager.execute(sql)
                     sql = ''
                 else:
                     sql += ' ' + line
