@@ -2,6 +2,7 @@
 .DS_Store
 .idea
 log/
+backup_log/
 .antlr
 data
 **/__pycache__

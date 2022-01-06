@@ -67,7 +67,6 @@ class SystemManager:
             
         try:
             res = self.visitor.visit(tree)
-            # print('final res: ', res)
             return res
         except Exception as e:
             print(f"execution error: {e}")
@@ -790,11 +789,10 @@ class SystemManager:
 
     def shutdown(self):
         '''退出'''
-        self.file_manager.shutdown()
-        self.record_manager.shutdown()
-        self.index_manager.shutdown()
         self.meta_manager.shutdown()
-    
+        self.index_manager.shutdown()
+        self.record_manager.shutdown()
+        self.file_manager.shutdown()
     
     
     

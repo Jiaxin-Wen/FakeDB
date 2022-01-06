@@ -45,9 +45,9 @@ class FileManager:
 
     def close_file(self, description):
         '''关闭文件'''
-        if isinstance(description, str) and description in self.name2fd:
+        if isinstance(description, str) and description in self.name2fd: # filename
             fd = self.name2fd[description]
-        elif description in self.fd2name:
+        elif description in self.fd2name: # fd
             fd = description
         else:
             fd = None
@@ -90,6 +90,7 @@ class FileManager:
         退出
         '''
         fds = list(self.fd2name.keys())
+        print('file manager shutdown: ', self.fd2name) 
         for fd in fds:
             self.close_file(fd)  
 
