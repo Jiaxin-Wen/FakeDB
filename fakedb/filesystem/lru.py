@@ -9,11 +9,12 @@ class LRU:
     def assign(self):
         # return new_idx, need_write_back
         if len(self.unused) == 0:
-            idx = self.cache.popitem(last=False)
+            idx = self.cache.popitem(last=False)[0]
+            self.unused.add(idx)
             return idx, True
         else:
-            idx = self.unused.pop()
-            self.cache[idx] = None
+            # idx = self.unused.pop()
+            idx = next(iter(self.unused))
             return idx, False
 
     def free(self, idx):
@@ -24,5 +25,9 @@ class LRU:
     def access(self, idx):
         # assert idx not in self.unused
         #  self.cache[idx] = None
-        self.cache.move_to_end(idx, last=True)
+        if idx in self.cache:
+            self.cache.move_to_end(idx, last=True)
+        else:
+            self.cache[idx] = None
+            self.unused.remove(idx)
         

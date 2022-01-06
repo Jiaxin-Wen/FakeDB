@@ -68,6 +68,7 @@ class SystemManager:
         try:
             res = self.visitor.visit(tree)
             # print('final res: ', res)
+            return res
         except Exception as e:
             print(f"execution error: {e}")
             print(traceback.format_exc())

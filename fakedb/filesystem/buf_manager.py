@@ -57,8 +57,10 @@ class BufManager:
         try: # 读cache
             idx = self.fdpd_to_idx[fd][pd]
             data = self.pages[idx]
+            # print(f'read from cache idx:{idx}')
         except: # 读存储 放回cache
             idx, need_write_back = self.lru.assign()
+            # print(f'assign cache idx:{idx}')
             if need_write_back:
                 self._write(fd, pd, idx)
                 if fd not in self.fdpd_to_idx:
@@ -68,6 +70,8 @@ class BufManager:
             data = self._read(fd, pd)
             data = np.frombuffer(data, np.uint8, PAGE_SIZE).copy()
             self.pages[idx] = data
-            
+
+        print(idx)
+
         self.lru.access(idx)
         return data
