@@ -71,7 +71,7 @@ class FileIndex:
             temp_node = self.rootNode
             self.rootNode = newroot
             self.root_id = new_root_id
-            print(f'new root id:{new_root_id}')
+            # print(f'new root id:{new_root_id}')
             self.rootNode.key_values = [[left_max_key, temp_node], [max_key, right_node]]
 
     
