@@ -222,10 +222,10 @@ class SystemManager:
                 # print(f'index root id:{index.root_id}')
                 # print(f'index search {col_name} l:{l} h:{h}')
                 rids = index.rangeSearch(l, h)
-                print('rids:')
-                if rids:
-                    for rid in rids:
-                        print(rid)
+                # print('rids:')
+                # if rids:
+                #     for rid in rids:
+                #         print(rid)
                 if rids:
                     if results is None:
                         results = set(rids)

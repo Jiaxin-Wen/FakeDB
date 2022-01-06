@@ -204,7 +204,8 @@ class TreeNode:
                 return None
             
             # rpos = self.upper_bound(r)
-            rpos = min(len(self.key_values), self.lower_bound(r) + 1)
+            # rpos = min(len(self.key_values), self.lower_bound(r) + 1)
+            rpos = min(len(self.key_values), self.upper_bound(r) + 1)
             res = []
             for i in range(lpos, rpos):
                 ret = self.key_values[i][1].rangeSearch(l, r)
