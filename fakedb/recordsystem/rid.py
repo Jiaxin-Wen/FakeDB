@@ -9,5 +9,12 @@ class RID:
         self.page_id = page_id
         self.slot_id = slot_id
 
+    def __eq__(self, other):
+        return self.page_id == other.page_id and self.slot_id == other.slot_id
+
+    def __hash__(self):
+        return hash((self.page_id, self.slot_id))
+        # return self.page_id * 1e10 + self.slot_id
+
     def __str__(self):
         return f'{self.page_id}, {self.slot_id}'

@@ -20,7 +20,7 @@ class FileIndex:
         nodeType = data[0]
         parent_id = data[1]
         assert nodeType == 0
-        assert parent_id == root_id
+        # assert parent_id == root_id
         self.rootNode = self.get_node(root_id)    
     
     def get_node(self, page_id):

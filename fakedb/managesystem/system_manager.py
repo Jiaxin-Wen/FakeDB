@@ -219,8 +219,13 @@ class SystemManager:
                 root_id = table_meta.indexes[col_name]
                 index_file_path = get_index_path(self.current_db, table_name, col_name)
                 index = self.index_manager.open_index(index_file_path, root_id)
+                # print(f'index root id:{index.root_id}')
                 # print(f'index search {col_name} l:{l} h:{h}')
                 rids = index.rangeSearch(l, h)
+                print('rids:')
+                if rids:
+                    for rid in rids:
+                        print(rid)
                 if rids:
                     if results is None:
                         results = set(rids)
@@ -517,6 +522,7 @@ class SystemManager:
             # FIXME: 对None值的处理
             # if value_list[col_id] is not None:
             index.insert(value_list[col_id], rid)
+            table_meta.indexes[col] = index.root_id
                 
     def _delete_index(self, table_meta, value_list, rid):
         '''内部接口, 删除行后更新索引文件'''
@@ -527,6 +533,8 @@ class SystemManager:
             # FIXME: 对None值的处理
             # if value_list[col_id] is not None:
             index.remove(value_list[col_id], rid)
+            table_meta.indexes[col] = index.root_id
+
             
     def insert_record(self, table, value_list):
         '''在表中插入行'''
