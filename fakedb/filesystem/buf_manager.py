@@ -71,7 +71,6 @@ class BufManager:
             data = np.frombuffer(data, np.uint8, PAGE_SIZE).copy()
             self.pages[idx] = data
 
-        print(idx)
 
         self.lru.access(idx)
         return data
