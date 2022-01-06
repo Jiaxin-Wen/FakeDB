@@ -789,11 +789,10 @@ class SystemManager:
 
     def shutdown(self):
         '''退出'''
-        self.file_manager.shutdown()
-        self.record_manager.shutdown()
-        self.index_manager.shutdown()
         self.meta_manager.shutdown()
-    
+        self.index_manager.shutdown()
+        self.record_manager.shutdown()
+        self.file_manager.shutdown()
     
     
     
