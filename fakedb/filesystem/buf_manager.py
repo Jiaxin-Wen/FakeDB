@@ -26,6 +26,8 @@ class BufManager:
         '''
         写到存储中 不直接调用
         '''
+        # if pd == 0:
+        #     print(fd, self.pages[idx])
         os.lseek(fd, pd << PAGE_SIZE_BITS, os.SEEK_SET)
         os.write(fd, self.pages[idx].tobytes())
         
@@ -61,14 +63,20 @@ class BufManager:
         except: # 读存储 放回cache
             idx, need_write_back = self.lru.assign()
             # print(f'assign cache idx:{idx}')
+            # print(f'pd:{pd}, idx:{idx}')
+            # if need_write_back is True:
+            #     print(f'pd:{pd}, idx:{idx}')
+            assert need_write_back is False
             if need_write_back:
                 self._write(fd, pd, idx)
-                if fd not in self.fdpd_to_idx:
-                    self.fdpd_to_idx[fd] = {}
-                self.fdpd_to_idx[fd][pd] = idx
-                
+
+            if fd not in self.fdpd_to_idx:
+                self.fdpd_to_idx[fd] = {}
+            self.fdpd_to_idx[fd][pd] = idx
+
             data = self._read(fd, pd)
             data = np.frombuffer(data, np.uint8, PAGE_SIZE).copy()
+            # print(f'after frombuffer data:{data}')
             self.pages[idx] = data
 
 

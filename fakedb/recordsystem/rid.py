@@ -8,4 +8,6 @@ class RID:
         '''
         self.page_id = page_id
         self.slot_id = slot_id
-    
+
+    def __str__(self):
+        return f'{self.page_id}, {self.slot_id}'

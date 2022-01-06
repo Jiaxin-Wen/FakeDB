@@ -21,6 +21,7 @@ class RecordManager:
         '''
         self.fd = fd
         header_page = self.file_manager.read_page(fd, 0)
+        # print(f'header page:{header_page}')
         self.header = Header.deserialize(header_page)
         # print('self.header = ', self.header)
 
@@ -133,6 +134,9 @@ class RecordManager:
         page_id = self.header.next_available_page
         if page_id == 0:
             page_id = self.append_page()
+            # print(f'append page:{page_id}')
+            # header_page = self.file_manager.read_page(self.fd, 0)
+            # print(f'header_page', header_page)
 
         page = self.get_page(page_id)
         bitmap = self.get_bitmap(page)

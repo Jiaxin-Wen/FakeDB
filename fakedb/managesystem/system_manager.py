@@ -308,7 +308,7 @@ class SystemManager:
         for record in all_records:
             record_values = table_meta.load_record(record.data)
             flag = True
-            # print(f'record_values:{record_values}')
+            # print(f'record_values:{record_values}, rid:{record.rid}')
             for func in condition_funcs:
                 if not func(record_values):
                     flag = False

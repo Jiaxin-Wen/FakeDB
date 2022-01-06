@@ -51,7 +51,8 @@ class FileManager:
             fd = description
         else:
             fd = None
-        
+
+        # print(f'fd2name:{self.fd2name}')
         if fd is not None:
             self.buf_manager.close(fd) # 清空cache中该文件对应的页
             os.close(fd)
