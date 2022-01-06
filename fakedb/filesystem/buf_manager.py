@@ -74,7 +74,7 @@ class BufManager:
             # print(f'pd:{pd}, idx:{idx}')
             # if need_write_back is True:
             #     print(f'pd:{pd}, idx:{idx}')
-            assert need_write_back is False
+            # assert need_write_back is False
             if need_write_back:
                 _fd, _pd = self.idx_to_fdpd[idx]
                 self._write(_fd, _pd, idx)
