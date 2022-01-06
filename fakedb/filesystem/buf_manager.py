@@ -8,6 +8,7 @@ class BufManager:
     def __init__(self):
         self.pages = np.zeros((CACHE_SIZE, PAGE_SIZE), dtype=np.uint8)
         self.fdpd_to_idx = {}
+        self.idx_to_fdpd = {}
         self.lru = LRU(CACHE_SIZE)
 
     def close(self, fd):
@@ -20,6 +21,7 @@ class BufManager:
             for pd, idx in d.items():
                 self.lru.free(idx)
                 self._write(fd, pd, idx)
+                self.idx_to_fdpd.pop(idx)
             self.fdpd_to_idx.pop(fd)
 
     def _write(self, fd, pd, idx):
@@ -44,11 +46,17 @@ class BufManager:
         if pd not in self.fdpd_to_idx[fd]:
             idx, need_write_back = self.lru.assign()
             if need_write_back:
-                self._write(fd, pd, idx)
+                _fd, _pd = self.idx_to_fdpd[idx]
+                self._write(_fd, _pd, idx)
+                self.fdpd_to_idx[_fd].pop(_pd)
+                if not self.fdpd_to_idx[_fd]:
+                    self.fdpd_to_idx.pop(_fd)
+
             self.fdpd_to_idx[fd][pd] = idx
         idx = self.fdpd_to_idx[fd][pd]
         self.lru.access(idx)
         self.pages[idx] = data
+        self.idx_to_fdpd[idx] = (fd, pd)
 
     def read(self, fd, pd):
         '''
@@ -68,7 +76,11 @@ class BufManager:
             #     print(f'pd:{pd}, idx:{idx}')
             assert need_write_back is False
             if need_write_back:
-                self._write(fd, pd, idx)
+                _fd, _pd = self.idx_to_fdpd[idx]
+                self._write(_fd, _pd, idx)
+                self.fdpd_to_idx[_fd].pop(_pd)
+                if not self.fdpd_to_idx[_fd]:
+                    self.fdpd_to_idx.pop(_fd)
 
             if fd not in self.fdpd_to_idx:
                 self.fdpd_to_idx[fd] = {}
@@ -79,6 +91,6 @@ class BufManager:
             # print(f'after frombuffer data:{data}')
             self.pages[idx] = data
 
-
+        self.idx_to_fdpd[idx] = (fd, pd)
         self.lru.access(idx)
         return data
