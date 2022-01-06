@@ -38,7 +38,7 @@ class FileIndex:
         else:
             # inter node
             length = data[2]
-            key_values = [[data[2*i+3], data[2*i+4]] for i in range(length)]
+            key_values = [[data[2*i+3], self.get_node(data[2*i+4])] for i in range(length)]
             return TreeNode(nodeType='inter', page_id=page_id, parent_id=parent_id, prev_id=None, next_id=None, key_values=key_values, handler=self.handler)
     
     def writeback(self):
@@ -71,6 +71,7 @@ class FileIndex:
             temp_node = self.rootNode
             self.rootNode = newroot
             self.root_id = new_root_id
+            print(f'new root id:{new_root_id}')
             self.rootNode.key_values = [[left_max_key, temp_node], [max_key, right_node]]
 
     

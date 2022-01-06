@@ -1,7 +1,7 @@
 # develop
 .DS_Store
 .idea
-log/
+log*/
 backup_log/
 .antlr
 data
