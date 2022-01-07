@@ -123,7 +123,7 @@ class TableMeta:
     def get_description(self):
         return '\n'.join([v.get_description() for v in self.column_dict.values()]) + ';' + ' '.join([key for key in self.primary]) + ';' + ' '.join(
             [f'{foreign[0]} REFERENCES {foreign[1]}' for foreign in self.foreigns_alias.values()]
-        ) + ';' + ' '.join([item for item in self.uniques]) + ';' + ' '.join([idx for idx in self.indexes]) + ';'
+        ) + ';' + ' '.join(sorted([item for item in self.uniques])) + ';' + ' '.join(sorted([idx for idx in self.indexes])) + ';'
 
     def build_record(self, values):
         record_siz = self.get_record_size()
