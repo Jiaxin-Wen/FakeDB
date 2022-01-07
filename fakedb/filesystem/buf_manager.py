@@ -46,6 +46,7 @@ class BufManager:
         if pd not in self.fdpd_to_idx[fd]:
             idx, need_write_back = self.lru.assign()
             if need_write_back:
+                print(f'in write need write back, fd:{fd}, pd:{pd}, idx:{idx}, _fd and _pd:{self.idx_to_fdpd[idx]}')
                 _fd, _pd = self.idx_to_fdpd[idx]
                 self._write(_fd, _pd, idx)
                 self.fdpd_to_idx[_fd].pop(_pd)
@@ -87,6 +88,8 @@ class BufManager:
             self.fdpd_to_idx[fd][pd] = idx
 
             data = self._read(fd, pd)
+            # if pd == 1:
+            #     print(f'fd: {fd}, pd:{pd}, read data:{data}')
             data = np.frombuffer(data, np.uint8, PAGE_SIZE).copy()
             # print(f'after frombuffer data:{data}')
             self.pages[idx] = data

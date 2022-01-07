@@ -298,7 +298,7 @@ class SystemManager:
             all_records = get_all_records(self.record_manager)
         else:
             all_records = list(map(self.record_manager.get_record, index_filter_rids))
-
+        # print(f'all_records num:{len(all_records)}')
         records = []
         values = []
         # print(f'all_records:{all_records}')
@@ -309,10 +309,11 @@ class SystemManager:
             if func is not None:
                 condition_funcs.append(func)
 
-        for record in all_records:
+        for i, record in enumerate(all_records):
             record_values = table_meta.load_record(record.data)
             flag = True
-            # print(f'record_values:{record_values}, rid:{record.rid}')
+            # if i < 10:
+            #     print(f'record_values:{record_values}, rid:{record.rid}')
             for func in condition_funcs:
                 if not func(record_values):
                     flag = False
@@ -321,6 +322,7 @@ class SystemManager:
                 records.append(record)
                 values.append(record_values)
 
+        # print(f'records num:{len(records)}')
         return records, values
 
     def check_constraints(self, tablemeta, values, old_record=None, delete=False):

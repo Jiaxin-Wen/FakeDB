@@ -31,6 +31,7 @@ class RecordManager:
         filename: 待创建的文件名(数据库名+表名)
         record_len: 一条记录的长度
         '''
+        print(f'record manager create file:{filename}')
         # 创建文件
         self.file_manager.create_file(filename)
 
@@ -61,7 +62,9 @@ class RecordManager:
         打开文件, 获得其句柄
         '''
         fd = self.file_manager.open_file(filename)
-        self.init_info(fd)
+        if fd != self.fd:
+            self.init_info(fd)
+            # print(f'filename:{filename}, fd:{fd}')
         return fd
 
     def close_file(self):
@@ -137,6 +140,9 @@ class RecordManager:
             # print(f'append page:{page_id}')
             # header_page = self.file_manager.read_page(self.fd, 0)
             # print(f'header_page', header_page)
+
+        # if page_id == 1:
+        #     print(f'insert data:{data.tobytes()}, page:{page_id}')
 
         page = self.get_page(page_id)
         bitmap = self.get_bitmap(page)

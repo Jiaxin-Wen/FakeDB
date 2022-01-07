@@ -9,7 +9,7 @@ class Record:
         data: 记录的数据
         '''
         self.rid = rid
-        self.data = data
+        self.data = data.copy()
         
         
     def set_data(self, data):

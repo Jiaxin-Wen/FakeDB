@@ -8,11 +8,17 @@ def get_all_records(record_manager):
     res = []
     for page_id in range(1, page_num):
         page = record_manager.get_page(page_id)
+        # if page_id == 1:
+        #     print(f'page 1:{page.tobytes()}')
         bitmap = record_manager.get_bitmap(page)
         for slot_id in np.where(bitmap == 0)[0]:
             record = record_manager.get_record(RID(page_id, slot_id))
             res.append(record)
+        # if page_id == 1:
+        #     print(f'in for, res 0:{res[0].data.tobytes()}')
 
+    # if res:
+    #     print(f'res 0:{res[0].data.tobytes()}')
     return res
 
 def get_record_capacity(record_len):
