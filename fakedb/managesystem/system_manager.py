@@ -137,7 +137,7 @@ class SystemManager:
             self.file_manager.close_file(file)
             self.file_manager.remove_file(file)
         return f'drop table: {name} from db: {self.current_db}'
-                   
+
     def describe_table(self, name):
         '''展示一张表'''
         table_meta = self.meta_manager.get_table(name)
@@ -725,6 +725,7 @@ class SystemManager:
         for record in records:
             value = table_meta.load_record(record.data)
             index.insert(value[col_idx], record.rid)
+        table_meta.indexes[col] = index.root_id
         return f"add index on {table}.{col}" 
     
     def drop_index(self, table, col):

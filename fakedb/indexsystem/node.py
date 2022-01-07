@@ -189,8 +189,7 @@ class TreeNode:
 
     def rangeSearch(self, l, r):
         # 返回key在[l,r]之间的所有value
-        # print(f'page:{self.page_id},nodeType:{self.nodeType},key_values:{self.key_values}')
-
+        print(f'page:{self.page_id},nodeType:{self.nodeType},key_values[0]:{self.key_values[0], self.key_values[-1]}')
         if self.isleaf():
             lpos = self.lower_bound(l)
             if lpos is None or lpos >= len(self.key_values):
