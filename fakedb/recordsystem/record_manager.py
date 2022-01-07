@@ -31,7 +31,7 @@ class RecordManager:
         filename: 待创建的文件名(数据库名+表名)
         record_len: 一条记录的长度
         '''
-        print(f'record manager create file:{filename}')
+        # print(f'record manager create file:{filename}')
         # 创建文件
         self.file_manager.create_file(filename)
 
