@@ -1,0 +1,17 @@
+CREATE DATABASE orderDB3;
+USE orderDB3;
+CREATE TABLE student(
+n_id INT NOT NULL,
+n_name VARCHAR(25) NOT NULL,
+n_score INT NOT NULL
+);
+INSERT INTO student VALUES (0, '小明', 80);
+INSERT INTO student VALUES (0, '小王', 86);
+INSERT INTO student VALUES (2, '小李', 70);
+INSERT INTO student VALUES (2, '小赵', 90);
+INSERT INTO student VALUES (4, '小任', 100);
+SELECT student.bug FROM student;
+SELECT * FROM bug;
+INSERT INTO student VALUES ('bug', '小任', 100);
+INSERT INTO student VALUES (7, 111, 100);
+USE bug;
