@@ -46,7 +46,7 @@ class BufManager:
         if pd not in self.fdpd_to_idx[fd]:
             idx, need_write_back = self.lru.assign()
             if need_write_back:
-                print(f'in write need write back, fd:{fd}, pd:{pd}, idx:{idx}, _fd and _pd:{self.idx_to_fdpd[idx]}')
+                # print(f'in write need write back, fd:{fd}, pd:{pd}, idx:{idx}, _fd and _pd:{self.idx_to_fdpd[idx]}')
                 _fd, _pd = self.idx_to_fdpd[idx]
                 self._write(_fd, _pd, idx)
                 self.fdpd_to_idx[_fd].pop(_pd)
