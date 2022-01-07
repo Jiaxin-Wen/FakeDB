@@ -74,7 +74,7 @@ class SystemVisitor(SQLVisitor):
         res = self.manager.create_table(tablemeta)
         # for key, (foreign_table, foreign_key) in foreign_keys.items():
             # self.manager.add_foreign_key(table, foreign_table, key, foreign_key, None)
-        print('in create table, foreign key list= ', foreign_key_list)
+        # print('in create table, foreign key list= ', foreign_key_list)
         for item in foreign_key_list:
             if any(item):
                 name, keys, foreign_table, foreign_keys = item
