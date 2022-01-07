@@ -194,6 +194,8 @@ class SystemManager:
                 continue
             if condition.table_name and condition.table_name != table_name:
                 continue
+            if condition.table_name2 is not None:
+                continue
             col_name = condition.col_name
             if table_meta.has_index(col_name):
                 value = condition.value
