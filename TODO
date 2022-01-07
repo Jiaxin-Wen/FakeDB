@@ -1,16 +1,3 @@
-create table的完善(done)
-高级查询
-- 分组: group by(done)
-- 分页: limit offset(done)
-多表join
-- 双表join(done)
-- 3,4,5表join(done)
-联合主键(done)
-联合外键(done)
-> 强制外键必须指定alias(done)
-- 需要测试一下(done)
-修复一下索引对null的实现(done)
-高级完整性约束
-- null: where的判断(done)
-- 级联外键(待定)
-print优化
+列不存在的报错
+数据类型的报错
+desc输出
