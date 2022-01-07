@@ -58,6 +58,8 @@ class TableMeta:
         return name in self.column_dict
 
     def get_col_idx(self, name):
+        if name not in self.col_idx:
+            raise Exception(f"column {name} does not exist")
         return self.col_idx.get(name, None)
 
     def has_index(self, colname):
