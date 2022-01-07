@@ -1,6 +1,8 @@
 import os
+import numpy as np
 import shutil
 import traceback
+
 
 from collections import defaultdict
 from itertools import product
@@ -614,11 +616,7 @@ class SystemManager:
             return data[offset: offset + limit]
     
     def _select_records(self, selectors, tables, conditions, group_by):
-        '''
-        select语句
-        TODO: 
-        join
-        '''
+        '''select语句'''
         # for i in selectors:
         #     print(i)
         # for i in conditions:
@@ -699,7 +697,7 @@ class SystemManager:
                     res.append(selected_value_list)
                 
                 # print('ori res = ', res)
-                if not isinstance(res[0], int): # COUNT *
+                if isinstance(res[0], list): # COUNT *
                     res = [[row[i] for row in res] for i in range(len(res[0]))]
                 # print('new res = ', res)
                 return res                
