@@ -68,17 +68,18 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#create_table.
     def visitCreate_table(self, ctx:SQLParser.Create_tableContext):
-        columns, foreign_key, primary = ctx.field_list().accept(self)
+        columns, foreign_key_list, primary = ctx.field_list().accept(self)
         table = ctx.Identifier().getText()
         tablemeta = TableMeta(table, columns)
         res = self.manager.create_table(tablemeta)
         # for key, (foreign_table, foreign_key) in foreign_keys.items():
             # self.manager.add_foreign_key(table, foreign_table, key, foreign_key, None)
-        # print('in create table, foreign key = ', foreign_key)
-        if any(foreign_key):
-            name, keys, foreign_table, foreign_keys = foreign_key
-            self.manager.add_foreign_key(table, foreign_table, keys, foreign_keys, name)
-        self.manager.add_primary_key(table, primary)
+        print('in create table, foreign key list= ', foreign_key_list)
+        for item in foreign_key_list:
+            if any(item):
+                name, keys, foreign_table, foreign_keys = item
+                print(self.manager.add_foreign_key(table, foreign_table, keys, foreign_keys, name))
+        print(self.manager.add_primary_key(table, primary))
         return res
 
     # Visit a parse tree produced by SQLParser#drop_table.
@@ -187,7 +188,7 @@ class SystemVisitor(SQLVisitor):
         创建表时指定的field list
         '''
         col_dict = {}
-        foreign_keys = ()
+        foreign_key_list = []
         primary_key = None
         
         for field in ctx.field():
@@ -203,6 +204,7 @@ class SystemVisitor(SQLVisitor):
                 # foreign key
                 name, keys, foreign_table, _foreign_keys = field.accept(self)
                 foreign_keys = (name, keys, foreign_table, _foreign_keys)
+                foreign_key_list.append(foreign_keys)
             elif isinstance(field, SQLParser.Primary_key_fieldContext):
                 if primary_key is not None:
                     raise Exception(f"Alread set primary key: {primary_key}")
@@ -213,7 +215,7 @@ class SystemVisitor(SQLVisitor):
                 primary_key = cols
             else:
                 raise Exception(f"wrong field: {type(field)}")
-        return list(col_dict.values()), foreign_keys, primary_key
+        return list(col_dict.values()), foreign_key_list, primary_key
 
     # Visit a parse tree produced by SQLParser#normal_field.
     def visitNormal_field(self, ctx:SQLParser.Normal_fieldContext):
@@ -247,6 +249,8 @@ class SystemVisitor(SQLVisitor):
             foreign_name = ctx.Identifier(0).getText()
             foreign_table = ctx.Identifier(1).getText()
         keys = ctx.identifiers(0).accept(self)
+        if foreign_name is None:
+            foreign_name = '_'.join(keys)
         foreign_keys = ctx.identifiers(1).accept(self)
         return foreign_name, keys, foreign_table, foreign_keys
 
