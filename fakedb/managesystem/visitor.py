@@ -78,8 +78,8 @@ class SystemVisitor(SQLVisitor):
         for item in foreign_key_list:
             if any(item):
                 name, keys, foreign_table, foreign_keys = item
-                print(self.manager.add_foreign_key(table, foreign_table, keys, foreign_keys, name))
-        print(self.manager.add_primary_key(table, primary))
+                self.manager.add_foreign_key(table, foreign_table, keys, foreign_keys, name)
+        self.manager.add_primary_key(table, primary)
         return res
 
     # Visit a parse tree produced by SQLParser#drop_table.
