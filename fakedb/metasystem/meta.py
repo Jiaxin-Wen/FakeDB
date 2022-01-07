@@ -137,6 +137,8 @@ class TableMeta:
                 bitmap_data[i] = 1
             else:
                 if columnmeta.kind == 'VARCHAR':
+                    if not isinstance(value, str):
+                        raise Exception(f'{value} is not VARCHAR')
                     strbytes = tuple(value.encode())
                     if len(strbytes) > siz:
                         raise Exception(
@@ -144,9 +146,13 @@ class TableMeta:
                     res[pos: pos + len(strbytes)] = strbytes
                 else:
                     if columnmeta.kind == 'INT':
+                        if not isinstance(value, int):
+                            raise Exception(f'{value} is not INT')
                         intbytes = tuple(struct.pack('q', value))
                         res[pos: pos + siz] = intbytes
                     elif columnmeta.kind == 'FLOAT':
+                        if isinstance(value, str):
+                            raise Exception(f'{value} is not float')
                         floatbytes = tuple(struct.pack('d', value))
                         res[pos: pos + siz] = floatbytes
                     else:
