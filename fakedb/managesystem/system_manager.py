@@ -644,7 +644,7 @@ class SystemManager:
         if group_by[-1] is None and SelectorKind.Field in selector_kinds and len(selector_kinds) > 1:
             # 只有使用groupby时才能同时出现field和聚集函数的select
             raise Exception("should use group by")
-        
+
         def get_value_list(table):
             return [i[table] for i in value_list_dict]
         

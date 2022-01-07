@@ -1,9 +1,10 @@
 from ..config import PAGE_SIZE
 from .rid import RID
 import numpy as np
-
+from time import time
 
 def get_all_records(record_manager):
+    # t = time()
     page_num = record_manager.header.page_num
     res = []
     for page_id in range(1, page_num):
@@ -19,6 +20,7 @@ def get_all_records(record_manager):
 
     # if res:
     #     print(f'res 0:{res[0].data.tobytes()}')
+    # print(f'get all records takes {time() - t} s')
     return res
 
 def get_record_capacity(record_len):
