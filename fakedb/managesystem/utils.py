@@ -10,9 +10,17 @@ def compare_two_cols(col_idx, col_idx2, operator):
         return lambda x: x[col_idx] != x[col_idx2]
     elif operator == '=':
         return lambda x: x[col_idx] == x[col_idx2]
+    elif operator == '<':
+        return lambda x: x[col_idx] < x[col_idx2]
+    elif operator == '>':
+        return lambda x: x[col_idx] > x[col_idx2]
+    elif operator == '<=':
+        return lambda x: x[col_idx] <= x[col_idx2]
+    elif operator == '>=':
+        return lambda x: x[col_idx] >= x[col_idx2]
     else:
-        return lambda x: eval(f'{x[col_idx]}{operator}{x[col_idx2]}')
-
+        # return lambda x: eval(f'{x[col_idx]}{operator}{x[col_idx2]}')
+        raise Exception(f'wrong operator {operator}')
 
 def compare_col_value(col_idx, value, operator, col_null_true, value_null_true):
     if col_null_true:
@@ -20,8 +28,17 @@ def compare_col_value(col_idx, value, operator, col_null_true, value_null_true):
             return lambda x: x[col_idx] is None or x[col_idx] == value
         elif operator == '<>':
             return lambda x: x[col_idx] is None or x[col_idx] != value
+        elif operator == '<':
+            return lambda x: x[col_idx] is None or x[col_idx] < value
+        elif operator == '>':
+            return lambda x: x[col_idx] is None or x[col_idx] > value
+        elif operator == '<=':
+            return lambda x: x[col_idx] is None or x[col_idx] <= value
+        elif operator == '>=':
+            return lambda x: x[col_idx] is None or x[col_idx] >= value
         else:
-            return lambda x: x[col_idx] is None or eval(f'{x[col_idx]}{operator}{value}')
+            raise Exception(f'wrong operator {operator}')
+            # return lambda x: x[col_idx] is None or eval(f'{x[col_idx]}{operator}{value}')
 
     if value_null_true:
         if value is None:
@@ -34,8 +51,16 @@ def compare_col_value(col_idx, value, operator, col_null_true, value_null_true):
         return lambda x: x[col_idx] is not None and x[col_idx] == value
     elif operator == '<>':
         return lambda x: x[col_idx] is not None and x[col_idx] != value
+    elif operator == '<':
+        return lambda x: x[col_idx] is not None and x[col_idx] < value
+    elif operator == '>':
+        return lambda x: x[col_idx] is not None and x[col_idx] > value
+    elif operator == '<=':
+        return lambda x: x[col_idx] is not None and x[col_idx] <= value
+    elif operator == '>=':
+        return lambda x: x[col_idx] is not None and x[col_idx] >= value
     else:
-        return lambda x: x[col_idx] is not None and eval(f'{x[col_idx]}{operator}{value}')
+        raise Exception(f'wrong operator {operator}')
 
 
 def in_values(col_idx, values):

@@ -170,44 +170,111 @@ class SystemManager:
         return table_meta.get_description()
 
     def cond_join(self, table2records, conditions):
+        # print(f'get into cond_join!')
         res = []
         table2idx = {}
         for i, table in enumerate(table2records):
             table2idx[table] = i
         table_metas = {table_name: self.meta_manager.get_table(table_name) for table_name in table2records}
 
-        for tup in product(*table2records.values()):
-            flag = True
+        table_names = list(table2records.keys())
+        table_names = sorted(table_names, key=lambda x:len(table2records[x]))
+        res = [{table_names[0]: item} for item in table2records[table_names[0]]]
+        for i in range(1, len(table_names)):
+            # print(f'current cond join: {table_names[i]}, current res size:{len(res)}')
+            table_name = table_names[i]
+            small_cols = []
+            big_cols = []
             for cond in conditions:
                 if cond.table_name2 is None:
                     continue
                 assert cond.kind == ConditionKind.Compare, f'expected Compare for two table columns, but got {cond.kind}'
-                table_meta = table_metas[cond.table_name]
-                col_idx = table_meta.get_col_idx(cond.col_name)
-                table_idx = table2idx[cond.table_name]
-                val = tup[table_idx][col_idx]
+                if cond.table_name == table_name or cond.table_name2 == table_name:
+                    before_table_names = set(table_names[:i])
+                    if cond.table_name in before_table_names or cond.table_name2 in before_table_names:
+                        if cond.table_name == table_name:
+                            big_table_name = table_name
+                            big_col_name = cond.col_name
+                            small_table_name = cond.table_name2
+                            small_col_name = cond.col_name2
+                        else:
+                            big_table_name = cond.table_name2
+                            big_col_name = cond.col_name2
+                            small_table_name = table_name
+                            small_col_name = cond.col_name
+                        small_cols.append((small_table_name, table_metas[small_table_name].get_col_idx(small_col_name)))
+                        big_cols.append(table_metas[big_table_name].get_col_idx(big_col_name))
 
-                table_meta2 = table_metas[cond.table_name2]
-                col_idx2 = table_meta2.get_col_idx(cond.col_name2)
-                table_idx2 = table2idx[cond.table_name2]
-                val2 = tup[table_idx2][col_idx2]
-
-                op = cond.operator
-                if op == '=':
-                    if val != val2:
-                        flag = False
-                        break
-                elif op == '<>':
-                    if val == val2:
-                        flag = False
-                        break
+                    else:
+                        continue
                 else:
-                    if not eval(f'{val}{op}{val2}'):
-                        flag = False
-                        break
+                    continue
 
-            if flag:
-                res.append({table_name: value_list for value_list, table_name in zip(tup, table2records)})
+            if not small_cols:
+                new_res = []
+                for d in res:
+                    for value_list in table2records[table_name]:
+                        newd = d.copy()
+                        newd[table_name] = value_list
+                        new_res.append(newd)
+                res = new_res
+            else:
+
+                # 对大表建立hash
+                hash_dict = {}
+                for value_list in table2records[table_name]:
+                    key = tuple([value_list[col] for col in big_cols])
+                    if key not in hash_dict:
+                        hash_dict[key] = []
+                    hash_dict[key].append(value_list)
+
+                new_res = []
+                for d in res:
+                    key = []
+                    for item in small_cols:
+                        name, idx = item
+                        key.append(d[name][idx])
+                    if tuple(key) in hash_dict:
+                        value_lists = hash_dict[tuple(key)]
+                        for value_list in value_lists:
+                            newd = d.copy()
+                            newd[table_name] = value_list
+                            new_res.append(newd)
+
+                res = new_res
+
+        # for tup in product(*table2records.values()):
+        #     flag = True
+        #     for cond in conditions:
+        #         if cond.table_name2 is None:
+        #             continue
+        #         assert cond.kind == ConditionKind.Compare, f'expected Compare for two table columns, but got {cond.kind}'
+        #         table_meta = table_metas[cond.table_name]
+        #         col_idx = table_meta.get_col_idx(cond.col_name)
+        #         table_idx = table2idx[cond.table_name]
+        #         val = tup[table_idx][col_idx]
+        #
+        #         table_meta2 = table_metas[cond.table_name2]
+        #         col_idx2 = table_meta2.get_col_idx(cond.col_name2)
+        #         table_idx2 = table2idx[cond.table_name2]
+        #         val2 = tup[table_idx2][col_idx2]
+        #
+        #         op = cond.operator
+        #         if op == '=':
+        #             if val != val2:
+        #                 flag = False
+        #                 break
+        #         elif op == '<>':
+        #             if val == val2:
+        #                 flag = False
+        #                 break
+        #         else:
+        #             if not eval(f'{val}{op}{val2}'):
+        #                 flag = False
+        #                 break
+        #
+        #     if flag:
+        #         res.append({table_name: value_list for value_list, table_name in zip(tup, table2records)})
 
         return res
 
