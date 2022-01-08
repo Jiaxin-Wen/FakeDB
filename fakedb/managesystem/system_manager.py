@@ -781,7 +781,27 @@ class SystemManager:
         if any(table_meta.primary):
             raise Exception("alread exists primary key, create primary key failed")
         # TODO: 插入前检查主键约束是否成立
+        self.record_manager.open_file(get_table_path(self.current_db, table))
+        records = get_all_records(self.record_manager)
         for key in primary_key_list:
+            if key not in table_meta.col_idx:
+                raise Exception(f'{key} not in {table}')
+        all_values = []
+
+        for record in records:
+            temp = []
+            for key in primary_key_list:
+                col_idx = table_meta.get_col_idx(key)
+                value = table_meta.load_record(record.data)
+                if value[col_idx] is None:
+                    raise Exception(f'cannot add primary constraint on col {key} which has None value')
+                temp.append(value[col_idx])
+            all_values.append(tuple(temp))
+        if len(all_values) != len(set(all_values)):
+            raise Exception(f'cannot add primary constraint on col {key} which has duplicated values')
+
+        for key in primary_key_list:
+
             table_meta.add_primary(key)
             self.add_index(table, key)
         return f'add primariy key: {primary_key_list} in {table}'  
@@ -801,9 +821,19 @@ class SystemManager:
     def add_foreign_key(self, table, foreign_table, key, foreign_key, foreign_name):
         '''添加外键'''
         table_meta = self.meta_manager.get_table(table)
+        ref_table_meta = self.meta_manager.get_table(foreign_table)
+        # 检查列是否存在
+        if len(key) != len(foreign_key):
+            raise Exception(f'length not same for foreign key!')
+        for k in key:
+            if k not in table_meta.col_idx:
+                raise Exception(f'{k} not in {table}')
+        for k in foreign_key:
+            if k not in ref_table_meta.col_idx:
+                raise Exception(f'{k} not in {foreign_table}')
+
         # table_meta.add_foreign(key, f"{foreign_table}.{foreign_key}")
         table_meta.add_foreign(tuple(key), tuple(f"{foreign_table}.{i}" for i in foreign_key), foreign_name)
-        ref_table_meta = self.meta_manager.get_table(foreign_table)
         ref_table_meta.add_ref_foreign(tuple(foreign_key), tuple(f"{table}.{i}" for i in key), foreign_name)
         # ref_table_meta.add_ref_foreign(foreign_key, f'{table}.{key}')
         for i in foreign_key:
