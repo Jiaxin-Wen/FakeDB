@@ -9,6 +9,7 @@ from itertools import product
 from copy import copy
 
 from antlr4 import InputStream, CommonTokenStream
+
 from antlr4.error.ErrorListener import ErrorListener
 
 
@@ -75,7 +76,8 @@ class SystemManager:
         封装给外部调用的主接口
         接受一条sql query语句
         返回执行结果
-        ''' 
+    ''' 
+
         input_stream = InputStream(query)
         lexer = SQLLexer(input_stream)
         tokens = CommonTokenStream(lexer)
@@ -85,15 +87,13 @@ class SystemManager:
             tree = parser.program()
         except Exception as e:
             # print(f"syntax error: {e}")
-            # print(traceback.format_exc())
+            print(traceback.format_exc())
             return str(e)
 
         try:
             res = self.visitor.visit(tree)
             return res[0]
         except Exception as e:
-            # print(f"execution error: {e}")
-            # print(traceback.format_exc())
             return str(e)
         
     def show_dbs(self):
