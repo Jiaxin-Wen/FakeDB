@@ -1,1 +1,7 @@
-desc输出
+重复加主键报错(done)
+删除空主键报错(done)
+后加主键，主键约束检查报错
+value_list长度
+complex query
+索引报错
+5表join速度
