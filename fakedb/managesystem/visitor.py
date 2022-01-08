@@ -303,10 +303,17 @@ class SystemVisitor(SQLVisitor):
 
     # Visit a parse tree produced by SQLParser#where_operator_select.
     def visitWhere_operator_select(self, ctx:SQLParser.Where_operator_selectContext):
+        # print('visitWhere_operator_select')
         table, col = ctx.column().accept(self)
         op = ctx.operator().getText()
         value = ctx.select_table().accept(self)
-        value = list(value)[0][0] # 保证是单值
+        # print(f'select, tabale = {table}, col = {col}, op = {op}')
+        # print('ori value = ', value)
+        try:
+            value = list(value)[0][0] # 保证是单值
+        except:
+            raise Exception("invalid operator select")
+        # print('parse value = ', value)
         # print(f'where operator select, table = {table}, col = {col}, op = {op}, value = {value}')
         condition = Condition(ConditionKind.Compare, table, col, op, value=value)
         return condition
@@ -327,17 +334,21 @@ class SystemVisitor(SQLVisitor):
     
     # Visit a parse tree produced by SQLParser#where_in_select.
     def visitWhere_in_select(self, ctx:SQLParser.Where_in_selectContext):
+        # print('visitWhere_in_select')
         table, col = ctx.column().accept(self)
         value = ctx.select_table().accept(self)
         # .values()
-        value = list(value)[0]
+        # print(f'select, tabale = {table}, col = {col}')
+        # print('ori value = ', value)
+        value = [i[0] for i in list(value)] # FIXME:
+        # print('parse value = ', value)
         # print(f'where operator select, table = {table}, col = {col}, op = {op}, value = {value}')
         condition = Condition(ConditionKind.In, table, col, value=value)
         return condition
 
     # Visit a parse tree produced by SQLParser#where_like_string.
     def visitWhere_like_string(self, ctx:SQLParser.Where_like_stringContext):
-        print('visit where like string')
+        # print('visit where like string')
         pattern = ctx.String().getText()[1:-1]
         table, col = ctx.column().accept(self)
         return Condition(ConditionKind.Like, table, col, value=pattern)

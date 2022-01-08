@@ -7,6 +7,6 @@ complex query
 索引报错(done)
 5表join速度
 group_by打印:实现有问题(done)
-deep recursive query
+deep recursive query(done)
 null check error(done)
 后加unique约束，检查报错(done)
