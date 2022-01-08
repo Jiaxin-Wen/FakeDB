@@ -2,7 +2,6 @@
 删除空主键报错(done)
 建立外键时，检查ref的列是否存在
 后加主键，主键约束检查报错
-后加unique约束，检查报错
 value_list长度
 complex query
 索引报错
@@ -10,3 +9,4 @@ complex query
 group_by打印
 deep recursive query
 null check error(done)
+后加unique约束，检查报错(done)
