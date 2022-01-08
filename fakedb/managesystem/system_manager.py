@@ -689,7 +689,7 @@ class SystemManager:
                     col = selector.col_name
                     selected_value_list = []
                     if col == '*': # Count (*)
-                        selected_value_list = [0] * len(value_list)
+                        selected_value_list = [0] * len(tmp_value_list)
                     else:
                         col_idx = table_meta.get_col_idx(col)
                         selected_value_list = [i[col_idx] for i in tmp_value_list]
@@ -697,6 +697,10 @@ class SystemManager:
                     selected_value_list = selector(selected_value_list)
                     if group_col == col: # 被group的列取单一值
                         selected_value_list = selected_value_list[0]
+                    else:
+                        if isinstance(selected_value_list, list):
+                            raise Exception("invalid select query with group by") 
+                    
                     tmp_res.append(selected_value_list)
                 group_res.append(tmp_res)
             return group_res
