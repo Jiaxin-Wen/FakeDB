@@ -9,6 +9,8 @@ from itertools import product
 from copy import copy
 
 from antlr4 import InputStream, CommonTokenStream
+from antlr4.error.ErrorListener import ErrorListener
+
 
 from ..filesystem import FileManager
 from ..recordsystem import RID, RecordManager, Record, get_all_records
@@ -22,6 +24,23 @@ from .utils import get_db_dir, get_table_path, get_index_path, get_db_tables, ge
     compare_two_cols, compare_col_value, in_values, like_check, null_check
 from .condition import ConditionKind, Condition
 from .selector import SelectorKind, Selector
+
+class MyErrorListener( ErrorListener ):
+
+    def __init__(self):
+        super(MyErrorListener, self).__init__()
+
+    def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
+        raise Exception("syntax error")
+
+    def reportAmbiguity(self, recognizer, dfa, startIndex, stopIndex, exact, ambigAlts, configs):
+        raise Exception("syntax error")
+
+    def reportAttemptingFullContext(self, recognizer, dfa, startIndex, stopIndex, conflictingAlts, configs):
+        raise Exception("syntax error")
+
+    def reportContextSensitivity(self, recognizer, dfa, startIndex, stopIndex, prediction, configs):
+        raise Exception("syntax error")
 
 class SystemManager:
     '''
@@ -61,18 +80,21 @@ class SystemManager:
         lexer = SQLLexer(input_stream)
         tokens = CommonTokenStream(lexer)
         parser = SQLParser(tokens)
+        parser.addErrorListener(MyErrorListener())
         try:
             tree = parser.program()
         except Exception as e:
-            print(f"syntax error: {e}")
-            print(traceback.format_exc())
-            
+            # print(f"syntax error: {e}")
+            # print(traceback.format_exc())
+            return str(e)
+
         try:
             res = self.visitor.visit(tree)
             return res[0]
         except Exception as e:
-            print(f"execution error: {e}")
-            print(traceback.format_exc())
+            # print(f"execution error: {e}")
+            # print(traceback.format_exc())
+            return str(e)
         
     def show_dbs(self):
         '''打印全部数据库'''

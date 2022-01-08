@@ -90,7 +90,7 @@ class FileManager:
         退出
         '''
         fds = list(self.fd2name.keys())
-        print('file manager shutdown: ', self.fd2name) 
+        # print('file manager shutdown: ', self.fd2name)
         for fd in fds:
             self.close_file(fd)  
 

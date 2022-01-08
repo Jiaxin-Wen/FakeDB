@@ -49,7 +49,10 @@ def main():
                 if ipt.endswith(';'):
                     sql += ' ' + ipt
                     ret = system_manager.execute(sql)
+
                     print(ret)
+                    if isinstance(ret, list):
+                        print(len(ret))
                     sql = ''
                 else:
                     sql += ' ' + ipt

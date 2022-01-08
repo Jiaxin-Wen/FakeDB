@@ -5,4 +5,5 @@ log*/
 backup_log/
 .antlr
 data
+*.zip
 **/__pycache__
