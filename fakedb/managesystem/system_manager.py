@@ -909,8 +909,8 @@ class SystemManager:
         table_meta.add_foreign(tuple(key), tuple(f"{foreign_table}.{i}" for i in foreign_key), foreign_name)
         ref_table_meta.add_ref_foreign(tuple(foreign_key), tuple(f"{table}.{i}" for i in key), foreign_name)
         # ref_table_meta.add_ref_foreign(foreign_key, f'{table}.{key}')
-        for i in foreign_key:
-            self.add_index(foreign_table, i)
+        # for i in foreign_key:
+        #     self.add_index(foreign_table, i)
         return f"add foreign key, alias = {foreign_name}, ori = {table}.{','.join(key)}, ref = {foreign_table}.{','.join(foreign_key)}"
     
     def drop_foreign_key(self, table, foreign_name):
