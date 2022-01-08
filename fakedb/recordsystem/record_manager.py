@@ -23,7 +23,7 @@ class RecordManager:
         header_page = self.file_manager.read_page(fd, 0)
         # print(f'header page:{header_page}')
         self.header = Header.deserialize(header_page)
-        # print('self.header = ', self.header)
+        # print('self.header = ', self.header.filename)
 
     def create_file(self, filename, record_len):
         '''
@@ -64,7 +64,6 @@ class RecordManager:
         fd = self.file_manager.open_file(filename)
         if fd != self.fd:
             self.init_info(fd)
-            # print(f'filename:{filename}, fd:{fd}')
         return fd
 
     def close_file(self):
@@ -127,6 +126,9 @@ class RecordManager:
 
     def update_record(self, rid: RID, data):
         page, byte_offset = self.get_page_and_offset(rid)
+        # print('record len = ', self.header.record_len)
+        # print('header file = '', self.header.record_len)
+        # print('header file = ', self.header.filename)
         page[byte_offset: byte_offset + self.header.record_len] = data
         self.file_manager.write_page(self.fd, rid.page_id, page)
 

@@ -94,6 +94,7 @@ class SystemManager:
             res = self.visitor.visit(tree)
             return res[0]
         except Exception as e:
+            print(traceback.format_exc())
             return str(e)
         
     def show_dbs(self):
@@ -148,6 +149,7 @@ class SystemManager:
         if self.current_db is None:
             raise Exception(f"Please using database first to create table")
         self.meta_manager.create_table(tablemeta)
+        print(f'creat table: {tablemeta.name}, siz = {tablemeta.get_record_size()}')
         self.record_manager.create_file(get_table_path(self.current_db, tablemeta.name), tablemeta.get_record_size())
         # self.file_manager.create_file(get_table_path(self.current_db, tablemeta.name))
         return f'db = {self.current_db}, create table = {tablemeta}'
@@ -606,7 +608,6 @@ class SystemManager:
         # print('update_info = ', update_info)
         table_meta = self.meta_manager.get_table(table)
         records, record_values = self.search_records_using_indexes(table, conditions) # 根据condition找到的record和原始value
-        
         self.record_manager.open_file(get_table_path(self.current_db, table))
         
         # print('records = ', records)
@@ -618,6 +619,7 @@ class SystemManager:
                 new_value_list[index] = new_value # 维护更新后的record
             
             self.check_constraints(table_meta, new_value_list, record)
+            self.record_manager.open_file(get_table_path(self.current_db, table))
             
             # 更新record
             data = table_meta.build_record(new_value_list)

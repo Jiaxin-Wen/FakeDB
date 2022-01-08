@@ -127,6 +127,7 @@ class TableMeta:
 
     def build_record(self, values):
         record_siz = self.get_record_size()
+        # print('record siz = ', record_siz)
         res = np.zeros(record_siz, dtype=np.uint8)
 
         bitmap_len = self.get_record_null_bitmap_len()
