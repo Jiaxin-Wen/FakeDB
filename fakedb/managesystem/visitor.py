@@ -71,6 +71,20 @@ class SystemVisitor(SQLVisitor):
         columns, foreign_key_list, primary = ctx.field_list().accept(self)
         table = ctx.Identifier().getText()
         tablemeta = TableMeta(table, columns)
+        # TODO: check foreign key
+        for item in foreign_key_list:
+            if any(item):
+                name, key, foreign_table, foreign_key = item
+                ref_tablemeta = self.manager.meta_manager.get_table(foreign_table)
+                if len(key) != len(foreign_key):
+                    raise Exception(f'length not same for foreign key!')
+                for k in key:
+                    if k not in tablemeta.col_idx:
+                        raise Exception(f'{k} not in {table}')
+                for k in foreign_key:
+                    if k not in ref_tablemeta.col_idx:
+                        raise Exception(f'{k} not in {foreign_table}')
+
         res = self.manager.create_table(tablemeta)
         # for key, (foreign_table, foreign_key) in foreign_keys.items():
             # self.manager.add_foreign_key(table, foreign_table, key, foreign_key, None)
