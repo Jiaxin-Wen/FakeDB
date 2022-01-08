@@ -2,9 +2,9 @@
 删除空主键报错(done)
 建立外键时，检查ref的列是否存在(done)
 后加主键，主键约束检查报错(done)
-value_list长度
+value_list长度(done)
 complex query
-索引报错
+索引报错(done)
 5表join速度
 group_by打印:实现有问题(done)
 deep recursive query

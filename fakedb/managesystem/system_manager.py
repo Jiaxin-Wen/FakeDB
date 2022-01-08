@@ -571,7 +571,9 @@ class SystemManager:
         if self.current_db is None:
             raise Exception(f"Please use database first to insert record")
         # print(f'insert, table = {table}, value = {value_list}')
-        table_meta = self.meta_manager.get_table(table)       
+        table_meta = self.meta_manager.get_table(table)
+        if len(value_list) != len(table_meta.column_dict):
+            raise Exception(f'length of insert value list not equal to column num!')
         data = table_meta.build_record(value_list) # 字节序列
                 
         self.check_constraints(table_meta, value_list, old_record=None)
@@ -738,9 +740,9 @@ class SystemManager:
         '''添加索引'''
         table_meta = self.meta_manager.get_table(table)
         if not table_meta.has_column(col): # 判断列是否在表中
-            return f"{table} has no column named {col}"
+            raise Exception(f"{table} has no column named {col}")
         if table_meta.has_index(col): # 判断该列是否已创建过索引
-            return f"{table}.{col} has created index"
+            raise Exception(f"{table}.{col} has created index")
         
         # 创建index文件
         index_path = get_index_path(self.current_db, table, col)
@@ -762,9 +764,9 @@ class SystemManager:
         '''删除索引'''
         table_meta = self.meta_manager.get_table(table)
         if not table_meta.has_column(col): # 判断列是否在表中
-            return f"{table} has no column named {col}"
+            raise Exception(f"{table} has no column named {col}")
         if not table_meta.has_index(col): # 判断该列是否已创建过索引
-            return f"{table}.{col} has not created index"
+            raise Exception(f"{table}.{col} has not created index")
         table_meta.drop_index(col)
         
         index_path = get_index_path(self.current_db, table, col)
@@ -871,6 +873,8 @@ class SystemManager:
             all_values.append(value[col_idx])
         if len(all_values) != len(set(all_values)):
             raise Exception(f'cannot add unique constraint on col {col} which has duplicated values')
+        if col in table_meta.uniques:
+            raise Exception(f'{col} already has unique constraint')
         table_meta.add_unique(col)
         return f'add unique on {table}.{col}'
 
