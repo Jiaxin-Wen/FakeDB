@@ -777,7 +777,7 @@ class SystemManager:
         table_meta = self.meta_manager.get_table(table)
         # 不允许重复添加主键
         if any(table_meta.primary):
-            raise Exception("alread exists primary key")
+            raise Exception("alread exists primary key, create primary key failed")
         # TODO: 插入前检查主键约束是否成立
         for key in primary_key_list:
             table_meta.add_primary(key)
@@ -788,6 +788,8 @@ class SystemManager:
         '''删除主键''' 
         table_meta = self.meta_manager.get_table(table)
         primary_keys = copy(table_meta.primary)
+        if not any(primary_keys):
+            raise Exception("there is not primary key, delete primary key failed")
         for col in primary_keys: # 删掉所有主键列的index
             self.drop_index(table, col)
         table_meta.drop_primary() # 删除主键
