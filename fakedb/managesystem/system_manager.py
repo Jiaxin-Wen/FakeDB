@@ -775,6 +775,10 @@ class SystemManager:
         if primary_key_list is None: # create table时未指定主键
             return
         table_meta = self.meta_manager.get_table(table)
+        # 不允许重复添加主键
+        if any(table_meta.primary):
+            raise Exception("alread exists primary key")
+        # TODO: 插入前检查主键约束是否成立
         for key in primary_key_list:
             table_meta.add_primary(key)
             self.add_index(table, key)
