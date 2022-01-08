@@ -825,6 +825,18 @@ class SystemManager:
 
     def add_unique(self, table, col):
         table_meta = self.meta_manager.get_table(table)
+        # 先检查是否满足unique条件
+        if col not in table_meta.col_idx:
+            raise Exception(f'table {table} does not have col {col}')
+        col_idx = table_meta.get_col_idx(col)
+        self.record_manager.open_file(get_table_path(self.current_db, table))
+        records = get_all_records(self.record_manager)
+        all_values = []
+        for record in records:
+            value = table_meta.load_record(record.data)
+            all_values.append(value[col_idx])
+        if len(all_values) != len(set(all_values)):
+            raise Exception(f'cannot add unique constraint on col {col} which has duplicated values')
         table_meta.add_unique(col)
         return f'add unique on {table}.{col}'
 
