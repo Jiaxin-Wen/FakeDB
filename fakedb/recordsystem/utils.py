@@ -6,6 +6,7 @@ from time import time
 def get_all_records(record_manager):
     # t = time()
     page_num = record_manager.header.page_num
+    # print(f'page num:{page_num}')
     res = []
     for page_id in range(1, page_num):
         page = record_manager.get_page(page_id)

@@ -66,6 +66,7 @@ class BufManager:
         - 不在cache中的话就读存储, 放到cache
         '''
         try: # 读cache
+            # print(f'fd:{fd}, pd:{pd}, fdpdtoidx:{self.fdpd_to_idx}')
             idx = self.fdpd_to_idx[fd][pd]
             data = self.pages[idx]
             # print(f'read from cache idx:{idx}')
@@ -88,6 +89,7 @@ class BufManager:
             self.fdpd_to_idx[fd][pd] = idx
 
             data = self._read(fd, pd)
+            # print(f'data:{data}')
             # if pd == 1:
             #     print(f'fd: {fd}, pd:{pd}, read data:{data}')
             data = np.frombuffer(data, np.uint8, PAGE_SIZE).copy()

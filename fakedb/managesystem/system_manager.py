@@ -160,6 +160,7 @@ class SystemManager:
             raise Exception(f"Please use database first to drop table")
         self.meta_manager.drop_table(name)
         for file in get_table_related_files(self.current_db, name): # 删除表相关的文件
+            print(file)
             self.file_manager.close_file(file)
             self.file_manager.remove_file(file)
         return f'drop table: {name} from db: {self.current_db}'

@@ -62,8 +62,8 @@ class RecordManager:
         打开文件, 获得其句柄
         '''
         fd = self.file_manager.open_file(filename)
-        if fd != self.fd:
-            self.init_info(fd)
+        # if fd != self.fd:
+        self.init_info(fd)
         return fd
 
     def close_file(self):
