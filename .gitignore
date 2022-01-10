@@ -7,3 +7,4 @@ backup_log/
 data
 *.zip
 **/__pycache__
+final-report.pdf
