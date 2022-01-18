@@ -1,10 +1,15 @@
 # FakeDB
-依赖：
 
-python >= 3.6
+2022数据库概论大作业
 
+### Get Started
+
+```bash
+# python >= 3.6
 pip3 install -r requirements.txt
+```
+### Usage
 
-运行方式：
-
+```bash
 python3 main.py
+```
